@@ -2,7 +2,7 @@ from django import forms
 from .models import Usuario
 from django.core.exceptions import ValidationError
 
-class UsuarioForm(forms.ModelForm):
+class UsuarioForm(forms.ModelForm):#02-04/11/2025
     class Meta:
         model = Usuario
         fields = [
@@ -12,8 +12,8 @@ class UsuarioForm(forms.ModelForm):
         ]
         widgets = {
             'contrasena': forms.PasswordInput(),
-            'rol': forms.Select(attrs={'class': 'form-select'}),
-            'local_Fijo': forms.Select(attrs={'class': 'form-select'}),
+           # 'rol': forms.Select(attrs={'class': 'form-select'}),
+           #'local_Fijo': forms.Select(attrs={'class': 'form-select'}),
         }
 
     #Validaciones
@@ -28,3 +28,8 @@ class UsuarioForm(forms.ModelForm):
         if len(contrasena) < 10:
           raise ValidationError("La contraseña debe tener al menos 10 caracteres.")
         return contrasena
+    
+#05/11/2025
+class LoginForm(forms.Form):
+    correo = forms.EmailField(label="Correo electrónico", widget=forms.EmailInput(attrs={'class': 'form-control'}))
+    contrasena = forms.CharField(label="Contraseña", widget=forms.PasswordInput(attrs={'class': 'form-control'}))
