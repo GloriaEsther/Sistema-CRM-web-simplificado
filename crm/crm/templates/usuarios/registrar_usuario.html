@@ -1,0 +1,181 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registro de Usuario</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">Registrar Usuario</h2>
+
+  <!-- mensajes de Django -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} mt-3" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
+            {% if redirigir %}
+                <script>
+                    setTimeout(function() {
+                        window.location.href = "{% url 'iniciar_sesion' %}";
+                    }, 4000);  // redirige después de 4 segundos
+                </script>
+            {% endif %}
+        {% endif %}
+
+  <form method="POST" class="card p-4 shadow-sm" id="registroForm">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        {{ form.nombre.label_tag }} {{ form.nombre }}
+      </div>
+      <div class="col-md-4 mb-3">
+        {{ form.apellidopaterno.label_tag }} {{ form.apellidopaterno }}
+      </div>
+      <div class="col-md-4 mb-3">
+        {{ form.apellidomaterno.label_tag }} {{ form.apellidomaterno }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        {{ form.numerotel.label_tag }} {{ form.numerotel }}
+      </div>
+      <div class="col-md-6 mb-3">
+        {{ form.correo.label_tag }} {{ form.correo }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        {{ form.rfc.label_tag }} {{ form.rfc }}
+      </div>
+      <div class="col-md-6 mb-3">
+        {{ form.curp.label_tag }} {{ form.curp }}
+      </div>
+    </div>
+
+    <div class="mb-3">
+      {{ form.direccion.label_tag }} {{ form.direccion }}
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        {{ form.rol.label_tag }} {{ form.rol }}
+      </div>
+
+      <!-- Campo que se muestra solo si el rol es “Dueño” -->
+      <div class="col-md-6 mb-3" id="localFijoContainer" style="display:none;">
+        {{ form.local_Fijo.label_tag }} {{ form.local_Fijo }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        {{ form.contrasena.label_tag }} {{ form.contrasena }}
+      </div>
+      <div class="col-md-6 mb-3">
+        {{ form.nss.label_tag }} {{ form.nss }}
+      </div>
+    </div>
+    
+    <div class="text-center mt-3">
+      <button type="button" class="btn btn-primary" id="btnGuardar">Guardar</button>
+      <a href="{% url 'iniciar_sesion' %}" class="btn btn-secondary">Cancelar</a>
+    </div>
+
+  </form>
+  <!--Haber que sale,Esto es de un codigo aparte-->
+   <form method="POST" class="card p-4 shadow-sm">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary w-100">Registrar</button>
+        </form>
+
+     <div class="text-center mt-3">
+            <a href="{% url 'iniciar_sesion' %}">¿Ya tienes cuenta? Inicia sesión</a>
+    </div>
+</div>
+
+<!-- 🔔 Modal de confirmación -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title" id="confirmModalLabel">Confirmar datos opcionales</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        Has ingresado datos opcionales (como NSS o Local Fijo).  
+        ¿Deseas guardarlos junto con tu registro?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="descartarOpcionales" data-bs-dismiss="modal">No, descartar</button>
+        <button type="button" class="btn btn-primary" id="confirmarOpcionales">Sí, guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const rolSelect = document.getElementById("id_rol");
+  const localFijoContainer = document.getElementById("localFijoContainer");
+  const localFijoInput = document.getElementById("id_local_Fijo");
+  const nssInput = document.getElementById("id_nss");
+  const form = document.getElementById("registroForm");
+  const btnGuardar = document.getElementById("btnGuardar");
+
+  const modal = new bootstrap.Modal(document.getElementById("confirmModal"));
+  const btnConfirmar = document.getElementById("confirmarOpcionales");
+  const btnDescartar = document.getElementById("descartarOpcionales");
+
+  // Mostrar u ocultar campo Local Fijo según el rol
+  function mostrarCampoLocalFijo() {
+    if (rolSelect.value === "Dueño") {
+      localFijoContainer.style.display = "block";
+    } else {
+      localFijoContainer.style.display = "none";
+      if (localFijoInput) localFijoInput.value = "";
+    }
+  }
+
+  rolSelect.addEventListener("change", mostrarCampoLocalFijo);
+  mostrarCampoLocalFijo();
+
+  // Interceptar el botón Guardar
+  btnGuardar.addEventListener("click", function (e) {
+    const tieneOpcionales =
+      (nssInput && nssInput.value.trim() !== "") ||
+      (localFijoInput && localFijoInput.value.trim() !== "");
+
+    if (tieneOpcionales) {
+      // Mostrar el modal de confirmación
+      modal.show();
+    } else {
+      // Si no hay opcionales, enviar directamente
+      form.submit();
+    }
+  });
+
+  // Si el usuario confirma guardar los opcionales
+  btnConfirmar.addEventListener("click", function () {
+    modal.hide();
+    form.submit();
+  });
+
+  // Si el usuario elige descartar los opcionales
+  btnDescartar.addEventListener("click", function () {
+    if (nssInput) nssInput.value = "";
+    if (localFijoInput) localFijoInput.value = "";
+    form.submit();
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,36 @@
+# ========== Python ==========
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+*.log
+*.tmp
+*.bak
+*~
+
+# ========== Entornos virtuales ==========
+env/
+venv/
+.venv/
+ENV/
+.ENV/
+venvcrm/
+# ========== Variables de entorno ==========
+*.env
+.env/
+.env.*.local
+
+# ========== Archivos de base de datos ==========
+*.sqlite3
+*.db
+
+# ========== Django ==========
+staticfiles/
+media/
+local_settings.py
+
+# ========== VS Code ==========
+.vscode/
+.history/
