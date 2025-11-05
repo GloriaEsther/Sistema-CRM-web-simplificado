@@ -16,7 +16,7 @@ def registrar_usuario(request):
                 usuario = form.save()
                 messages.success(request, f"Registro exitoso. Su clave es: {usuario.claveusuario}. Será redirigido al inicio de sesión en unos segundos...")
                 # en lugar de redirigir de inmediato, renderizamos la misma plantilla con redirección diferida
-                return render(request, 'usuarios/registrar_usuario.html', {
+                return render(request, 'usuario/registrar_usuario.html', {
                     'form': UsuarioForm(),  # formulario vacío
                     'redirigir': True
                 })
@@ -28,7 +28,7 @@ def registrar_usuario(request):
                     messages.error(request, f"Error en {field}: {error}")
     else:
         form = UsuarioForm()
-    return render(request, 'templates/usuarios/registrar_usuario.html', {'form': form})
+    return render(request, 'usuario/registrar_usuario.html', {'form': form})
 
 
 
@@ -40,7 +40,7 @@ def iniciar_sesion(request):
         form = LoginForm(request.POST)
         if not form.correo or not form.contrasena:
             messages.error(request, "Por favor, llena ambos campos.")
-            return render(request, 'templates/usuarios/login.html')
+            return render(request, 'usuario/login.html')
         
         if form.is_valid():
             correo = form.cleaned_data['correo']
@@ -75,7 +75,7 @@ def iniciar_sesion(request):
         '''
     else:
         form=LoginForm()      
-    return render(request, 'templates/usuarios/login.html', {'form': form})
+    return render(request, 'usuario/login.html', {'form': form})
 
 @csrf_exempt
 def cerrar_sesion(request):
