@@ -43,16 +43,7 @@ class Usuario(models.Model):#te quedasta aqui en revisar y ponerle el modelo a l
     activos = ActivoManager()
     todos = models.Manager()
     
-    '''
-    def save(self, *args, **kwargs):
-        if not self.pk or 'pbkdf2_sha256$' not in self.contrasena:
-            self.contrasena = make_password(self.contrasena)
-
-        if not self.claveusuario:
-           last_id = Usuario.objects.count() + 1
-           self.claveusuario = f"USR{last_id:03d}"
-        super().save(*args, **kwargs)
-    '''
+    
     def generar_clave(self):
         # Prefijo según rol
         prefijo = ''

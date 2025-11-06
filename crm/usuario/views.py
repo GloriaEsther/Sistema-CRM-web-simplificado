@@ -48,8 +48,6 @@ def registrar_usuario(request):
 @csrf_exempt
 def iniciar_sesion(request):
     if request.method == 'POST':
-        #correo = request.POST.get('correo')
-        #contrasena = request.POST.get('contrasena')
         form = LoginForm(request.POST)
         if not form.correo or not form.contrasena:
             messages.error(request, "Por favor, llena ambos campos.")
@@ -70,22 +68,6 @@ def iniciar_sesion(request):
                     messages.error(request, "Contraseña incorrecta.")
             except Usuario.DoesNotExist:
                 messages.error(request, "No existe una cuenta con ese correo.")
-
-        '''  try:
-            usuario = Usuario.todos.get(correo=correo, activo=True)
-            
-            if check_password(contrasena, usuario.contrasena):
-                request.session['usuario_id'] = usuario.idusuario
-                request.session['nombre_usuario'] = usuario.nombre
-                request.session['usuario_rol'] = usuario.rol
-                messages.success(request, f"Bienvenido {usuario.nombre}")
-                return redirect('inicio')
-            else:
-                messages.error(request, "Contraseña incorrecta.")
-        except Usuario.DoesNotExist:
-            messages.error(request, "El correo no está registrado.")
-    
-        '''
     else:
         form=LoginForm()      
     return render(request, 'usuario/login.html', {'form': form})

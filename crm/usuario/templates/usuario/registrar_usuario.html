@@ -1,3 +1,4 @@
+<!--esta version es muy funcional pero le faltan algunos ajustes-->
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
@@ -6,6 +7,7 @@
   <title>Registro de Usuario</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
 </head>
 
 <body class="bg-light">
@@ -103,7 +105,7 @@
     </div>
 </div>
 
-<!-- Modal de confirmación -->
+<!-- Modal de confirmación campos opcionales-->
 <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -123,6 +125,44 @@
   </div>
 </div>
 
+<!-- Modal de contrasena invalida no lo he probado-->
+<div class="modal fade" id="coninvalida" tabindex="-1" aria-labelledby="coninvalidaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title" id="coninvalidaLabel">Contraseña invalida</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        La contraseña debe tener una longitud minima de 10 caracteres.
+      </div>
+      <div class="modal-footer">
+       <!--  <button type="button" class="btn btn-secondary" id="descartarOpcionales" data-bs-dismiss="modal">Cancelar</button> -->
+        <button type="button" class="btn btn-primary" id="confirmar">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Modal de datos duplicados-->
+<div class="modal fade" id="duplicadoModal" tabindex="-1" aria-labelledby="duplicadoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="duplicadoModalLabel">Datos duplicados</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        Ya existe un usuario con alguno de los datos ingresados (correo, RFC o CURP). Verifica e inténtalo de nuevo.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <script>
   const rolSelect = document.getElementById("id_rol");
   const localFijoContainer = document.getElementById("localFijoContainer");
@@ -131,9 +171,45 @@
   const form = document.getElementById("registroForm");
   const btnGuardar = document.getElementById("btnGuardar");
 
-  const modal = new bootstrap.Modal(document.getElementById("confirmModal"));
+  const modal = new bootstrap.Modal(document.getElementById("confirmModal"));///
   const btnConfirmar = document.getElementById("confirmarOpcionales");
   const btnDescartar = document.getElementById("descartarOpcionales");
+
+ 
+  const modalcontrasena = new bootstrap.Modal(document.getElementById("coninvalida"));
+  const btnAceptar = document.getElementById("confirmar");
+  /*
+  function validarContrasena(){
+    const contrasenafront =document.getElementById("contrasena");
+    if (contrasenafront.length < 10){//si es menor a 10 caracteres todo
+      modalcontrasena.show();
+    } 
+    else{
+      modal.hide();
+    }
+  }
+*/
+  btnGuardar.addEventListener("click", function (e) {
+    e.preventDefault(); // evita que se envíe todavía
+
+    const contrasenaInput = document.getElementById("id_contrasena");
+    const contrasena = contrasenaInput.value.trim();
+
+    if (contrasena.length < 10) {
+      modalcontrasena.show();
+      return; // detiene el flujo
+    }
+
+    const tieneOpcionales =
+      (nssInput && nssInput.value.trim() !== "") ||
+      (localFijoInput && localFijoInput.value.trim() !== "");
+
+    if (tieneOpcionales) {
+      modal.show();
+    } else {
+      form.submit();
+    }
+  });
 
   // Mostrar u ocultar campo Local Fijo según el rol
   function mostrarCampoLocalFijo() {
