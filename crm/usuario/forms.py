@@ -1,6 +1,7 @@
 from django import forms
 from .models import Usuario
 from django.core.exceptions import ValidationError
+import re
 
 class UsuarioForm(forms.ModelForm):#02-04/11/2025
     class Meta:
@@ -12,8 +13,6 @@ class UsuarioForm(forms.ModelForm):#02-04/11/2025
         ]
         widgets = {
             'contrasena': forms.PasswordInput(),
-           # 'rol': forms.Select(attrs={'class': 'form-select'}),
-           #'local_Fijo': forms.Select(attrs={'class': 'form-select'}),
         }
 
     #Validaciones
@@ -27,6 +26,14 @@ class UsuarioForm(forms.ModelForm):#02-04/11/2025
         contrasena = self.cleaned_data.get('contrasena')
         if len(contrasena) < 10:
           raise ValidationError("La contraseña debe tener al menos 10 caracteres.")
+        
+        # Verificar que contenga al menos una mayúscula
+        if not re.search(r'[A-Z]', contrasena):
+            raise ValidationError("La contraseña debe contener al menos una letra mayúscula.")
+
+        # Verificar que contenga al menos un número
+        if not re.search(r'\d', contrasena):
+            raise ValidationError("La contraseña debe contener al menos un número.")
         return contrasena
     
     #para que no ande pidiendo claveusuario porque se genera solo :b

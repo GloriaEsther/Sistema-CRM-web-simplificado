@@ -126,7 +126,13 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
-        La contraseña debe tener una longitud minima de 10 caracteres.
+       <!-- La contraseña debe tener una longitud minima de 10 caracteres. --> 
+        La contraseña debe cumplir con los siguientes requisitos:
+        <ul>
+          <li>Mínimo 10 caracteres</li>
+          <li>Al menos una letra mayúscula</li>
+          <li>Al menos un número</li>
+        </ul>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" id="confirmar">Aceptar</button>
@@ -192,8 +198,13 @@
 
     const contrasenaInput = document.getElementById("id_contrasena");
     const contrasena = contrasenaInput.value.trim();
+    const regexMayuscula = /[A-Z]/;
+    const regexNumero = /\d/;
 
-    if (contrasena.length < 10) {
+    if (contrasena.length < 10||
+        !regexMayuscula.test(contrasena) ||
+        !regexNumero.test(contrasena)
+    ) {
       modalcontrasena.show();
       return; // detiene el flujo
     }
