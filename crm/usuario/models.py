@@ -24,7 +24,7 @@ class Usuario(models.Model):#te quedasta aqui en revisar y ponerle el modelo a l
     nombre = models.CharField(max_length=45)
     apellidopaterno = models.CharField(max_length=45)
     apellidomaterno = models.CharField(max_length=45)
-    numerotel = models.CharField(max_length=25)
+    numerotel = models.CharField(max_length=15)
     correo = models.CharField(unique=True, max_length=100)
     contrasena = models.CharField(max_length=255)
     rfc = models.CharField(max_length=13)
