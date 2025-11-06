@@ -20,7 +20,7 @@ class Usuario(models.Model):#te quedasta aqui en revisar y ponerle el modelo a l
     ]
 
     idusuario = models.AutoField(primary_key=True)
-    claveusuario = models.CharField(unique=True, max_length=25)
+    claveusuario = models.CharField(unique=True, max_length=10,blank=True)#se permite null para guardar al ultimo la clave ya que el modelo lo crea antes de guardarla
     nombre = models.CharField(max_length=45)
     apellidopaterno = models.CharField(max_length=45)
     apellidomaterno = models.CharField(max_length=45)
@@ -42,7 +42,8 @@ class Usuario(models.Model):#te quedasta aqui en revisar y ponerle el modelo a l
 
     activos = ActivoManager()
     todos = models.Manager()
-
+    
+    '''
     def save(self, *args, **kwargs):
         if not self.pk or 'pbkdf2_sha256$' not in self.contrasena:
             self.contrasena = make_password(self.contrasena)
@@ -51,7 +52,32 @@ class Usuario(models.Model):#te quedasta aqui en revisar y ponerle el modelo a l
            last_id = Usuario.objects.count() + 1
            self.claveusuario = f"USR{last_id:03d}"
         super().save(*args, **kwargs)
+    '''
+    def generar_clave(self):
+        # Prefijo según rol
+        prefijo = ''
+        if self.rol.lower() == 'vendedor':
+            prefijo = 'VEN'
+        elif self.rol.lower() == 'admin':
+            prefijo = 'ADM'
+        else:
+            prefijo = 'Due'
+        # Contar cuántos usuarios existen con ese prefijo
+        cantidad = Usuario.todos.filter(claveusuario__startswith=prefijo).count() + 1
+        return f"{prefijo}{cantidad:03d}"  # VEN001, VEN002, etc.
 
+    def save(self, *args, **kwargs):
+        # Hashea la contrasena si no lo esta
+        if not self.contrasena.startswith('pbkdf2_sha256$'):
+            self.contrasena = make_password(self.contrasena)
+
+        # Crea claveusuario si no existe
+        if not self.claveusuario:
+            self.claveusuario = self.generar_clave()
+
+        super().save(*args, **kwargs)
+
+     
     class Meta:
         managed = False
         db_table = 'usuario'
