@@ -8,31 +8,21 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.hashers import make_password
 
-'''
-def generar_clave():#generar clave de usuario
-    if not Usuario.claveusuario:#self.claveusuario:
-        last_id = Usuario.objects.count() + 1
-        Usuario.claveusuario= f"USR{last_id:03d}"
-    return Usuario.claveusuario        
-'''
-
 @csrf_exempt
 def registrar_usuario(request):
     if request.method == 'POST':
         form = UsuarioForm(request.POST)
         if form.is_valid():
             try:
-               # usuario = form.save()
                 usuario = form.save(commit=False)#Obtiene el objeto pero aun no lo guarda en la base de datos (se van a agregar cosas :b)
-                #usuario.claveusuario = generar_clave()
                 usuario.save()#ahora si lo va a guardar en la base 
-               #usuario = form.save()
-                messages.success(request, f"Registro exitoso. Su clave es: {usuario.claveusuario}. Será redirigido al inicio de sesión en unos segundos...")
-                # en lugar de redirigir de inmediato, renderizamos la misma plantilla con redirección diferida
+                clave = usuario.claveusuario
+                # Renderizamos la plantilla con la clave y un indicador para mostrar el modal
                 return render(request, 'usuario/registrar_usuario.html', {
                     'form': UsuarioForm(),  # formulario vacío
-                    'redirigir': True
-                })
+                    'mostrar_modal': True,
+                    'claveusuario': clave
+                })         
             except IntegrityError:
                 messages.error(request, "Error: datos duplicados.")
         else:
