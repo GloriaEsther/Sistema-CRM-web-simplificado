@@ -56,9 +56,9 @@ class Usuario(models.Model):#te quedasta aqui en revisar y ponerle el modelo a l
     def generar_clave(self):
         # Prefijo según rol
         prefijo = ''
-        if self.rol.lower() == 'vendedor':
+        if self.rol=='Vendedor':#self.rol.lower() == 'Vendedor':
             prefijo = 'VEN'
-        elif self.rol.lower() == 'admin':
+        elif self.rol== 'Administrador':#self.rol.lower() == 'Administrador':
             prefijo = 'ADM'
         else:
             prefijo = 'Due'
