@@ -16,13 +16,6 @@ class UsuarioForm(forms.ModelForm):#02-04/11/2025
         }
 
     #Validaciones
-    '''
-    def clean_correo(self):
-            correo = self.cleaned_data.get('correo')
-            if Usuario.activos.filter(correo=correo).exists():#comprueba si ya esta registrado(solo los activos y no los eliminados logicamente, esto se senala en el modelo). Usuario.objects.filter(correo=correo).exists():
-                raise ValidationError("Este correo ya está registrado.")
-            return correo
-    '''
     def clean_contrasena(self):
         contrasena = self.cleaned_data.get('contrasena')
         if len(contrasena) < 10:

@@ -71,25 +71,35 @@ def registrar_usuario(request):
 def iniciar_sesion(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
+        '''
         if not form.correo or not form.contrasena:
             messages.error(request, "Por favor, llena ambos campos.")
-            return render(request, 'usuario/login.html')
-        
+            return render(request, 'usuario/login.html')        
+        '''
         if form.is_valid():
-            correo = form.cleaned_data['correo']
-            contrasena = form.cleaned_data['contrasena']
+            correo = form.cleaned_data.get('correo')
+            contrasena = form.cleaned_data.get('contrasena')
+
             try:
                 usuario = Usuario.activos.get(correo=correo)
+
                 if check_password(contrasena, usuario.contrasena):
-                    request.session['usuario_id'] = usuario.idusuario
-                    request.session['usuario_nombre'] = usuario.nombre
-                    request.session['usuario_rol'] = usuario.rol
-                    messages.success(request, f"¡Bienvenido, {usuario.nombre}!")
-                    return redirect('inicio')  #vista principal
+
+                    request.session['idusuario'] = usuario.idusuario#request.session['usuario_id'] = usuario.idusuario
+                    request.session['nombre'] = usuario.nombre#request.session['usuario_nombre'] = usuario.nombre
+                    request.session['rol'] = usuario.rol#request.session['usuario_rol'] = usuario.rol
+
+                    return render(request, 'usuario/login.html', {
+                        'form': LoginForm(),
+                        'mostrar_modal': True,
+                        'usuario_nombre': usuario.nombre
+                    })
+                    #messages.success(request, f"¡Bienvenido, {usuario.nombre}!")
+                    #return redirect('inicio')  #vista principal
                 else:
                     messages.error(request, "Contraseña incorrecta.")
             except Usuario.DoesNotExist:
-                messages.error(request, "No existe una cuenta con ese correo.")
+                messages.error(request, "No existe una cuenta con ese correo, favor de registrarse.")
     else:
         form=LoginForm()      
     return render(request, 'usuario/login.html', {'form': form})
