@@ -71,14 +71,20 @@ def registrar_usuario(request):
 def iniciar_sesion(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
-        '''
-        if not form.correo or not form.contrasena:
-            messages.error(request, "Por favor, llena ambos campos.")
-            return render(request, 'usuario/login.html')        
-        '''
+        correo = request.POST.get('correo', '').strip()
+        contrasena = request.POST.get('contrasena', '').strip()
+
+        if not correo or not contrasena:
+            return render(request, 'usuario/login.html', {
+                'form': form,
+                'mostrar_modal': True,
+                'modal_titulo': 'Campos incompletos',
+                'modal_mensaje': 'Por favor, completa todos los campos antes de continuar.'
+            })
+        
         if form.is_valid():
-            correo = form.cleaned_data.get('correo')
-            contrasena = form.cleaned_data.get('contrasena')
+            correo = form.cleaned_data['correo']#correo = form.cleaned_data.get('correo')
+            contrasena = form.cleaned_data['contrasena']#contrasena = form.cleaned_data.get('contrasena')
 
             try:
                 usuario = Usuario.activos.get(correo=correo)
@@ -92,14 +98,26 @@ def iniciar_sesion(request):
                     return render(request, 'usuario/login.html', {
                         'form': LoginForm(),
                         'mostrar_modal': True,
-                        'usuario_nombre': usuario.nombre
+                        'modal_titulo': 'Inicio de sesión exitoso',
+                        'modal_mensaje': f'¡Bienvenido, {usuario.nombre}! Serás redirigido en unos segundos...',
+                        'redirigir': True
                     })
-                    #messages.success(request, f"¡Bienvenido, {usuario.nombre}!")
-                    #return redirect('inicio')  #vista principal
                 else:
-                    messages.error(request, "Contraseña incorrecta.")
+                    return render(request, 'usuario/login.html', {
+                        'form': form,
+                        'mostrar_modal': True,
+                        'modal_titulo': 'Contraseña incorrecta',
+                        'modal_mensaje': 'La contraseña ingresada no es válida.'
+                    })
+                    #messages.error(request, "Contraseña incorrecta.")
             except Usuario.DoesNotExist:
-                messages.error(request, "No existe una cuenta con ese correo, favor de registrarse.")
+                return render(request, 'usuario/login.html', {
+                    'form': form,
+                    'mostrar_modal': True,
+                    'modal_titulo': 'Cuenta no encontrada',
+                    'modal_mensaje': 'No existe una cuenta con ese correo electrónico.'
+                })
+                #messages.error(request, "No existe una cuenta con ese correo, favor de registrarse.")
     else:
         form=LoginForm()      
     return render(request, 'usuario/login.html', {'form': form})
