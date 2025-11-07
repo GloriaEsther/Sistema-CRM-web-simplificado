@@ -13,6 +13,7 @@ def registrar_usuario(request):
     mostrar_modal = False
     clave = None
     duplicado = False
+    campo_duplicado = None
 
     if request.method == 'POST':
         form = UsuarioForm(request.POST)
@@ -30,10 +31,24 @@ def registrar_usuario(request):
                     'mostrar_modal': mostrar_modal,
                     'claveusuario': clave
                 })         
-            except IntegrityError:
+            except IntegrityError as e:
                 duplicado = True
-                messages.error(request, "a existe un usuario con el correo, RFC o CURP ingresado.")
+                data = request.POST
+                correo = data.get('correo')
+                rfc = data.get('rfc')
+                curp = data.get('curp')
+                
+                if Usuario.objects.filter(correo=correo).exists():
+                    campo_duplicado = "correo electrónico"
+                elif Usuario.objects.filter(rfc=rfc).exists():
+                    campo_duplicado = "RFC"
+                elif Usuario.objects.filter(curp=curp).exists():
+                    campo_duplicado = "CURP"
+                else:
+                    campo_duplicado = "alguno de los datos"
+               # messages.error(request, "a existe un usuario con el correo, RFC o CURP ingresado.")
         else:
+
             for field, errors in form.errors.items():
                 for error in errors:
                     messages.error(request, f"Error en {field}: {error}")
@@ -43,14 +58,14 @@ def registrar_usuario(request):
                 duplicado = True
     else:
         form = UsuarioForm()
+
     return render(request, 'usuario/registrar_usuario.html', {''
         'form': form,
         'mostrar_modal': mostrar_modal,#lo mismo pero el modal :b
         'claveusuario': clave,
-        'duplicado': duplicado#activa el modal de duplicados en el html
+        'duplicado': duplicado,#activa el modal de duplicados en el html
+        'campo_duplicado': campo_duplicado,
     })
-
-
 
 @csrf_exempt
 def iniciar_sesion(request):
