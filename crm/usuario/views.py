@@ -38,11 +38,11 @@ def registrar_usuario(request):
                 rfc = data.get('rfc')
                 curp = data.get('curp')
                 
-                if Usuario.objects.filter(correo=correo).exists():
+                if Usuario.activos.filter(correo=correo).exists():
                     campo_duplicado = "correo electrónico"
-                elif Usuario.objects.filter(rfc=rfc).exists():
+                elif Usuario.activos.filter(rfc=rfc).exists():
                     campo_duplicado = "RFC"
-                elif Usuario.objects.filter(curp=curp).exists():
+                elif Usuario.activos.filter(curp=curp).exists():
                     campo_duplicado = "CURP"
                 else:
                     campo_duplicado = "alguno de los datos"

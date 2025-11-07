@@ -11,100 +11,125 @@
 
 <body class="bg-light">
 <div class="container mt-5">
- <!--<h2 class="mb-4 text-center">Registrar Usuario</h2> --> 
-  <!-- 
-     {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} mt-3" role="alert">
-                    {{ message }}
-                </div>
-            {% endfor %}
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-8 col-xl-6">
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+          <h2 class="mb-4 text-center fw-bold text-primary">Registrar Usuario</h2>
 
-            {% if redirigir %}
-                <script>
-                    setTimeout(function() {
-                        window.location.href = "{% url 'inicio' %}";// "{% url 'iniciar_sesion' %}"
-                    }, 4000);  // redirige después de 4 segundos
-                </script>
-            {% endif %}
-        {% endif %}  
-  -->
-    <div class="row justify-content-center">
-    <div class="col-12 col-md-10 col-lg-8 col-xl-6"> 
-      <h2 class="mb-4 text-center">Registrar Usuario</h2>
-
-      <form method="POST" class="card p-4 shadow-sm" id="registroForm">
-        {% csrf_token %}
-        <!-- tu formulario completo aquí -->
-          <form method="POST" class="card p-4 shadow-sm" id="registroForm">
+          <form method="POST" id="registroForm" class="needs-validation" novalidate>
             {% csrf_token %}
+
             <div class="row">
               <div class="col-md-4 mb-3">
-                {{ form.nombre.label_tag }} {{ form.nombre }}
+                <label for="id_nombre" class="form-label">Nombre</label>
+                {{ form.nombre }}
               </div>
               <div class="col-md-4 mb-3">
-                {{ form.apellidopaterno.label_tag }} {{ form.apellidopaterno }}
+                <label for="id_apellidopaterno" class="form-label">Apellido Paterno</label>
+                {{ form.apellidopaterno }}
               </div>
               <div class="col-md-4 mb-3">
-                {{ form.apellidomaterno.label_tag }} {{ form.apellidomaterno }}
+                <label for="id_apellidomaterno" class="form-label">Apellido Materno</label>
+                {{ form.apellidomaterno }}
               </div>
             </div>
 
             <div class="row">
               <div class="col-md-6 mb-3">
-                {{ form.numerotel.label_tag }} {{ form.numerotel }}
+                <label for="id_numerotel" class="form-label">Número Telefónico</label>
+                {{ form.numerotel }}
+                <small class="form-text text-muted">Ejemplo: 5512345678</small>
               </div>
               <div class="col-md-6 mb-3">
-                {{ form.correo.label_tag }} {{ form.correo }}
+                <label for="id_correo" class="form-label">Correo Electrónico</label>
+                {{ form.correo }}
               </div>
             </div>
 
             <div class="row">
               <div class="col-md-6 mb-3">
-                {{ form.rfc.label_tag }} {{ form.rfc }}
+                <label for="id_rfc" class="form-label">RFC</label>
+                {{ form.rfc }}
               </div>
               <div class="col-md-6 mb-3">
-                {{ form.curp.label_tag }} {{ form.curp }}
+                <label for="id_curp" class="form-label">CURP</label>
+                {{ form.curp }}
               </div>
             </div>
 
             <div class="mb-3">
-              {{ form.direccion.label_tag }} {{ form.direccion }}
+              <label for="id_direccion" class="form-label">Dirección</label>
+              {{ form.direccion }}
             </div>
 
             <div class="row">
               <div class="col-md-6 mb-3">
-                {{ form.rol.label_tag }} {{ form.rol }}
+                <label for="id_rol" class="form-label">Rol</label>
+                {{ form.rol }}
               </div>
-
-              <!-- Campo que se muestra solo si el rol es “Dueño” -->
               <div class="col-md-6 mb-3" id="localFijoContainer" style="display:none;">
-                {{ form.local_Fijo.label_tag }} {{ form.local_Fijo }}
+                <label for="id_local_Fijo" class="form-label">Local Fijo</label>
+                {{ form.local_Fijo }}
               </div>
             </div>
 
             <div class="row">
               <div class="col-md-6 mb-3">
-                {{ form.contrasena.label_tag }} {{ form.contrasena }}
+                <label for="id_contrasena" class="form-label">Contraseña</label>
+                {{ form.contrasena }}
+                <small class="form-text text-muted">
+                  Mínimo 10 caracteres, una mayúscula y un número.
+                </small>
               </div>
               <div class="col-md-6 mb-3">
-                {{ form.nss.label_tag }} {{ form.nss }}
+                <label for="id_nss" class="form-label">NSS</label>
+                {{ form.nss }}
               </div>
             </div>
-            
+
+            <div class="d-flex justify-content-between mt-4">
+              <button type="button" class="btn btn-primary w-50 me-2" id="btnGuardar">
+                Guardar
+              </button>
+              <a href="{% url 'iniciar_sesion' %}" class="btn btn-secondary w-50">
+                Cancelar
+              </a>
+            </div>
+
             <div class="text-center mt-3">
-              <button type="button" class="btn btn-primary" id="btnGuardar">Guardar</button>
-              <a href="{% url 'iniciar_sesion' %}" class="btn btn-secondary">Cancelar</a>
+              <a href="{% url 'iniciar_sesion' %}">¿Ya tienes cuenta? Inicia sesión</a>
             </div>
           </form>
-
-            <div class="text-center mt-3">
-                    <a href="{% url 'iniciar_sesion' %}">¿Ya tienes cuenta? Inicia sesión</a>
-            </div>
-      </form>
+        </div>
+      </div>
     </div>
-  </div>    
+  </div>
 </div>
+
+<style>
+  /* 💅 Ajustes visuales para los campos */
+  input, select, textarea {
+    width: 100% !important;
+    border-radius: 0.5rem !important;
+    padding: 0.5rem 0.75rem !important;
+    border: 1px solid #ced4da !important;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.25) !important;
+  }
+
+  .card {
+    border-radius: 1rem !important;
+  }
+
+  body {
+    background-color: #f8f9fa;
+  }
+</style>
+
 
 <!--Campos opcionales, si funciona-->
 <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
