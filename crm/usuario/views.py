@@ -10,28 +10,45 @@ from django.contrib.auth.hashers import make_password
 
 @csrf_exempt
 def registrar_usuario(request):
+    mostrar_modal = False
+    clave = None
+    duplicado = False
+
     if request.method == 'POST':
         form = UsuarioForm(request.POST)
+        
         if form.is_valid():
             try:
                 usuario = form.save(commit=False)#Obtiene el objeto pero aun no lo guarda en la base de datos (se van a agregar cosas :b)
                 usuario.save()#ahora si lo va a guardar en la base 
                 clave = usuario.claveusuario
+                
+                mostrar_modal = True
                 # Renderizamos la plantilla con la clave y un indicador para mostrar el modal
                 return render(request, 'usuario/registrar_usuario.html', {
                     'form': UsuarioForm(),  # formulario vacío
-                    'mostrar_modal': True,
+                    'mostrar_modal': mostrar_modal,
                     'claveusuario': clave
                 })         
             except IntegrityError:
-                messages.error(request, "Error: datos duplicados.")
+                duplicado = True
+                messages.error(request, "a existe un usuario con el correo, RFC o CURP ingresado.")
         else:
             for field, errors in form.errors.items():
                 for error in errors:
                     messages.error(request, f"Error en {field}: {error}")
+            
+            errores_texto = form.errors.as_text()
+            if "Ya existe un usuario" in errores_texto:
+                duplicado = True
     else:
         form = UsuarioForm()
-    return render(request, 'usuario/registrar_usuario.html', {'form': form})
+    return render(request, 'usuario/registrar_usuario.html', {''
+        'form': form,
+        'mostrar_modal': mostrar_modal,#lo mismo pero el modal :b
+        'claveusuario': clave,
+        'duplicado': duplicado#activa el modal de duplicados en el html
+    })
 
 
 

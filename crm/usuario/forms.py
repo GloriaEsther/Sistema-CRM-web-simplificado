@@ -16,12 +16,13 @@ class UsuarioForm(forms.ModelForm):#02-04/11/2025
         }
 
     #Validaciones
+    '''
     def clean_correo(self):
             correo = self.cleaned_data.get('correo')
             if Usuario.activos.filter(correo=correo).exists():#comprueba si ya esta registrado(solo los activos y no los eliminados logicamente, esto se senala en el modelo). Usuario.objects.filter(correo=correo).exists():
                 raise ValidationError("Este correo ya está registrado.")
             return correo
-
+    '''
     def clean_contrasena(self):
         contrasena = self.cleaned_data.get('contrasena')
         if len(contrasena) < 10:
@@ -42,6 +43,30 @@ class UsuarioForm(forms.ModelForm):#02-04/11/2025
         if 'claveusuario' in self.fields:
             self.fields['claveusuario'].required = False
     
+    def clean(self):
+        cleaned_data = super().clean()
+        correo = cleaned_data.get('correo')
+        rfc = cleaned_data.get('rfc')
+        curp = cleaned_data.get('curp')
+
+        # Validar campos obligatorios vacíos
+        campos_obligatorios = ['nombre', 'apellidopaterno', 'apellidomaterno', 'correo', 'rfc', 'curp', 'contrasena','rol','direccion']
+        faltantes = [campo for campo in campos_obligatorios if not cleaned_data.get(campo)]
+
+        if faltantes:
+            raise forms.ValidationError(f"Faltan campos obligatorios: {', '.join(faltantes)}")
+
+        # Validar duplicados
+        if Usuario.todos.filter(correo=correo).exists():
+            raise forms.ValidationError("Ya existe un usuario con ese correo.")
+        if Usuario.todos.filter(rfc=rfc).exists():
+            raise forms.ValidationError("Ya existe un usuario con ese RFC.")
+        if Usuario.todos.filter(curp=curp).exists():
+            raise forms.ValidationError("Ya existe un usuario con esa CURP.")
+
+        return cleaned_data
+
+
 #05/11/2025
 class LoginForm(forms.Form):
     correo = forms.EmailField(label="Correo electrónico", widget=forms.EmailInput(attrs={'class': 'form-control'}))

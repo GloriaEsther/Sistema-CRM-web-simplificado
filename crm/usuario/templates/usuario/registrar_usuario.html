@@ -117,7 +117,7 @@
   </div>
 </div>
 
-<!-- Modal de contrasena invalida no lo he probado-->
+<!-- Modal de contrasena invalida, si funciona -->
 <div class="modal fade" id="coninvalida" tabindex="-1" aria-labelledby="coninvalidaLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -160,6 +160,33 @@
     </div>
   </div>
 </div>
+{% if duplicado %}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var modalDuplicado = new bootstrap.Modal(document.getElementById('duplicadoModal'));
+    modalDuplicado.show();
+  });
+</script>
+{% endif %}
+
+<!-- Modal de campos faltantes -->
+<div class="modal fade" id="faltantesModal" tabindex="-1" aria-labelledby="faltantesModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-warning text-dark">
+        <h5 class="modal-title" id="faltantesModalLabel">Campos obligatorios faltantes</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <p>Debes llenar los siguientes campos antes de continuar:</p>
+        <ul id="listaFaltantes"></ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
   const rolSelect = document.getElementById("id_rol");
@@ -192,6 +219,39 @@
   rolSelect.addEventListener("change", mostrarCampoLocalFijo);
   mostrarCampoLocalFijo();
 
+  function camposVacios() {
+    const obligatorios = [
+      {id: "id_nombre", label: "Nombre"},
+      {id: "id_apellidopaterno", label: "Apellido Paterno"},
+      {id: "id_apellidomaterno", label: "Apellido Materno"},
+      {id:"id_numerotel",label: "Numero Telefonico"},
+      {id: "id_correo", label: "Correo electronico"},
+      {id: "id_rfc", label: "RFC"},
+      {id:"id_direccion",label:"Direccion"},
+      {id: "id_curp", label: "CURP"},
+      {id:"id_rol",label:"Rol"},
+      {id: "id_contrasena", label: "Contraseña"},     
+    ];
+  
+    const faltantes = obligatorios.filter(campo => {
+      const el = document.getElementById(campo.id);
+      return !el || el.value.trim() === "";
+    });
+
+    if (faltantes.length > 0) {
+      const lista = document.getElementById("listaFaltantes");
+      lista.innerHTML = "";
+      faltantes.forEach(c => {
+        const li = document.createElement("li");
+        li.textContent = c.label;
+        lista.appendChild(li);
+      });
+      const modalFaltantes = new bootstrap.Modal(document.getElementById("faltantesModal"));
+      modalFaltantes.show();
+      return true;
+    }
+    return false;
+  }
 
   btnGuardar.addEventListener("click", function (e) {//Ya muestra 
     e.preventDefault(); // evita que se envíe todavía
@@ -200,6 +260,8 @@
     const contrasena = contrasenaInput.value.trim();
     const regexMayuscula = /[A-Z]/;
     const regexNumero = /\d/;
+
+    if (camposVacios()) return;
 
     if (contrasena.length < 10||
         !regexMayuscula.test(contrasena) ||
@@ -268,8 +330,5 @@
     });
   </script>
   {% endif %}
-  
-
-
 </body>
 </html>
