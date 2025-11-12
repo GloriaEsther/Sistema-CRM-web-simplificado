@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class InventarioConfig(AppConfig):
+class CatalogosConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'inventario'
+    name = 'catalogos'

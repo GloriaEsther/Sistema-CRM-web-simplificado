@@ -1,5 +1,4 @@
 from django.db import models
-from django.db import models
 from django.utils import timezone
 from django.contrib.auth.hashers import make_password
 
@@ -45,7 +44,8 @@ class Usuario(models.Model):#te quedasta aqui en revisar y ponerle el modelo a l
     
     
     def generar_clave(self):
-        # Prefijo según rol
+        # Prefijo según rol  en la base de datos lo voy a manejar por el id del rol (1,2,3 para los roles que defini) 09/11/25
+        #cambio la base de datos, por lo tanto tengo que hacer cambios en el modelo
         prefijo = ''
         if self.rol=='Vendedor':#self.rol.lower() == 'Vendedor':
             prefijo = 'VEN'
