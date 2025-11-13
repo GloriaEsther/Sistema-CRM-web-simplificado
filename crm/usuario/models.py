@@ -53,6 +53,7 @@ class Usuario(models.Model):
 
     activos = ActivoManager()
     todos = models.Manager()
+    
     class Meta:
         managed = False
         db_table = 'usuario'

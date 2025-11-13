@@ -19,7 +19,11 @@ from django.urls import include,path
 from usuario import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),#admin de django :b
     path('', views.registrar_usuario, name='registrar_usuario'),#apunta a la vista principal
-    path('usuario/', include('usuario.urls')),
+    path('usuario/', include('usuario.urls',namespace='usuario')),
+    path('clientes/', include('cliente.urls',namespace='cliente')),
+    path('oportunidades/', include('oportunidades.urls', namespace='oportunidades')),
+    path('ventas/', include('ventas.urls', namespace='ventas')),
+    path('reportes/', include('reportes.urls', namespace='reportes')),
 ]
