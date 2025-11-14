@@ -52,9 +52,9 @@ class Cliente(models.Model):
     activo = models.BooleanField(default=True)
     fecha_eliminacion = models.DateTimeField(null=True)
     
-
+   #claves foraneas(no pueden ser null)
     usuario_registro = models.ForeignKey(Usuario, on_delete=models.PROTECT, db_column='usuario_registro')
-    frecuencia_compra = models.ForeignKey(FrecuenciaClienteCat, on_delete=models.PROTECT, db_column='frecuencia_compra')
+    frecuencia_compra = models.ForeignKey(FrecuenciaClienteCat, on_delete=models.PROTECT, db_column='frecuencia_compra')#
     estado_cliente = models.ForeignKey(EstadoClienteCat, on_delete=models.PROTECT, db_column='estado_cliente')
     #.............
     activos = ActivoManager()
@@ -71,5 +71,5 @@ class Cliente(models.Model):
             self.save()
 
     def __str__(self):
-        return f"{self.nombre} {self.apellidopaterno}"
+        return f"{self.nombre} {self.apellidopaterno} {self.apellidomaterno} {self.numerotelcli} {self.correo} {self.activo}"
 
