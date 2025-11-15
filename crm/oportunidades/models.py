@@ -13,8 +13,9 @@ class Oportunidad(models.Model):
     idoportunidad = models.AutoField(primary_key=True)
     nombreoportunidad = models.CharField(max_length=45)
     valor_estimado = models.DecimalField(max_digits=10, decimal_places=2)
+    fecha_cierre_estimada = models.DateTimeField()
     #Opcional
-    fecha_cierre_estimada = models.DateTimeField(null=True)
+    
     comentarios = models.TextField(null=True)
    #Sistema
     activo = models.BooleanField(default=True)
@@ -42,4 +43,4 @@ class Oportunidad(models.Model):
             self.save()
 
     def __str__(self):
-        return self.nombreoportunidad
+        return f"{self.nombreoportunidad} {self.valor_estimado} {self.fecha_cierre_estimada} {self.etapa_ventas} {self.comentarios} {self.cliente_oportunidad} {self.usuario_responsable}"

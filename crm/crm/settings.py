@@ -112,6 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
+'''
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -119,7 +120,14 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+'''
+LANGUAGE_CODE = 'es-mx'
 
+TIME_ZONE = 'America/Mexico_City'#es por la hora,te quedaste en cehcar lo mismo en mysql y tambien en probar el backend de oportunidades y ventasm ya para empezar a hacer el forntend de una buena vez
+#si se pudo tu :D
+
+USE_I18N = True
+USE_TZ = False#True se le cambio porque esto tambien comvierte horas normales a UTC...
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
