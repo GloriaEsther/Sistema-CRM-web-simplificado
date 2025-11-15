@@ -39,3 +39,22 @@ def mover_oportunidad(request, pk):
     op.save()
     return JsonResponse({'ok': True, 'nueva_etapa': etapa.nombre_etapa})
 
+'''
+def oportunidades_cierre_ganado(request):#esto devolvera un json para que lo use e frontend
+    oportunidades = Oportunidad.objects.filter(
+        etapa_ventas__nombre_etapa="Cierre-Ganado",
+        activo=True
+    )
+
+    return JsonResponse([
+        {
+            "id": o.idoportunidad,
+            "nombre": o.nombreoportunidad,
+            "valor": float(o.valor_estimado),
+            "cliente": str(o.cliente_oportunidad),
+            "usuario": str(o.usuario_responsable)
+        }
+        for o in oportunidades
+    ], safe=False)
+'''
+

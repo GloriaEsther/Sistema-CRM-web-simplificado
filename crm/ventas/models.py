@@ -38,8 +38,6 @@ class Venta(models.Model):
     #Opcional
     cfdi = models.CharField(max_length=100, unique=True, null=True,blank=True)
     comentarios = models.TextField(null=True,blank=True)
-   
-    
     fecha_registro = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
     activo = models.BooleanField(default=True)
@@ -51,7 +49,14 @@ class Venta(models.Model):
     
     activos = ActivoManager()
     todos = models.Manager()
-    objects = models.Manager() # (lo estoy probando) para compatibilidad con Django Admin o shell
+    objects = models.Manager() # (lo estoy probando) para compatibilidad con Django Admin
+    #clave Venta...(prueba)
+    def save(self, *args, **kwargs):
+        if not self.claveventa:
+            last_id = Venta.objects.count() + 1
+            self.claveventa = f"VTA{last_id:07d}"
+        super().save(*args, **kwargs)
+
     class Meta:
         managed = False
         db_table = 'ventas'
@@ -63,6 +68,6 @@ class Venta(models.Model):
             self.save()
 
     def __str__(self):
-        return f"{self.nombreventa} ({self.claveventa})"
+        return f"{self.nombreventa} ({self.claveventa}) {self.preciototal} {self.comentarios} {self.oportunidad_venta}"
 
 

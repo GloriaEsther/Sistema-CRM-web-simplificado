@@ -28,7 +28,7 @@ def crear_venta_manual(request):
         form = VentaForm()
     return render(request, 'ventas/crear.html', {'form': form})
 
-def generar_venta_desde_oportunidad(request, oportunidad_id):
+def generar_venta_desde_oportunidad(request, oportunidad_id):#No funciono en el backend, a lo mejor ya con el frontend si lo haga (auida)
     # acción: crear venta solo si oportunidad está en Cierre-Ganado y no tiene venta
     from oportunidades.models import Oportunidad
     op = get_object_or_404(Oportunidad, pk=oportunidad_id)
@@ -42,7 +42,7 @@ def generar_venta_desde_oportunidad(request, oportunidad_id):
         return redirect('oportunidades:kanban')
 
     # generar clave simple
-    prefijo = "VTA"
+    prefijo = "VTA"#No funciono en el backend, a lo mejor ya con el frontend si lo haga (auida)
     contador = Venta.objects.filter(claveventa__startswith=prefijo).count() + 1
     clave = f"{prefijo}{contador:05d}"
     venta = Venta.objects.create(
