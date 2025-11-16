@@ -41,7 +41,7 @@ class UsuarioForm(forms.ModelForm):
         curp = data.get('curp')
 
         # Validar campos obligatorios vacíos
-        campos_obligatorios = ['nombre', 'apellidopaterno', 'apellidomaterno', 'correo', 'contrasena','rol']# 'rfc', 'curp','direccion'
+        campos_obligatorios = ['nombre', 'apellidopaterno', 'apellidomaterno', 'correo', 'contrasena','rol']# 'rfc', 'curp''direccion'
         faltantes = [campo for campo in campos_obligatorios if not data.get(campo)]
 
         if faltantes:

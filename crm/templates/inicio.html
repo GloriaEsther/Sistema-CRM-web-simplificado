@@ -2,7 +2,8 @@
 
 {% if request.session.idusuario %}
     <p>Bienvenido {{ request.session.nombre }}</p>
-<!--<a href="/usuario/logout/">Cerrar sesión</a>--> <a href="/usuario/login/">Cerrar sesión</a><!--al cerrar sesion mejor que redirija a inicio de sesion-->
+    <a href="/usuario/logout/">Cerrar sesión</a>
+
 {% else %}
     <a href="/usuario/login/">Cerrar sesión</a> |
     <a href="/usuario/registrar/">Registrar usuario</a>

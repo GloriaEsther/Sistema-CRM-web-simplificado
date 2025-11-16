@@ -1,0 +1,38 @@
+<h2>Usuarios registrados</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Rol</th>
+            <th>Registrado por</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for u in usuarios %}
+        <tr>
+            <td>{{ u.idusuario }}</td>
+            <td>{{ u.nombre }} {{ u.apellidopaterno }}</td>
+            <td>{{ u.correo }}</td>
+            <td>{{ u.rol.nombre_rol }}</td>
+            <td>{{ u.usuario_registro.nombre }}</td>
+
+            <td>
+                <a href="{% url 'usuario:editar_usuario' u.idusuario %}" class="btn btn-warning btn-sm">Editar</a>
+
+                {% if request.session.rol == 'Dueño' %}
+                <a href="{% url 'usuario:eliminar_usuario' u.idusuario %}" 
+                   class="btn btn-danger btn-sm"
+                   onclick="return confirm('¿Eliminar usuario?')">
+                   Eliminar
+                </a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
