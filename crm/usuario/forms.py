@@ -41,7 +41,7 @@ class UsuarioForm(forms.ModelForm):
         curp = data.get('curp')
 
         # Validar campos obligatorios vacíos
-        campos_obligatorios = ['nombre', 'apellidopaterno', 'apellidomaterno', 'correo', 'rfc', 'curp', 'contrasena','rol','direccion']
+        campos_obligatorios = ['nombre', 'apellidopaterno', 'apellidomaterno', 'correo', 'contrasena','rol']# 'rfc', 'curp','direccion'
         faltantes = [campo for campo in campos_obligatorios if not data.get(campo)]
 
         if faltantes:
@@ -64,6 +64,7 @@ class UsuarioForm(forms.ModelForm):
         if commit:
             usr.save()
         return usr
+    
 #05/11/2025
 class LoginForm(forms.Form):
     correo = forms.EmailField(label="Correo electrónico", widget=forms.EmailInput(attrs={'class': 'form-control'}))

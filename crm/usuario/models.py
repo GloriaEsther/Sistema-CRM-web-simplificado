@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.hashers import make_password
+from django.conf import settings
 
 class ActivoManager(models.Manager):
     """Devuelve solo los registros activos de usuarios (no eliminados)"""
@@ -8,6 +9,18 @@ class ActivoManager(models.Manager):
         return super().get_queryset().filter(activo=True)
 
 
+class PreferenciaUsuario(models.Model):
+    usuario = models.OneToOneField("usuario.Usuario", on_delete=models.CASCADE)
+
+    color_primario = models.CharField(max_length=20, default="#0d6efd")
+    color_secundario = models.CharField(max_length=20, default="#6c757d")
+    color_fondo = models.CharField(max_length=20, default="#ffffff")
+
+    logo = models.ImageField(upload_to="logos/", null=True, blank=True)
+
+    def __str__(self):
+        return f"Preferencias de {self.usuario.nombre}"
+    
 class RolUsuario(models.Model):
     id_rol = models.AutoField(primary_key=True)
     nombre_rol = models.CharField(max_length=45)

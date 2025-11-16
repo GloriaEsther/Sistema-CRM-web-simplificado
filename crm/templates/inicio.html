@@ -1,11 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hola :D</title>
-</head>
-<body>
-    <a>y ya por ahora hace eso :b</a>
-</body>
-</html>
+<h2>Pantalla de inicio</h2>
+
+{% if request.session.idusuario %}
+    <p>Bienvenido {{ request.session.nombre }}</p>
+<!--<a href="/usuario/logout/">Cerrar sesión</a>--> <a href="/usuario/login/">Cerrar sesión</a><!--al cerrar sesion mejor que redirija a inicio de sesion-->
+{% else %}
+    <a href="/usuario/login/">Cerrar sesión</a> |
+    <a href="/usuario/registrar/">Registrar usuario</a>
+{% endif %}
+<!--  {% if request.session.idusuario %}
+    <p>Bienvenido {{ request.session.nombre }}</p>
+   <a href="/usuario/logout/">Cerrar sesión</a>
+{% else %}
+    <a href="/usuario/login/">Cerrar sesión</a> |
+    <a href="/usuario/registrar/">Registrar usuario</a>
+{% endif %}-->

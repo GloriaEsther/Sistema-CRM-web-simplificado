@@ -42,11 +42,11 @@ def generar_venta_desde_oportunidad(request, oportunidad_id):#No funciono en el 
         return redirect('oportunidades:kanban')
 
     # generar clave simple
-    prefijo = "VTA"#No funciono en el backend, a lo mejor ya con el frontend si lo haga (auida)
-    contador = Venta.objects.filter(claveventa__startswith=prefijo).count() + 1
-    clave = f"{prefijo}{contador:05d}"
+   # prefijo = "VTA"#No funciono en el backend, a lo mejor ya con el frontend si lo haga (auida)
+    #contador = Venta.objects.filter(claveventa__startswith=prefijo).count() + 1
+   # clave = f"{prefijo}{contador:05d}"
     venta = Venta.objects.create(
-        claveventa=clave,
+        claveventa=Venta.claveventa,#mejor la llama desde el modelo
         nombreventa=op.nombreoportunidad,
         estatus_cobro=1,  # ajustar id por defecto; o buscar EstatusCobros.objects.get(nombre='Pendiente')
         preciototal=op.valor_estimado,
