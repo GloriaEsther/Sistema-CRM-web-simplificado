@@ -7,251 +7,300 @@
   <title>Registrarse</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
 </head>
 
 <body class="bg-light">
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-12 col-md-10 col-lg-8 col-xl-6">
-      <div class="card shadow-sm border-0">
-        <div class="card-body p-4">
-          <h2 class="mb-4 text-center fw-bold text-primary">Registrarse</h2>
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-10 col-lg-8 col-xl-6">
+        <div class="card shadow-sm border-0">
+          <div class="card-body p-4">
+            <h2 class="mb-4 text-center fw-bold text-primary">Registrarse</h2>
 
-          <form method="POST" id="registroForm" class="needs-validation" novalidate>
-            {% csrf_token %}
+            <form method="POST" id="registroForm" class="needs-validation" novalidate>
+              {% csrf_token %}
 
-            <div class="row">
-              <div class="col-md-4 mb-3">
-                <label for="id_nombre" class="form-label">Nombre</label>
-                {% render_field form.nombre class="form-control" %}
-              </div>
-              <div class="col-md-4 mb-3">
-                <label for="id_apellidopaterno" class="form-label">Apellido Paterno</label>
-                {% render_field form.apellidopaterno class="form-control" %}
-              </div>
-              <div class="col-md-4 mb-3">
-                <label for="id_apellidomaterno" class="form-label">Apellido Materno</label>
-                {% render_field form.apellidomaterno class="form-control" %}
-              </div>
-            </div>
+              {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+              {% endif %}
 
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="id_numerotel" class="form-label">Número Telefónico</label>
-                {% render_field form.numerotel class="form-control" %}
-                <small class="form-text text-muted">Ejemplo: 5512345678</small>
-              </div>
-              <div class="col-md-6 mb-3">
-                <label for="id_correo" class="form-label">Correo Electrónico</label>
-                {% render_field form.correo class="form-control" %}
-              </div>
-            </div>
 
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="id_rfc" class="form-label">RFC</label>
-                {% render_field form.rfc class="form-control" %}
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <label for="id_nombre" class="form-label">Nombre</label>
+                  {% render_field form.nombre class="form-control" add_error_class="is-invalid"%}
+                  {% for error in form.nombre.errors %}
+                      <div class="invalid-feedback d-block">
+                          {{ error }}
+                      </div>
+                  {% endfor %}
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="id_apellidopaterno" class="form-label">Apellido Paterno</label>
+                  {% render_field form.apellidopaterno class="form-control" add_error_class="is-invalid" %}
+                  {% for error in form.apellidopaterno.errors %}
+                      <div class="invalid-feedback d-block">
+                          {{ error }}
+                      </div>
+                  {% endfor %}
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="id_apellidomaterno" class="form-label">Apellido Materno</label>
+                  {% render_field form.apellidomaterno class="form-control" add_error_class="is-invalid" %}
+                  {% for error in form.apellidomaterno.errors %}
+                      <div class="invalid-feedback d-block">
+                          {{ error }}
+                      </div>
+                  {% endfor %}
+                </div>
               </div>
-              <div class="col-md-6 mb-3">
-                <label for="id_curp" class="form-label">CURP</label>
-                {% render_field form.curp class="form-control" %}
-              </div>
-            </div>
 
-            <div class="mb-3">
-              <label for="id_direccion" class="form-label">Dirección</label>
-             {% render_field form.direccion class="form-control" %}
-            </div>
-
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="id_rol" class="form-label">Rol</label>
-                {% render_field form.rol class="form-select" %}
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="id_numerotel" class="form-label">Número Telefónico</label>
+                  {% render_field form.numerotel class="form-control" add_error_class="is-invalid" %}
+                  {% for error in form.numerotel.errors %}<!--aqui te quedaste-->
+                      <div class="invalid-feedback d-block">
+                          {{ error }}
+                      </div>
+                  {% endfor %}
+                  <small class="form-text text-muted">Ejemplo: 5512345678</small>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="id_correo" class="form-label">Correo Electrónico</label>
+                  {% render_field form.correo class="form-control" add_error_class="is-invalid" %}
+                  {% for error in form.correo.errors %}
+                      <div class="invalid-feedback d-block">
+                          {{ error }}
+                      </div>
+                  {% endfor %}
+                </div>
               </div>
-              <div class="col-md-6 mb-3" id="localFijoContainer" style="display:none;">
-                <label for="id_local_Fijo" class="form-label">Local Fijo</label>
-                {% render_field form.local_Fijo class="form-control" %}
-              </div>
-            </div>
 
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="id_contrasena" class="form-label">Contraseña</label>
-                {% render_field form.contrasena class="form-control" %}
-                <small class="form-text text-muted">
-                  Mínimo 10 caracteres, una mayúscula y un número.
-                </small>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="id_rfc" class="form-label">RFC</label>
+                  {% render_field form.rfc class="form-control" add_error_class="is-invalid"  %}
+                  {% for error in form.rfc.errors %}
+                      <div class="invalid-feedback d-block">
+                          {{ error }}
+                      </div>
+                  {% endfor %}
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="id_curp" class="form-label">CURP</label>
+                  {% render_field form.curp class="form-control" add_error_class="is-invalid"  %}
+                  {% for error in form.curp.errors %}
+                      <div class="invalid-feedback d-block">
+                          {{ error }}
+                      </div>
+                  {% endfor %}
+                </div>
               </div>
-              <div class="col-md-6 mb-3">
-                <label for="id_nss" class="form-label">NSS</label>
-                {% render_field form.nss class="form-control" %}
+
+              <div class="mb-3">
+                <label for="id_direccion" class="form-label">Dirección</label>
+              {% render_field form.direccion class="form-control" add_error_class="is-invalid"  %}
+              {% for error in form.direccion.errors %}
+                      <div class="invalid-feedback d-block">
+                          {{ error }}
+                      </div>
+                  {% endfor %}
               </div>
-            </div>
 
-            <div class="d-flex justify-content-between mt-4">
-              <button type="button" class="btn btn-primary w-50 me-2" id="btnGuardar">
-                Guardar
-              </button>
-              <a href="{% url 'usuario:inicio' %}" class="btn btn-secondary w-50">
-                Cancelar
-              </a>
-            </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="id_rol" class="form-label">Rol</label>
+                  {% render_field form.rol class="form-select" add_error_class="is-invalid" %}
+                  {% for error in form.rol.errors %}
+                      <div class="invalid-feedback d-block">
+                          {{ error }}
+                      </div>
+                  {% endfor %}
+                </div>
+                <div class="col-md-6 mb-3" id="localFijoContainer" style="display:none;">
+                  <label for="id_local_Fijo" class="form-label">Local Fijo</label>
+                  {% render_field form.local_Fijo class="form-control" add_error_class="is-invalid"%}
+                  {% for error in form.local_Fijo.errors %}
+                      <div class="invalid-feedback d-block">
+                          {{ error }}
+                      </div>
+                  {% endfor %}
+                </div>
+              </div>
 
-            <div class="text-center mt-3">
-              <a href="{% url 'usuario:iniciar_sesion' %}">¿Ya tienes cuenta? Inicia sesión</a>
-            </div>
-          </form>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="id_contrasena" class="form-label">Contraseña</label>
+                  {% render_field form.contrasena class="form-control" add_error_class="is-invalid" %}
+                  {% for error in form.contrasena.errors %}
+                      <div class="invalid-feedback d-block">
+                          {{ error }}
+                      </div>
+                  {% endfor %} 
+                  <small class="form-text text-muted">
+                    Mínimo 10 caracteres, una mayúscula y un número.
+                  </small>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="id_nss" class="form-label">NSS</label>
+                  {% render_field form.nss class="form-control" add_error_class="is-invalid" %}
+                  {% for error in form.nss.errors %}
+                      <div class="invalid-feedback d-block">
+                          {{ error }}
+                      </div>
+                  {% endfor %}
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-primary w-50 me-2" id="btnGuardar">
+                  Guardar
+                </button>
+                <a href="{% url 'usuario:inicio' %}" class="btn btn-secondary w-50">
+                  Cancelar
+                </a>
+              </div>
+
+              <div class="text-center mt-3">
+                <a href="{% url 'usuario:iniciar_sesion' %}">¿Ya tienes cuenta? Inicia sesión</a>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<script>
-  const rolSelect = document.getElementById("id_rol");
-  const localFijoContainer = document.getElementById("localFijoContainer");
-  const localFijoInput = document.getElementById("id_local_Fijo");
-  const nssInput = document.getElementById("id_nss");
-  const rfcInput=document.getElementById("id_rfc");
-  const direccionInput=document.getElementById("id_direccion");
-  const curpInput=document.getElementById("id_curp");
-  const btnGuardar = document.getElementById("btnGuardar");
+  <!--modal registro exitoso-->
+  <div class="modal fade" id="registroExitosoModal" tabindex="-1" aria-labelledby="registroExitosoModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-success text-white">
+            <h5 class="modal-title" id="registroExitosoModalLabel">¡Registro Exitoso!</h5>
+          </div>
+          <div class="modal-body">
+            <p>Su usuario se ha registrado correctamente.</p>
+            <p>Será redirigido al inicio de sesión en unos segundos...</p>
+          </div>
+        </div>
+      </div>
+    </div>
 
-  const modal = new bootstrap.Modal(document.getElementById("confirmModal"));
-  const btnConfirmar = document.getElementById("confirmarOpcionales");
-  const btnDescartar = document.getElementById("descartarOpcionales");
+    {% if mostrar_modal %}
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        var modal = new bootstrap.Modal(document.getElementById('registroExitosoModal'));
+        modal.show();
 
-  const form = document.getElementById("registroForm");
-  
-  const modalcontrasena = new bootstrap.Modal(document.getElementById("coninvalida"));
-  const btnAceptar = document.getElementById("confirmar");
-  
-
-  // Mostrar u ocultar campo Local Fijo según el rol (Funcional)
-  function mostrarCampoLocalFijo() {
-    if (rolSelect.value === "Dueño") {
-      localFijoContainer.style.display = "block";
-    } else {
-      localFijoContainer.style.display = "none";
-      if (localFijoInput) localFijoInput.value = "";
-    }
-  }
-
-  rolSelect.addEventListener("change", mostrarCampoLocalFijo);
-  mostrarCampoLocalFijo();
-
-  function camposVacios() {
-    // Definición de campos OBLIGATORIOS
-    const obligatorios = [
-      {id: "id_nombre", label: "Nombre"},
-      {id: "id_apellidopaterno", label: "Apellido Paterno"},
-      {id: "id_apellidomaterno", label: "Apellido Materno"},
-      {id:"id_numerotel",label: "Número Telefónico"},
-      {id: "id_correo", label: "Correo Electrónico"},
-      {id:"id_rol",label:"Rol"},
-      {id: "id_contrasena", label: "Contraseña"},     
-    ];
-  
-    const faltantes = obligatorios.filter(campo => {
-      const el = document.getElementById(campo.id);
-      return !el || el.value.trim() === "";
-    });
-
-    if (faltantes.length > 0) {
-      const lista = document.getElementById("listaFaltantes");
-      lista.innerHTML = "";
-      faltantes.forEach(c => {
-        const li = document.createElement("li");
-        li.textContent = c.label;
-        lista.appendChild(li);
+        // **CORRECCIÓN REDIRECCIÓN:** Redirige al LOGIN después de un registro exitoso
+        setTimeout(function() {
+            window.location.href = "{% url 'usuario:iniciar_sesion' %}";
+        }, 4000);
       });
-      const modalFaltantes = new bootstrap.Modal(document.getElementById("faltantesModal"));
-      modalFaltantes.show();
-      return true;
-    }
-    return false;
-  }
+    </script>
+    {% endif %}
 
-  btnGuardar.addEventListener("click", function (e) {
-    e.preventDefault();
-
-    const contrasenaInput = document.getElementById("id_contrasena");
-    const contrasena = contrasenaInput.value.trim();
-    const regexMayuscula = /[A-Z]/;
-    const regexNumero = /\d/;
-
-    if (camposVacios()) return;
-
-    if (contrasena.length < 10 ||
-      !regexMayuscula.test(contrasena) ||
-      !regexNumero.test(contrasena)
-    ) {
-      modalcontrasena.show();
-      return;
-    }
-
-    // Se incluyen todos los campos que no son obligatorios en camposVacios()
-    const tieneOpcionales =
-      (nssInput && nssInput.value.trim() !== "") ||
-      (localFijoInput && localFijoInput.value.trim() !== "") ||
-      (rfcInput && rfcInput.value.trim() !== "") ||
-      (direccionInput && direccionInput.value.trim() !== "") ||
-      (curpInput && curpInput.value.trim() !== "");
-
-    if (tieneOpcionales) {
-      modal.show();
-    } else {
-      form.submit();
-    }
-  });
-
-  btnAceptar.addEventListener("click",function(){
-    modalcontrasena.hide();
-  });
-
-  btnConfirmar.addEventListener("click", function () {
-    modal.hide();
-    form.submit();
-  });
-
-  // **CORRECCIÓN LÓGICA:** Se limpian todos los campos opcionales que se están evaluando
-  btnDescartar.addEventListener("click", function () {
-    if (nssInput) nssInput.value = "";
-    if (localFijoInput) localFijoInput.value = "";
-    if (rfcInput) rfcInput.value = ""; // Limpiar RFC
-    if (direccionInput) direccionInput.value = ""; // Limpiar Dirección
-    if (curpInput) curpInput.value = ""; // Limpiar CURP
-    form.submit();
-  });
-  
-</script>
-
-<div class="modal fade" id="registroExitosoModal" tabindex="-1" aria-labelledby="registroExitosoModalLabel" aria-hidden="true">
+  <!--Campos opcionales-->
+  <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
-        <div class="modal-header bg-success text-white">
-          <h5 class="modal-title" id="registroExitosoModalLabel">¡Registro Exitoso!</h5>
+        <div class="modal-header bg-warning">
+          <h5 class="modal-title" id="confirmModalLabel">Confirmar datos opcionales</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body">
-          <p>Su usuario se ha registrado correctamente.</p>
-          <p>Será redirigido al inicio de sesión en unos segundos...</p>
+          Has ingresado datos opcionales (como NSS o Local Fijo).  
+          ¿Deseas guardarlos junto con tu registro?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="descartarOpcionales" data-bs-dismiss="modal">No, descartar</button>
+          <button type="button" class="btn btn-primary" id="confirmarOpcionales">Sí, guardar</button>
         </div>
       </div>
     </div>
   </div>
 
-  {% if mostrar_modal %}
+  <!-- Modal de contrasena invalida, si funciona -->
+  <div class="modal fade" id="coninvalida" tabindex="-1" aria-labelledby="coninvalidaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-warning">
+          <h5 class="modal-title" id="coninvalidaLabel">Contraseña invalida</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+        <!-- La contraseña debe tener una longitud minima de 10 caracteres. --> 
+          La contraseña debe cumplir con los siguientes requisitos:
+          <ul>
+            <li>Mínimo 10 caracteres</li>
+            <li>Al menos una letra mayúscula</li>
+            <li>Al menos un número</li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="confirmar">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!--Modal de datos duplicados-->
+  <div class="modal fade" id="duplicadoModal" tabindex="-1" aria-labelledby="duplicadoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="duplicadoModalLabel">Datos duplicados</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body text-center">
+          {% if campo_duplicado %}
+            <p>Ya existe un usuario con el <strong>{{ campo_duplicado }}</strong> ingresado.</p>
+          {% else %}
+            <p>Ya existe un usuario con alguno de los datos ingresados (correo, RFC o CURP).</p>
+          {% endif %}
+          <p>Verifica e inténtalo de nuevo.</p>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if duplicado %}
   <script>
     document.addEventListener("DOMContentLoaded", function() {
-      var modal = new bootstrap.Modal(document.getElementById('registroExitosoModal'));
-      modal.show();
-
-      // **CORRECCIÓN REDIRECCIÓN:** Redirige al LOGIN después de un registro exitoso
-      setTimeout(function() {
-          window.location.href = "{% url 'usuario:iniciar_sesion' %}";
-      }, 4000);
+      var modalDuplicado = new bootstrap.Modal(document.getElementById('duplicadoModal'));
+      modalDuplicado.show();
     });
   </script>
   {% endif %}
+
+  <!-- Modal de campos faltantes -->
+  <div class="modal fade" id="faltantesModal" tabindex="-1" aria-labelledby="faltantesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-warning text-dark">
+          <h5 class="modal-title" id="faltantesModalLabel">Campos obligatorios faltantes</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <p>Debes llenar los siguientes campos antes de continuar:</p>
+          <ul id="listaFaltantes"></ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="{% static 'usuario/js/registro.js' %}"></script>
 </body>
 </html>
