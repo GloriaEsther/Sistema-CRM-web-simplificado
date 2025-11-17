@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aqui se va a mostrar el pipeline de oportunidades</title>
+</head>
+<body>
+    <header class="navbar navbar-expand-lg border-bottom p-3" style="background-color: {{ preferencias.color_primario|default:'#c7dbff' }};">
+        <div class="container-fluid">
+            <h1>Mis Oportunidades</h1>
+
+            <span class="navbar-text me-3">Bienvenido, {{ user.nombre|default:user.username }}</span>
+            
+            <div class="d-flex ms-auto">
+                <a href="{% url 'usuario:cerrar_sesion' %}" class="btn btn-outline-dark">
+                    🔑 Cerrar Sesión
+                </a>
+            </div>
+         
+        </div>
+    </header>
+</body>
+</html>

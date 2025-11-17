@@ -11,6 +11,15 @@
         body {
             background-color: {{ preferencias.color_secundario|default:'var(--bs-white)' }}
         }
+        /* Asume que custom-purple-btn está definido en styles.css */
+        .custom-purple-btn {
+            background-color: #6f42c1; /* Ajustar a tu color real si es diferente */
+            border-color: #6f42c1;
+        }
+        .custom-purple-btn:hover {
+            background-color: #563d7c;
+            border-color: #563d7c;
+        }
     </style>
 </head>
 
@@ -18,23 +27,41 @@
 
     <header class="navbar navbar-expand-lg border-bottom p-3" style="background-color: {{ preferencias.color_primario|default:'#c7dbff' }};">
         <div class="container-fluid">
-            {% if usuario %}
-            <button class="btn btn-sm btn-dark" onclick="document.getElementById('logo-upload-form').submit()">
-                ⬆ Guardar Logo
+            <a class="navbar-brand" href="{% url 'usuario:inicio' %}">CRM MVP</a>
+            
+            {% if user.is_authenticated %}
+            <button class="btn btn-sm btn-dark me-2" onclick="document.getElementById('logo-input').click()">
+                ⬆ Subir Logo
             </button>
+            
             <form id="logo-upload-form" method="POST" enctype="multipart/form-data" action="{% url 'usuario:subir_logo' %}" class="d-none">
                 {% csrf_token %}
                 <input type="file" id="logo-input" name="logo" onchange="document.getElementById('logo-upload-form').submit()">
             </form>
-            {% endif %}
-
+            
+            <span class="navbar-text me-3">Bienvenido, {{ user.nombre|default:user.username }}</span>
+            
             <div class="d-flex ms-auto">
-                <a href="{% url 'usuario:iniciar_sesion' %}" class="btn btn-outline-dark me-2">
-                    🔑 Iniciar Sesión
+                <a href="{% url 'usuario:cerrar_sesion' %}" class="btn btn-outline-dark">
+                    🔑 Cerrar Sesión
                 </a>
             </div>
+            {% endif %}
         </div>
     </header>
+    
+    <div class="container mt-3">
+        {% if messages %}
+            <div class="messages mb-4">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
 
     <div class="container my-5">
         <div class="row align-items-center vh-75">
@@ -42,9 +69,15 @@
                 <h1 class="display-3 fw-bold mb-4">Gestiona tus Ventas y Clientes</h1>
                 <p class="fs-4 text-muted mb-5">Captura, organiza y da seguimiento a tus clientes y oportunidades de venta en un solo lugar.</p>
                 
-                <a href="{% url 'usuario:registrar_usuario' %}" class="btn btn-primary btn-lg custom-purple-btn shadow-lg">
-                    👥 Registrarse Gratis
-                </a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'oportunidades:kanban' %}" class="btn btn-primary btn-lg custom-purple-btn shadow-lg">
+                        💻 Ir a la Aplicación
+                    </a>
+                {% else %}
+                    <a href="{% url 'usuario:iniciar_sesion' %}" class="btn btn-primary btn-lg custom-purple-btn shadow-lg">
+                        🔑 Iniciar Sesión
+                    </a>
+                {% endif %}
             </div>
 
             <div class="col-lg-6 d-flex justify-content-center">
@@ -61,7 +94,7 @@
                             </svg>
                             <p class="mt-2 fw-bold">Tu Logo Aquí</p>
                             
-                            {% if usuario %}
+                            {% if user.is_authenticated %}
                                 <button class="btn btn-sm btn-secondary mt-2" onclick="document.getElementById('logo-input').click()">
                                     Cambiar Logo
                                 </button>

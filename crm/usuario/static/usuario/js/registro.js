@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Mostrar u ocultar campo Local Fijo según el rol
     function mostrarCampoLocalFijo() {
-        if (rolSelect.value === "Dueño") {
+        if (rolSelect.value === '1') {//  if (rolSelect.value === "Dueño") 
             localFijoContainer.style.display = "block";
         } else {
             localFijoContainer.style.display = "none";
