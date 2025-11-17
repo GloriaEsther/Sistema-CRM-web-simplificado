@@ -3,7 +3,6 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>ID</th>
             <th>Nombre</th>
             <th>Correo</th>
             <th>Rol</th>
@@ -15,7 +14,6 @@
     <tbody>
         {% for u in usuarios %}
         <tr>
-            <td>{{ u.idusuario }}</td>
             <td>{{ u.nombre }} {{ u.apellidopaterno }}</td>
             <td>{{ u.correo }}</td>
             <td>{{ u.rol.nombre_rol }}</td>

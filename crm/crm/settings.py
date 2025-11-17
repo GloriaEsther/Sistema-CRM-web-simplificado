@@ -112,15 +112,6 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-'''
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
-USE_I18N = True
-
-USE_TZ = True
-'''
 LANGUAGE_CODE = 'es-mx'
 
 TIME_ZONE = 'America/Mexico_City'#es por la hora,te quedaste en cehcar lo mismo en mysql y tambien en probar el backend de oportunidades y ventasm ya para empezar a hacer el forntend de una buena vez
@@ -132,7 +123,16 @@ USE_TZ = False#True se le cambio porque esto tambien comvierte horas normales a 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
+#para que no de problemas static
 STATIC_URL = 'static/'
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+#para subir logo
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

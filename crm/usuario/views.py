@@ -6,8 +6,9 @@ from django.db import IntegrityError
 from django.contrib.auth.hashers import check_password 
 from crm.utils import require_roles# es un decorador de roles y el login_required simple.
 from django.contrib import messages
+from django.core.files.storage import FileSystemStorage
 
-def registrar_usuario(request):
+def registrar_usuario(request):#funciona
    # Validar que haya sesión activa
     user_id = request.session.get('idusuario')
     if not user_id:
@@ -56,7 +57,7 @@ def registrar_usuario(request):
         form = UsuarioForm()
     return render(request, 'usuario/registrar_usuario.html', {'form': form})
 
-def iniciar_sesion(request):
+def iniciar_sesion(request):#funciona
 
     # Si ya está logueado -> redirigir
     if request.session.get('idusuario'):
@@ -107,9 +108,9 @@ def iniciar_sesion(request):
     return render(request, 'usuario/login.html', {'form': form})
 
 #@require_roles(['Dueño', 'Administrador'])
-def listar_usuarios(request):#consultar usuarios 
+def listar_usuarios(request):#consultar usuarios (en lo basico si funciona)
     usuarios = Usuario.activos.all().order_by('idusuario')
-    return render(request, 'usuarios/listar_usuarios.html', {'usuarios': usuarios})
+    return render(request, 'usuario/listar_usuarios.html', {'usuarios': usuarios})
 
 @require_roles(['Dueño', 'Administrador'])
 def editar_usuario(request, pk):
@@ -133,54 +134,54 @@ def editar_usuario(request, pk):
 
 
 @require_roles(['Dueño'])
-def eliminar_usuario(request, pk):
+def eliminar_usuario(request, pk):#funciona
     usuario = get_object_or_404(Usuario, pk=pk)
     usuario.eliminar_logico()
     messages.success(request, "Usuario eliminado ")#"(lógicamente)."
-    return redirect('usuarios:listar_usuarios')
+    return redirect('usuario:listar_usuarios')
 
-
-def cerrar_sesion(request):#
+def cerrar_sesion(request):#funciona
     request.session.flush()  # borra la sesión
     messages.success(request, "Has cerrado sesión correctamente.")
     return redirect('usuario:iniciar_sesion')
 
+def subir_logo(request):
+    if request.method == "POST" and request.FILES.get("logo"):
 
-def inicio(request):#por ahora es prueba :)
-    '''
+        archivo = request.FILES["logo"]
+        fs = FileSystemStorage(location="media/logos")
+        filename = fs.save(archivo.name, archivo)
+
+        # Guardamos en sesión para mostrarlo siempre
+        request.session["logo"] = "/media/logos/" + filename
+
+        return redirect('inicio')
+
+    return redirect('inicio')
+
+def inicio(request):
+    
     usuario = None
     preferencias = None
-    # Si el usuario está logueado
-    if "idusuario" in request.session:
+
+    if request.session.get("idusuario"):
         usuario = Usuario.activos.get(idusuario=request.session["idusuario"])
 
-        # Obtiene o crea preferencias del usuario
         preferencias, creado = PreferenciaUsuario.objects.get_or_create(usuario=usuario)
 
-        # Si el usuario envió cambios al formulario
         if request.method == "POST":
-
-            # Guardar colores
             preferencias.color_primario = request.POST.get("color_primario", preferencias.color_primario)
             preferencias.color_secundario = request.POST.get("color_secundario", preferencias.color_secundario)
             preferencias.color_fondo = request.POST.get("color_fondo", preferencias.color_fondo)
 
-            # Guardar logo
             if "logo" in request.FILES:
                 preferencias.logo = request.FILES["logo"]
 
             preferencias.save()
 
-            messages.success(request, "Preferencias guardadas correctamente.")
-            return redirect("inicio")
+            return redirect("usuario:inicio")#return redirect("inicio")
 
-    # Si no está logueado, solo muestra la pantalla sin preferencias
-    return render(request, "inicio.html", {#intenta poner la direccion de inicio/ pero el de crm templates
+    return render(request, "inicio.html", {
         "usuario": usuario,
-        "preferencias": preferencias})
-    
-    
-    '''
-    if not request.session.get('idusuario'):
-        return redirect('usuario:iniciar_sesion')
-    return render (request,"inicio.html")    
+        "preferencias": preferencias
+    })

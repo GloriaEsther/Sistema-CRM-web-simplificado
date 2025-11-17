@@ -1,0 +1,88 @@
+/* --------------------------
+    ESTILOS GENERALES
+--------------------------- */
+body {
+    /* Usaremos las fuentes de Bootstrap */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    min-height: 100vh; /* Asegura que el cuerpo ocupe toda la altura */
+}
+
+/* --------------------------
+    BOTONES PERSONALIZADOS
+--------------------------- */
+.custom-purple-btn {
+    background: #6a0dad; /* Púrpura */
+    border-color: #6a0dad;
+    color: white;
+    font-weight: 600;
+    padding: 12px 35px;
+    border-radius: 50px; /* Botones más redondeados */
+    transition: background-color 0.2s;
+}
+
+.custom-purple-btn:hover {
+    background: #5608a7;
+    border-color: #5608a7;
+    color: white;
+}
+
+/* --------------------------
+    CONTENEDOR DEL LOGO (EL CUADRADO DEL MOCKUP)
+--------------------------- */
+.logo-box {
+    /* 1. Definir un tamaño cuadrado fijo */
+    width: 480px; 
+    height: 480px; 
+    
+    /* 2. Estilos visuales */
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    
+    /* 3. Asegurar que el contenido (imagen o placeholder) se centre */
+    text-align: center;
+    overflow: hidden; /* Corta cualquier parte de la imagen que se salga */
+}
+
+/* --------------------------
+    IMAGEN DENTRO DEL CONTENEDOR
+--------------------------- */
+.logo-display {
+    /* La clave para que la imagen se vea del tamaño del contenedor */
+    max-width: 90%; 
+    max-height: 90%; 
+    width: auto;
+    height: auto;
+    object-fit: contain; /* Asegura que la imagen completa quepa sin distorsionarse */
+}
+
+/* --------------------------
+    RESPONSIVE (Ajuste para móviles/tabletas)
+--------------------------- */
+
+/* Para pantallas medianas o más pequeñas */
+@media (max-width: 992px) {
+    /* Centrar todo en pantallas pequeñas */
+    .vh-75 {
+        height: auto !important;
+        min-height: 80vh; 
+    }
+    
+    .logo-box {
+        /* Reducir el tamaño del cuadrado para que quepa en tabletas/móviles */
+        width: 300px; 
+        height: 300px;
+        margin-top: 30px;
+    }
+}
+
+/* Para móviles */
+@media (max-width: 576px) {
+    .logo-box {
+        width: 90%; /* Ancho completo */
+        height: 300px; /* Altura fija para móviles */
+    }
+    
+    .display-3 {
+        font-size: 2.5rem !important;
+    }
+}
