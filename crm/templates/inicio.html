@@ -22,7 +22,7 @@
             <button class="btn btn-sm btn-dark" onclick="document.getElementById('logo-upload-form').submit()">
                 ⬆ Guardar Logo
             </button>
-            <form id="logo-upload-form" method="POST" enctype="multipart/form-data" action="{% url 'usuario:inicio' %}" class="d-none">
+            <form id="logo-upload-form" method="POST" enctype="multipart/form-data" action="{% url 'usuario:subir_logo' %}" class="d-none">
                 {% csrf_token %}
                 <input type="file" id="logo-input" name="logo" onchange="document.getElementById('logo-upload-form').submit()">
             </form>

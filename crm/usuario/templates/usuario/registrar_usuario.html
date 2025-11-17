@@ -1,26 +1,257 @@
-{% extends "base.html" %}
 {% load static %}
-{% block title %}Registro{% endblock %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registrarse</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
 
-{% block content %}
-<div class="row mt-5">
+<body class="bg-light">
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-8 col-xl-6">
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+          <h2 class="mb-4 text-center fw-bold text-primary">Registrarse</h2>
 
-    <div class="col-md-6 text-center">
-        <img src="{% static 'img/placeholder-image.png' %}" width="300">
-        <h3 class="mt-3">Gestiona tus ventas</h3>
-        <p>Captura y organiza tus clientes y ventas en un solo lugar.</p>
-    </div>
-
-    <div class="col-md-6">
-        <h3 class="fw-bold mb-3">Regístrate</h3>
-
-        <form method="POST">
+          <form method="POST" id="registroForm" class="needs-validation" novalidate>
             {% csrf_token %}
-            {{ form.as_p }}
-            <button class="btn btn-primary w-100 mt-3">Registrar</button>
-        </form>
+
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="id_nombre" class="form-label">Nombre</label>
+                {% render_field form.nombre class="form-control" %}
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="id_apellidopaterno" class="form-label">Apellido Paterno</label>
+                {% render_field form.apellidopaterno class="form-control" %}
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="id_apellidomaterno" class="form-label">Apellido Materno</label>
+                {% render_field form.apellidomaterno class="form-control" %}
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="id_numerotel" class="form-label">Número Telefónico</label>
+                {% render_field form.numerotel class="form-control" %}
+                <small class="form-text text-muted">Ejemplo: 5512345678</small>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="id_correo" class="form-label">Correo Electrónico</label>
+                {% render_field form.correo class="form-control" %}
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="id_rfc" class="form-label">RFC</label>
+                {% render_field form.rfc class="form-control" %}
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="id_curp" class="form-label">CURP</label>
+                {% render_field form.curp class="form-control" %}
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="id_direccion" class="form-label">Dirección</label>
+             {% render_field form.direccion class="form-control" %}
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="id_rol" class="form-label">Rol</label>
+                {% render_field form.rol class="form-select" %}
+              </div>
+              <div class="col-md-6 mb-3" id="localFijoContainer" style="display:none;">
+                <label for="id_local_Fijo" class="form-label">Local Fijo</label>
+                {% render_field form.local_Fijo class="form-control" %}
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="id_contrasena" class="form-label">Contraseña</label>
+                {% render_field form.contrasena class="form-control" %}
+                <small class="form-text text-muted">
+                  Mínimo 10 caracteres, una mayúscula y un número.
+                </small>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="id_nss" class="form-label">NSS</label>
+                {% render_field form.nss class="form-control" %}
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+              <button type="button" class="btn btn-primary w-50 me-2" id="btnGuardar">
+                Guardar
+              </button>
+              <a href="{% url 'usuario:inicio' %}" class="btn btn-secondary w-50">
+                Cancelar
+              </a>
+            </div>
+
+            <div class="text-center mt-3">
+              <a href="{% url 'usuario:iniciar_sesion' %}">¿Ya tienes cuenta? Inicia sesión</a>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
-
+  </div>
 </div>
-{% endblock %}
 
+<script>
+  const rolSelect = document.getElementById("id_rol");
+  const localFijoContainer = document.getElementById("localFijoContainer");
+  const localFijoInput = document.getElementById("id_local_Fijo");
+  const nssInput = document.getElementById("id_nss");
+  const rfcInput=document.getElementById("id_rfc");
+  const direccionInput=document.getElementById("id_direccion");
+  const curpInput=document.getElementById("id_curp");
+  const btnGuardar = document.getElementById("btnGuardar");
+
+  const modal = new bootstrap.Modal(document.getElementById("confirmModal"));
+  const btnConfirmar = document.getElementById("confirmarOpcionales");
+  const btnDescartar = document.getElementById("descartarOpcionales");
+
+  const form = document.getElementById("registroForm");
+  
+  const modalcontrasena = new bootstrap.Modal(document.getElementById("coninvalida"));
+  const btnAceptar = document.getElementById("confirmar");
+  
+
+  // Mostrar u ocultar campo Local Fijo según el rol (Funcional)
+  function mostrarCampoLocalFijo() {
+    if (rolSelect.value === "Dueño") {
+      localFijoContainer.style.display = "block";
+    } else {
+      localFijoContainer.style.display = "none";
+      if (localFijoInput) localFijoInput.value = "";
+    }
+  }
+
+  rolSelect.addEventListener("change", mostrarCampoLocalFijo);
+  mostrarCampoLocalFijo();
+
+  function camposVacios() {
+    // Definición de campos OBLIGATORIOS
+    const obligatorios = [
+      {id: "id_nombre", label: "Nombre"},
+      {id: "id_apellidopaterno", label: "Apellido Paterno"},
+      {id: "id_apellidomaterno", label: "Apellido Materno"},
+      {id:"id_numerotel",label: "Número Telefónico"},
+      {id: "id_correo", label: "Correo Electrónico"},
+      {id:"id_rol",label:"Rol"},
+      {id: "id_contrasena", label: "Contraseña"},     
+    ];
+  
+    const faltantes = obligatorios.filter(campo => {
+      const el = document.getElementById(campo.id);
+      return !el || el.value.trim() === "";
+    });
+
+    if (faltantes.length > 0) {
+      const lista = document.getElementById("listaFaltantes");
+      lista.innerHTML = "";
+      faltantes.forEach(c => {
+        const li = document.createElement("li");
+        li.textContent = c.label;
+        lista.appendChild(li);
+      });
+      const modalFaltantes = new bootstrap.Modal(document.getElementById("faltantesModal"));
+      modalFaltantes.show();
+      return true;
+    }
+    return false;
+  }
+
+  btnGuardar.addEventListener("click", function (e) {
+    e.preventDefault();
+
+    const contrasenaInput = document.getElementById("id_contrasena");
+    const contrasena = contrasenaInput.value.trim();
+    const regexMayuscula = /[A-Z]/;
+    const regexNumero = /\d/;
+
+    if (camposVacios()) return;
+
+    if (contrasena.length < 10 ||
+      !regexMayuscula.test(contrasena) ||
+      !regexNumero.test(contrasena)
+    ) {
+      modalcontrasena.show();
+      return;
+    }
+
+    // Se incluyen todos los campos que no son obligatorios en camposVacios()
+    const tieneOpcionales =
+      (nssInput && nssInput.value.trim() !== "") ||
+      (localFijoInput && localFijoInput.value.trim() !== "") ||
+      (rfcInput && rfcInput.value.trim() !== "") ||
+      (direccionInput && direccionInput.value.trim() !== "") ||
+      (curpInput && curpInput.value.trim() !== "");
+
+    if (tieneOpcionales) {
+      modal.show();
+    } else {
+      form.submit();
+    }
+  });
+
+  btnAceptar.addEventListener("click",function(){
+    modalcontrasena.hide();
+  });
+
+  btnConfirmar.addEventListener("click", function () {
+    modal.hide();
+    form.submit();
+  });
+
+  // **CORRECCIÓN LÓGICA:** Se limpian todos los campos opcionales que se están evaluando
+  btnDescartar.addEventListener("click", function () {
+    if (nssInput) nssInput.value = "";
+    if (localFijoInput) localFijoInput.value = "";
+    if (rfcInput) rfcInput.value = ""; // Limpiar RFC
+    if (direccionInput) direccionInput.value = ""; // Limpiar Dirección
+    if (curpInput) curpInput.value = ""; // Limpiar CURP
+    form.submit();
+  });
+  
+</script>
+
+<div class="modal fade" id="registroExitosoModal" tabindex="-1" aria-labelledby="registroExitosoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title" id="registroExitosoModalLabel">¡Registro Exitoso!</h5>
+        </div>
+        <div class="modal-body">
+          <p>Su usuario se ha registrado correctamente.</p>
+          <p>Será redirigido al inicio de sesión en unos segundos...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if mostrar_modal %}
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var modal = new bootstrap.Modal(document.getElementById('registroExitosoModal'));
+      modal.show();
+
+      // **CORRECCIÓN REDIRECCIÓN:** Redirige al LOGIN después de un registro exitoso
+      setTimeout(function() {
+          window.location.href = "{% url 'usuario:iniciar_sesion' %}";
+      }, 4000);
+    });
+  </script>
+  {% endif %}
+</body>
+</html>
