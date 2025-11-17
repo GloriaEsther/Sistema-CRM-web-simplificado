@@ -8,78 +8,8 @@ from crm.utils import require_roles# es un decorador de roles y el login_require
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 
-'''
 @require_roles(['Dueño'])
 def registrar_usuario(request):
-    user_id = request.session.get('idusuario')
-    usuario_actual = None
-    
-    # 1. Lógica para manejar usuarios logueados (Dueño/Admin)
-    if user_id:
-        usuario_actual = Usuario.activos.filter(idusuario=user_id).first()
-        
-        # Validar que la sesión sea válida
-        if not usuario_actual:
-            messages.error(request, "Tu sesión expiró. Inicia sesión nuevamente.")
-            request.session.flush()
-            return redirect('usuario:iniciar_sesion')
-        
-        # Validar roles permitidos para CREAR OTRAS cuentas
-        if request.session.get('rol') not in ['Dueño', 'Administrador']:
-            # Si un empleado intenta acceder a esta URL logueado
-            messages.error(request, "No tienes permisos para registrar usuarios.")
-            return redirect('usuario:inicio')
-
-    # 2. El resto de la vista es accesible tanto si hay user_id (Dueño/Admin) como si NO hay (Público)
-
-    if request.method == 'POST':
-        form = UsuarioForm(request.POST)
-        if form.is_valid():
-            try:
-                nuevo_usuario = form.save(commit=False)
-                
-                # Si el registro lo hace un Dueño/Admin, se registra quién lo creó.
-                if usuario_actual:
-                    nuevo_usuario.usuario_registro = usuario_actual
-                
-                # NOTA: Asegúrate de que tu modelo maneje la encriptación de la contraseña aquí
-                # o en el método save del modelo/form si estás usando password raw.
-                
-                nuevo_usuario.save()
-
-                # Si el registro fue público, redirigimos al login
-                if not usuario_actual:
-                    messages.success(request, f"Usuario {nuevo_usuario.nombre} registrado. ¡Inicia sesión!")
-                    return redirect('usuario:iniciar_sesion')
-                else:
-                    # Si el registro fue interno (hecho por Admin/Dueño)
-                    messages.success(request, f"Usuario {nuevo_usuario.nombre} registrado correctamente.")
-                    return redirect('usuario:registrar_usuario') # Permite seguir registrando
-                                
-            except IntegrityError:
-                messages.error(request, "Error: Ya existe un usuario con uno de los datos ingresados (correo, RFC o CURP).")
-                # El template puede mostrar el modal de duplicados aquí
-                return render(request, 'usuario/registrar_usuario.html', {'form': form, 'duplicado': True})
-            
-            except Exception as e:
-                messages.error(request, f"Ocurrió un error inesperado al registrar: {e}")
-
-        # Si el formulario no es válido, los errores se manejan automáticamente o con messages
-        # ... (Puedes mantener tu bucle de messages si lo necesitas)
-        
-    else: # GET request
-        form = UsuarioForm()
-        
-    # 3. Renderiza el formulario
-    return render(request, 'usuario/registrar_usuario.html', {
-        'form': form,
-        'duplicado': 'duplicado' in locals() # Pasa el contexto si hubo un error de integridad
-    })
-'''
-@require_roles(['Dueño'])
-def registrar_usuario(request):
-    
-    # 2. Asumimos que request.user es el Dueño logueado (el registrador)
     usuario_registrador = request.user 
     
     # Si el usuario no está autenticado, el decorador ya lo redirigió. 
@@ -106,14 +36,9 @@ def registrar_usuario(request):
             
             except Exception as e:
                 messages.error(request, f"Ocurrió un error inesperado al registrar: {e}")
-                
-        # Si el formulario NO es válido (POST), volvemos a renderizar con errores
-        # La plantilla se encarga de mostrar los errores del formulario
         
     else: # GET request
         form = UsuarioForm()
-        
-    # 3. Renderiza el formulario (GET o POST con errores)
     return render(request, 'usuario/registrar_usuario.html', {
         'form': form,
         # Si 'duplicado' no fue definido en el try/except, se asume False o se omite
@@ -127,46 +52,7 @@ def iniciar_sesion(request):#funciona
         return redirect('oportunidades:kanban')#pipeline ventas
 
     if request.method == 'POST':
-        form = LoginForm(request.POST)    
-        '''
-        form = LoginForm(request.POST)
-
-        if form.is_valid():
-            correo = form.cleaned_data['correo']
-            contrasena = form.cleaned_data['contrasena']
-
-            # 1) Verificar usuario
-            usuario = Usuario.activos.filter(correo=correo).first()
-            if not usuario:
-                messages.error(request, "No existe una cuenta con ese correo.")
-                return render(request, 'usuario/login.html', {
-                    'form': form,
-                    'mostrar_modal': True,
-                    'modal_titulo': 'Cuenta no encontrada',
-                    'modal_mensaje': 'No existe una cuenta con ese correo electrónico.'
-                })
-
-            # 2) Verificar contraseña
-            if not check_password(contrasena, usuario.contrasena):
-                messages.error(request, "Contraseña incorrecta.")
-                return render(request, 'usuario/login.html', {
-                    'form': form,
-                    'mostrar_modal': True,
-                    'modal_titulo': 'Contraseña incorrecta',
-                    'modal_mensaje': 'La contraseña ingresada no es válida.'
-                })
-
-            # 3) Limpiar cualquier sesión previa
-            request.session.flush()
-
-            # 4) Crear sesión nueva
-            request.session['idusuario'] = usuario.idusuario
-            request.session['nombre'] = usuario.nombre
-            request.session['rol'] = usuario.rol.nombre_rol
-
-            messages.success(request, f"Bienvenido {usuario.nombre}")
-            return redirect('usuario:inicio')
-            '''
+        form = LoginForm(request.POST)   
         
         if form.is_valid():
             correo = form.cleaned_data['correo']
@@ -280,34 +166,6 @@ def subir_logo(request):
 
     # 5. Redirigir de vuelta al inicio
     return redirect('usuario:inicio') # Redirección con namespace 'usuario'
-'''
-def inicio(request):
-    
-    usuario = None
-    preferencias = None
-
-    if request.session.get("idusuario"):
-        usuario = Usuario.activos.get(idusuario=request.session["idusuario"])
-
-        preferencias, creado = PreferenciaUsuario.objects.get_or_create(usuario=usuario)
-
-        if request.method == "POST":
-            preferencias.color_primario = request.POST.get("color_primario", preferencias.color_primario)
-            preferencias.color_secundario = request.POST.get("color_secundario", preferencias.color_secundario)
-            preferencias.color_fondo = request.POST.get("color_fondo", preferencias.color_fondo)
-
-           # if "logo" in request.FILES:
-            #    preferencias.logo = request.FILES["logo"]
-
-            preferencias.save()
-
-            return redirect("usuario:inicio")#return redirect("inicio")
-
-    return render(request, "inicio.html", {
-        "usuario": usuario,
-        "preferencias": preferencias
-    })
-'''
 
 def inicio(request):  
     usuario = None
