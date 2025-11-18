@@ -28,25 +28,29 @@
     <header class="navbar navbar-expand-lg border-bottom p-3" style="background-color: {{ preferencias.color_primario|default:'#c7dbff' }};">
         <div class="container-fluid">
             <a class="navbar-brand" href="{% url 'usuario:inicio' %}">CRM MVP</a>
-            
-            {% if user.is_authenticated %}
-            <button class="btn btn-sm btn-dark me-2" onclick="document.getElementById('logo-input').click()">
-                ⬆ Subir Logo
-            </button>
-            
-            <form id="logo-upload-form" method="POST" enctype="multipart/form-data" action="{% url 'usuario:subir_logo' %}" class="d-none">
-                {% csrf_token %}
-                <input type="file" id="logo-input" name="logo" onchange="document.getElementById('logo-upload-form').submit()">
-            </form>
-            
-            <span class="navbar-text me-3">Bienvenido, {{ user.nombre|default:user.username }}</span>
-            
-            <div class="d-flex ms-auto">
-                <a href="{% url 'usuario:cerrar_sesion' %}" class="btn btn-outline-dark">
-                    🔑 Cerrar Sesión
-                </a>
+          
+            <div class="d-flex ms-auto align-items-center">
+                {% if user.is_authenticated %}
+                    <button class="btn btn-sm btn-dark me-2" onclick="document.getElementById('logo-input').click()">
+                        ⬆ Subir Logo
+                    </button>
+                    
+                    <form id="logo-upload-form" method="POST" enctype="multipart/form-data" action="{% url 'usuario:subir_logo' %}" class="d-none">
+                        {% csrf_token %}
+                        <input type="file" id="logo-input" name="logo" onchange="document.getElementById('logo-upload-form').submit()">
+                    </form>
+                    
+                    <span class="navbar-text me-3">Bienvenido, {{ user.nombre|default:user.username }}</span>
+                    
+                    <a href="{% url 'usuario:cerrar_sesion' %}" class="btn btn-outline-dark">
+                            🔑 Cerrar Sesión
+                    </a>
+                    
+                    {%else%}
+                {% endif %}
+
             </div>
-            {% endif %}
+            
         </div>
     </header>
     

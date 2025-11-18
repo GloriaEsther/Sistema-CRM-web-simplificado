@@ -56,7 +56,7 @@
   </div>
 </div>
 
-<!-- Modal -->
+<!-- Modal de error de inicio de sesion  -->
 <div class="modal fade" id="resultadoModal" tabindex="-1" aria-labelledby="resultadoModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -72,6 +72,10 @@
         {% else %}
           No hay mensaje disponible.
         {% endif %}
+      </div>
+      <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Aceptar</button>
+          <a href="{% url 'usuario:inicio' %}" class="btn btn-primary">Regresar</a>
       </div>
     </div>
   </div>

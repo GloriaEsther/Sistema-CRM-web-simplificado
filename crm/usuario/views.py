@@ -10,10 +10,23 @@ from django.core.files.storage import FileSystemStorage
 
 @require_roles(['Dueño'])
 def registrar_usuario(request):
-    usuario_registrador = request.user 
+    registrador_id = request.session.get('idusuario')
+    usuario_registrador = None
     
-    # Si el usuario no está autenticado, el decorador ya lo redirigió. 
-    # Si llega aquí, está autenticado y es Dueño.
+    if not registrador_id:
+         # Si el decorador falla o la sesión expira (no creo :b)
+         messages.error(request, "Acceso denegado. Debes ser Dueño y estar logueado.")
+         return redirect('usuario:iniciar_sesion')
+         
+    try:
+        #Obtener la instancia real del usuario usando el id de sesion 
+        usuario_registrador = Usuario.activos.get(idusuario=registrador_id)
+        
+    except Usuario.DoesNotExist:
+        # En caso de una sesión corrupta
+        messages.error(request, "Tu sesión es inválida. Inicia sesión nuevamente.")
+        request.session.flush()
+        return redirect('usuario:iniciar_sesion')
     
     if request.method == 'POST':
         form = UsuarioForm(request.POST)
@@ -76,12 +89,12 @@ def iniciar_sesion(request):#funciona
                 return redirect('oportunidades:kanban') # Usar dashboard en lugar de inicio
             else:
                 # Error de credenciales
-                messages.error(request, "Credenciales incorrectas (correo o contraseña).")
+               # messages.error(request, "Credenciales incorrectas (correo o contraseña).")#si funciona pero mejor lo quite
                 return render(request, 'usuario/login.html', {
                     'form': form,
                     'mostrar_modal': True,
                     'modal_titulo': 'Error de Ingreso',
-                    'modal_mensaje': 'Verifica tu correo electrónico y contraseña.'
+                    'modal_mensaje': 'Verifica tu correo electrónico o contraseña.'
                 })
 
     else:

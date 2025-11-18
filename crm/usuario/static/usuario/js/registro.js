@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // 1. OBTENCIÓN DE ELEMENTOS
+    // Obtener elementos
     const rolSelect = document.getElementById("id_rol");
     const localFijoContainer = document.getElementById("localFijoContainer");
     const localFijoInput = document.getElementById("id_local_Fijo");
@@ -11,14 +11,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const form = document.getElementById("registroForm");
 
-    // 2. INICIALIZACIÓN DE OBJETOS MODAL DE BOOTSTRAP
+    // Iniicar objetos de modal
     // Se inicializan aquí para que el código pueda llamarlos con .show()
-    // Ya que los elementos HTML ya se cargaron.
+    
     const modalConfirmar = new bootstrap.Modal(document.getElementById("confirmModal"));
     const modalContrasena = new bootstrap.Modal(document.getElementById("coninvalida"));
     const modalFaltantes = new bootstrap.Modal(document.getElementById("faltantesModal")); 
-    // Nota: cambié el nombre de 'modal' a 'modalConfirmar' para mayor claridad.
-    
     const btnConfirmar = document.getElementById("confirmarOpcionales");
     const btnDescartar = document.getElementById("descartarOpcionales");
     const btnAceptar = document.getElementById("confirmar");
