@@ -42,5 +42,5 @@ class Oportunidad(models.Model):
             self.fecha_eliminacion = timezone.now()
             self.save()
 
-    def __str__(self):
-        return f"{self.nombreoportunidad} {self.valor_estimado} {self.fecha_cierre_estimada} {self.etapa_ventas} {self.comentarios} {self.cliente_oportunidad} {self.usuario_responsable}"
+    def __str__(self): 
+        return f"{self.nombreoportunidad} {self.valor_estimado} {self.fecha_cierre_estimada} {self.etapa_ventas} {self.comentarios} {self.cliente_oportunidad} (Responsable: {self.usuario_responsable.nombre})"#{self.usuario_responsable.nombre}

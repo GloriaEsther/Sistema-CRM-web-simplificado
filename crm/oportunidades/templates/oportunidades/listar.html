@@ -1,0 +1,19 @@
+<h2>Oportunidades</h2>
+<a href="{% url 'oportunidades:crear' %}">Nueva oportunidad</a>
+<hr>
+
+{% for o in oportunidades %}
+    <p>
+        <strong>{{ o.nombreoportunidad }}</strong><br>
+        Cliente: {{ o.cliente_oportunidad.nombre }}<br>
+        Etapa: {{ o.etapa_ventas.nombre_etapa }}<br>
+        Valor estimado: ${{ o.valor_estimado }}<br>
+
+        <a href="{% url 'oportunidades:editar' o.idoportunidad %}">Editar</a>
+        |
+        <a href="{% url 'oportunidades:eliminar' o.idoportunidad %}">Eliminar</a>
+    </p>
+    <hr>
+{% empty %}
+    <p>No hay oportunidades registradas.</p>
+{% endfor %}

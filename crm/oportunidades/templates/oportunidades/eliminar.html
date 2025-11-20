@@ -1,0 +1,9 @@
+<h2>Eliminar oportunidad</h2>
+
+<p>¿Estás segura de eliminar la oportunidad <strong>{{ oportunidad.nombreoportunidad }}</strong>?</p>
+
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit">Sí, eliminar</button>
+    <a href="{% url 'oportunidades:listar' %}">Cancelar</a>
+</form>

@@ -89,5 +89,7 @@ class Usuario(models.Model):
             self.fecha_eliminacion = timezone.now()
             self.save()
 
+    #def __str__(self):
+     #   return f"{self.nombre} {self.apellidopaterno} {self.apellidomaterno} {self.usuario_registro}" #{self.rol} {self.correo} {self.activo}
     def __str__(self):
-        return f"{self.nombre} {self.apellidopaterno} {self.apellidomaterno} {self.usuario_registro}" #{self.rol} {self.correo} {self.activo}
+     return f"{self.nombre} {self.apellidopaterno} {self.apellidomaterno}".strip()
