@@ -1,0 +1,25 @@
+<!-- Modal Consultar -->
+<div class="modal fade" id="modalConsultar" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Consultar Oportunidad</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="consultar-body">
+        <!-- Se rellena por JS -->
+        <p><strong>Nombre:</strong> <span id="cons-nombre"></span></p>
+        <p><strong>Cliente:</strong> <span id="cons-cliente"></span></p>
+        <p><strong>Vendedor:</strong> <span id="cons-usuario"></span></p>
+        <p><strong>Valor estimado:</strong> $<span id="cons-valor"></span></p>
+        <p><strong>Fecha cierre estimada:</strong> <span id="cons-fecha"></span></p>
+        <p><strong>Etapa:</strong> <span id="cons-etapa"></span></p>
+        <p><strong>Comentarios:</strong></p>
+        <div id="cons-comentarios" class="border rounded p-2 bg-light"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Regresar</button>
+      </div>
+    </div>
+  </div>
+</div>

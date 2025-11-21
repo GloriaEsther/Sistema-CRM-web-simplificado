@@ -1,0 +1,78 @@
+<!-- Modal Crear -->
+<div class="modal fade" id="modalCrear" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <form id="formCrear" class="modal-content" method="post">
+      {% csrf_token %}
+      <div class="modal-header">
+        <h5 class="modal-title">Crear Oportunidad</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Usamos campos explícitos para facilitar manipulación JS -->
+        <div class="mb-2">
+          <label class="form-label">Nombre oportunidad *</label>
+          <input name="nombreoportunidad" id="crear-nombre" class="form-control" required maxlength="45">
+        </div>
+
+        <div class="mb-2 row">
+          <div class="col">
+            <label class="form-label">Valor estimado *</label>
+            <input name="valor_estimado" id="crear-valor" class="form-control" type="number" step="0.01" required>
+          </div>
+          <div class="col">
+            <label class="form-label">Fecha cierre estimada *</label>
+            <input name="fecha_cierre_estimada" id="crear-fecha" class="form-control" type="date" required>
+          </div>
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label">Etapa *</label>
+          <select name="etapa_ventas" id="crear-etapa" class="form-select" required>
+            {% for e in etapas %}
+              <option value="{{ e.idetapa_ventas }}">{{ e.nombre_etapa }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="mb-2 d-flex gap-2">
+          <div class="flex-grow-1">
+            <label class="form-label">Cliente *</label>
+            <div class="input-group">
+              <input type="text" id="crear-cliente-display" class="form-control" placeholder="Selecciona cliente" readonly required>
+              <input type="hidden" name="cliente_oportunidad" id="crear-cliente-id">
+              <button class="btn btn-outline-secondary" type="button" onclick="abrirBuscarCliente('#modalCrear')">Buscar</button>
+            </div>
+          </div>
+
+          <div class="flex-grow-1">
+            <label class="form-label">Vendedor *</label>
+            <div class="input-group">
+              <input type="text" id="crear-usuario-display" class="form-control" placeholder="Selecciona vendedor" readonly required>
+              <input type="hidden" name="usuario_responsable" id="crear-usuario-id">
+              <button class="btn btn-outline-secondary" type="button" onclick="abrirBuscarVendedor('#modalCrear')">Buscar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label">Comentarios</label>
+          <textarea class="form-control" name="comentarios" id="crear-comentarios" rows="3"></textarea>
+        </div>
+
+        <!-- Buscador (se muestra como modal in-page) -->
+        <div id="buscarPanel" style="display:none;">
+          <hr>
+          <div class="mb-2">
+            <input type="text" id="buscar-input" class="form-control" placeholder="Buscar por nombre o apellido" oninput="busquedaAjax()">
+          </div>
+          <div id="buscar-resultados" class="list-group"></div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>

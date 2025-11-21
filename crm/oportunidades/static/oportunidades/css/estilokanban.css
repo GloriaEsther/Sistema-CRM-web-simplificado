@@ -1,0 +1,35 @@
+/* Columna de etapa */
+        .kanban-column {
+            min-width: 280px;
+            max-width: 280px;
+            background: #f5f6f8;
+            border-radius: 10px;
+            padding: 15px;
+            margin-right: 15px;
+            height: 75vh;
+            overflow-y: auto;
+        }
+
+        /* Card de oportunidad */
+        .kanban-card {
+            background: white;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.10);
+            cursor: grab;
+            position: relative;
+        }
+
+        /* 3 puntitos */
+        .card-menu {
+            position: absolute;
+            top: 5px;
+            right: 8px;
+            cursor: pointer;
+        }
+        .kanban-container {
+            display: flex;
+            gap: 18px;
+            overflow-x: auto;
+        }
