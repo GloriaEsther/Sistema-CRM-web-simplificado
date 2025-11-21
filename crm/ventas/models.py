@@ -10,10 +10,12 @@ class ActivoManager(models.Manager):
 class EtapaVentas(models.Model):
     idetapa_ventas = models.AutoField(primary_key=True)
     nombre_etapa = models.CharField(max_length=45)
+    orden = models.PositiveIntegerField(default=1)#ordenar explicitamente por orden
 
     class Meta:
-        managed = False
+        managed = True#False 
         db_table = 'etapa_ventas'
+        ordering = ['orden']#para tener un ordenamiento 
 
     def __str__(self):
         return self.nombre_etapa

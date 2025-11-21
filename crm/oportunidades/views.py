@@ -13,7 +13,7 @@ from django.core import serializers
 from django.db.models import Q
 
 
-def kanban(request):#prueba 1
+def kanban(request):#si funciona :D
     etapas = EtapaVentas.objects.all()
     data = {}
     # data será dict { etapa.nombre: queryset }
@@ -21,23 +21,26 @@ def kanban(request):#prueba 1
         data[e.nombre_etapa] = Oportunidad.activos.filter(etapa_ventas=e).order_by('-fecha_registro')
     form_crear = OportunidadForm()
     return render(request, 'oportunidades/kanban.html', {
-        'etapas': etapas, 'data': data, 'form_crear': form_crear,
-        'preferencias': request.context.get('preferencias', None) if hasattr(request, 'context') else None
+        'etapas': etapas, 
+        'data': data,
+        'form_crear': form_crear,
+        'preferencias': request.context.get('preferencias', None) 
+        if hasattr(request, 'context') else None
     })
 
 def crear_oportunidad(request): #prueba
-    #Obtener catálogos ---
+    #Obtener los datos de cliente y etapas de venta.....
     clientes = Cliente.activos.all()
-    etapas = EtapaVentas.objects.all()
-
+    etapas = EtapaVentas.objects.all()#.order_by('idetapa_ventas')#tiene que ordenarlas por etapa
+   
     usuario_id = request.session.get('idusuario')#se obtiene la sesion del usuario logueado
     usuario_creador =Usuario.activos.filter(idusuario=usuario_id).first()
     
     #Se obtienen los roles del sistema 
     rol_vendedor = RolUsuario.objects.filter(nombre_rol__iexact="Vendedor").first()
     rol_admin = RolUsuario.objects.filter(nombre_rol__in=["Administrador", "Dueño"])
-
-    #filtrar vendedores 
+    '''
+   #Filtrar vendedores 
     if usuario_creador.rol in rol_admin:
         #Usuario.activos.filter(nombre_rol__in=["Administrador", "Dueño"])
         vendedores =Usuario.activos.all()#si el suario es dueno o administrador puede ver a todos los usuarios(para asignar oportunidad)
@@ -49,6 +52,15 @@ def crear_oportunidad(request): #prueba
     else:
         vendedores =Usuario.activos.none()
 
+   '''
+    if usuario_creador.rol.nombre_rol in ["Administrador", "Dueño"]:
+        vendedores = Usuario.activos.all()
+
+    elif usuario_creador.rol.nombre_rol == "Vendedor":
+        vendedores = Usuario.activos.filter(rol=rol_vendedor)
+
+    else:
+        vendedores = Usuario.activos.none()
 
     if request.method == 'POST':
         form = OportunidadForm(request.POST)
@@ -79,7 +91,7 @@ def crear_oportunidad(request): #prueba
     })
 
 
-@require_POST#prueba 
+@require_POST#funciona :D
 def mover_oportunidad(request, pk):
     # endpoint AJAX que recibe nueva etapa id
     nueva_etapa_id = request.POST.get('etapa_id')
@@ -103,7 +115,7 @@ def editar_oportunidad(request, pk):#prueba
     etapas = EtapaVentas.objects.all()
     usuarios = Usuario.activos.all()
 
-    # Si es POST → guardar cambios
+    # Si es POST -> guardar cambios
     if request.method == "POST":
         oportunidad.nombreoportunidad = request.POST.get("nombreoportunidad")
         oportunidad.valor_estimado = request.POST.get("valor_estimado")
@@ -119,7 +131,7 @@ def editar_oportunidad(request, pk):#prueba
         messages.success(request, "Oportunidad actualizada.")
         return redirect("oportunidades:listar")
 
-    # AJAX/HTMX → solo devolver el modal
+    # AJAX/HTMX -> solo devolver el modal
     if (
         request.headers.get("HX-Request") == "true" or
         request.headers.get("x-requested-with") == "XMLHttpRequest"

@@ -16,7 +16,7 @@ class Oportunidad(models.Model):
     fecha_cierre_estimada = models.DateTimeField()
     #Opcional
     
-    comentarios = models.TextField(null=True)
+    comentarios = models.TextField(null=True, blank=True)#comentarios = models.TextField(null=True)
    #Sistema
     activo = models.BooleanField(default=True)
     fecha_registro = models.DateTimeField(auto_now_add=True)
