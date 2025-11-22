@@ -84,7 +84,7 @@ def iniciar_sesion(request):#funciona
                 request.session['nombre'] = usuario.nombre
                 request.session['rol'] = usuario.rol.nombre_rol
 
-                messages.success(request, f"Bienvenido {usuario.nombre}")
+                #messages.success(request, f"Bienvenido {usuario.nombre}")
                 #Redirigir al inicio de la aplicación para usuarios logueados
                 return redirect('oportunidades:kanban') # Usar dashboard en lugar de inicio
             else:
