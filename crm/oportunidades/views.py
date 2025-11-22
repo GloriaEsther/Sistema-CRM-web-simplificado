@@ -5,7 +5,7 @@ from usuario.models import RolUsuario
 from ventas.models import Venta, EtapaVentas
 from django.views.decorators.http import require_POST
 from django.contrib import messages
-from crm.utils import require_roles
+from crm.utils import require_roles,queryset_usuarios_segun_rol
 from django.utils import timezone
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.db import IntegrityError
@@ -27,10 +27,10 @@ def kanban(request):#si funciona :D
         if hasattr(request, 'context') else None
     })
 
-def crear_oportunidad(request): #ya casi funciona......(por los vendedores que muestra...)
+def crear_oportunidad(request): #Si funciona :D...espera 
     #Obtener los datos de cliente y etapas de venta.....
     clientes = Cliente.activos.all()
-    etapas = EtapaVentas.objects.all()#.order_by('idetapa_ventas')#tiene que ordenarlas por etapa
+    etapas = EtapaVentas.objects.all()#
    
     usuario_id = request.session.get('idusuario')#se obtiene la sesion del usuario logueado
     usuario_creador =Usuario.activos.filter(idusuario=usuario_id).first()
@@ -38,20 +38,7 @@ def crear_oportunidad(request): #ya casi funciona......(por los vendedores que m
     #Se obtienen los roles del sistema 
     rol_vendedor = RolUsuario.objects.filter(nombre_rol__iexact="Vendedor").first()
     rol_admin = RolUsuario.objects.filter(nombre_rol__in=["Administrador", "Dueño"])
-    '''
-   #Filtrar vendedores 
-    if usuario_creador.rol in rol_admin:
-        #Usuario.activos.filter(nombre_rol__in=["Administrador", "Dueño"])
-        vendedores =Usuario.activos.all()#si el suario es dueno o administrador puede ver a todos los usuarios(para asignar oportunidad)
-
-    elif usuario_creador.rol == rol_vendedor:
-       # crea una lista de Vendedores permitidos al registrar una oportunidad excluyendo a los duenos o administradores
-       vendedores = Usuario.activos.filter(rol=rol_vendedor)#Usuario.activos.exclude(rol__in=rol_admin)
-    
-    else:
-        vendedores =Usuario.activos.none()
-
-   '''
+   #Filtrar usuarios para agregar como responsables de la oportunidad......
     if usuario_creador.rol.nombre_rol in ["Administrador", "Dueño"]:
         vendedores = Usuario.activos.all()
 
@@ -59,7 +46,7 @@ def crear_oportunidad(request): #ya casi funciona......(por los vendedores que m
         vendedores = Usuario.activos.filter(rol=rol_vendedor)
 
     else:
-        vendedores = Usuario.activos.none()
+     vendedores = Usuario.activos.none()
 
     if request.method == 'POST':
         form = OportunidadForm(request.POST)
@@ -128,7 +115,7 @@ def editar_oportunidad(request, pk):#prueba
         oportunidad.save()
 
         messages.success(request, "Oportunidad actualizada.")
-        return redirect("oportunidades:listar")
+        return redirect("oportunidades:kanban")# return redirect("oportunidades:listar")
 
     # AJAX/HTMX -> solo devolver el modal
     if (
@@ -191,15 +178,28 @@ def buscar_clientes(request):#funciona :D
 def buscar_vendedores(request):#prueba
     texto = request.GET.get("q", "").strip()
 
-    vendedores = Usuario.activos.filter( 
-      rol__nombre_rol__iexact="Vendedor"#solo muestra vendedores(en general, ahorita lo compongo)
-    ).filter(
+    #agarra la sesion del usuario 
+    usuario_id = request.session.get("idusuario")
+    usuario = Usuario.activos.filter(idusuario=usuario_id).first()
+    
+    usuarios = queryset_usuarios_segun_rol(usuario)
+   
+    vendedores = usuarios.filter(
         nombre__icontains=texto
-    ) | Usuario.activos.filter(
-        nombre__icontains=texto
+    ) | usuarios.filter(
+        apellidopaterno__icontains=texto
     )
 
     '''
+    vendedores = Usuario.activos.filter( 
+        rol__nombre_rol__iexact="Vendedor"#solo muestra vendedores(en general, ahorita lo compongo)
+        ).filter(
+            nombre__icontains=texto
+        ) | Usuario.activos.filter(
+            nombre__icontains=texto
+        )
+
+    #
     vendedores = Usuario.activos.filter(
         rol__nombre_rol__iexact="Vendedor"#solo muestra vendedores(en general, ahorita lo compongo)
     ).filter(
@@ -243,7 +243,18 @@ def ajax_buscar_cliente(request):
 
 def ajax_buscar_vendedor(request):#tambien checar aqui lo de los roles....
     q = request.GET.get('q', '').strip()
-    # filtra por rol vendedor: asumiendo RolUsuario existe y Usuario tiene FK
+    #prueba.....
+    usuario_id = request.session.get("idusuario")
+    usuario = Usuario.activos.filter(idusuario=usuario_id).first()
+
+    usuarios = queryset_usuarios_segun_rol(usuario)
+
+    if q:
+        usuarios = usuarios.filter(nombre__icontains=q)
+
+    res = [{'id': u.idusuario, 'display': f"{u.nombre} {u.apellidopaterno}"} for u in usuarios[:15]]
+    
+    '''
     from usuario.models import RolUsuario, Usuario
     rol_v = RolUsuario.objects.filter(nombre_rol__iexact='Vendedor').first()
     if rol_v:
@@ -251,5 +262,8 @@ def ajax_buscar_vendedor(request):#tambien checar aqui lo de los roles....
     else:
         qs = Usuario.activos.filter(nombre__icontains=q)[:15] if q else Usuario.activos.all()[:15]
     res = [{'id': u.idusuario, 'display': f"{u.nombre} {u.apellidopaterno}"} for u in qs]
+   
+    '''
+
     return JsonResponse(res, safe=False)
 

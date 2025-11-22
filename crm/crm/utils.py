@@ -3,7 +3,9 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required as dj_login_required
 from django.contrib.auth import logout
-def require_roles(allowed_roles):
+from usuario.models import Usuario,RolUsuario
+
+def require_roles(allowed_roles):#restringe roles (quien accede a que)
     def decorator(view_func):
         @wraps(view_func)
         def _wrapped(request, *args, **kwargs):
@@ -18,3 +20,15 @@ def require_roles(allowed_roles):
             return view_func(request, *args, **kwargs)
         return _wrapped
     return decorator
+
+def queryset_usuarios_segun_rol(usuario):#prueba , en teoria servira de filtro en las busquedas
+    rol = usuario.rol.nombre_rol
+
+    if rol in ["Administrador", "Dueño"]:
+        return Usuario.activos.all()
+
+    if rol == "Vendedor":
+        rol_vendedor = RolUsuario.objects.filter(nombre_rol__iexact="Vendedor").first()
+        return Usuario.activos.filter(rol=rol_vendedor)
+
+    return Usuario.activos.none()
