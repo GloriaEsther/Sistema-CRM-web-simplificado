@@ -27,54 +27,90 @@ def kanban(request):#si funciona :D
         if hasattr(request, 'context') else None
     })
 
-def crear_oportunidad(request): #Si funciona :D...espera 
-    #Obtener los datos de cliente y etapas de venta.....
-    clientes = Cliente.activos.all()
-    etapas = EtapaVentas.objects.all()#
-   
-    usuario_id = request.session.get('idusuario')#se obtiene la sesion del usuario logueado
-    usuario_creador =Usuario.activos.filter(idusuario=usuario_id).first()
-    
-    #Se obtienen los roles del sistema 
+def crear_oportunidad(request):#Funciona...
+    usuario_id = request.session.get('idusuario')
+    usuario_creador = Usuario.activos.filter(idusuario=usuario_id).first()
+
     rol_vendedor = RolUsuario.objects.filter(nombre_rol__iexact="Vendedor").first()
+    '''
     rol_admin = RolUsuario.objects.filter(nombre_rol__in=["Administrador", "Dueño"])
-   #Filtrar usuarios para agregar como responsables de la oportunidad......
     if usuario_creador.rol.nombre_rol in ["Administrador", "Dueño"]:
         vendedores = Usuario.activos.all()
-
     elif usuario_creador.rol.nombre_rol == "Vendedor":
         vendedores = Usuario.activos.filter(rol=rol_vendedor)
-
     else:
-     vendedores = Usuario.activos.none()
-
-    if request.method == 'POST':
+        vendedores = Usuario.activos.none()
+    ''' 
+    if request.method == "POST":
         form = OportunidadForm(request.POST)
+
         if form.is_valid():
             try:
                 op = form.save(commit=False)
-                vendedor = op.usuario_responsable#prueba
-                if vendedor.rol.id_rol in rol_admin:#if vendedor.rol.id_rol in [r.id_rol for r in rol_admin]
-                    messages.error(request, " No puedes asignar oportunidades a administradores o dueños.")
-                    return redirect("oportunidades:crear")
+                vendedor = op.usuario_responsable
                 
+                # Vendedor no puede asignar oportunidades a admin o dueños ....checar esto
+                if vendedor.rol.id_rol == rol_vendedor:
+
+                    # AJAX
+                    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                        return JsonResponse({
+                            "ok": False,
+                            "errores": ["No puedes asignar oportunidades a administradores o dueños."]
+                        })
+                    
+                    # NO AJAX
+                    messages.error(request, "No puedes asignar oportunidades a administradores o dueños.")
+                    return redirect("oportunidades:kanban")
+
                 op.save()
+
+                # AJAX OK
+                if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                    return JsonResponse({"ok": True})
+
+                # NO AJAX OK
                 messages.success(request, "Oportunidad creada correctamente.")
-                return redirect('oportunidades:kanban')
-            except IntegrityError as e:
-                messages.error(request, "Error al crear la oportunidad. ¿Ya existe una con mismo nombre?")
+                return redirect("oportunidades:kanban")
+
+            except IntegrityError:
+                # AJAX
+                if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                    return JsonResponse({
+                        "ok": False,
+                        "errores": ["Datos duplicados:Esta oportunidad ya existe."]
+                    })
+                
+                # NO AJAX
+                messages.error(request, "Error al crear la oportunidad. Por favor, intente de nuevo.")
+                return redirect("oportunidades:kanban")
+
+        # FORM INVALID
         else:
-            # form invalid -> mostrar errores en el modal
-            for field, errs in form.errors.items():
-                for err in errs:
-                    messages.error(request, f"{field}: {err}")
+            # AJAX
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                errores = []
+                for campo, lista in form.errors.items():
+                    for err in lista:
+                        campo_legible = "Error" if campo == "__all__" else campo#quitar el __all__ del error de validacion del form
+                        errores.append(f"{campo_legible}: {err}")
+
+                return JsonResponse({
+                    "ok": False,
+                    "errores": errores
+                })
+
+            # NO AJAX
+            for campo, lista in form.errors.items():
+                for err in lista:
+                    messages.error(request, f"{campo}: {err}")
+
     else:
         form = OportunidadForm()
-    return render(request, 'oportunidades/crear.html', {
-        'form': form,
-        'clientes': clientes,
-        'vendedores': vendedores
-    })
+
+    return redirect("oportunidades:kanban")
+
+   
 
 
 @require_POST#funciona :D
@@ -95,6 +131,7 @@ def listar_oportunidades(request):#si funciona
         "oportunidades": oportunidades
     })
 
+'''esta vista si funciona.....
 def editar_oportunidad(request, pk):#prueba
     oportunidad = Oportunidad.activos.get(pk=pk)
     clientes = Cliente.activos.all()
@@ -136,16 +173,127 @@ def editar_oportunidad(request, pk):#prueba
         "etapas": etapas,
         "usuarios": usuarios,
     })
+'''
 
+#esto funciona
+def editar_oportunidad(request, pk):
+    oportunidad = Oportunidad.activos.get(pk=pk)
+    rol_vendedor = RolUsuario.objects.filter(nombre_rol__iexact="Vendedor").first()
+
+    if request.method == "POST":
+        try:
+            oportunidad.nombreoportunidad = request.POST.get("nombreoportunidad")
+            oportunidad.valor_estimado = request.POST.get("valor_estimado")
+            oportunidad.fecha_cierre_estimada = request.POST.get("fecha_cierre_estimada")
+            oportunidad.comentarios = request.POST.get("comentarios")
+
+            oportunidad.cliente_oportunidad_id = request.POST.get("cliente_oportunidad")
+            oportunidad.etapa_ventas_id = request.POST.get("etapa_ventas")
+
+            nuevo_responsable = request.POST.get("usuario_responsable")
+            oportunidad.usuario_responsable_id = nuevo_responsable
+
+            # VALIDACIÓN: no asignar a admin/dueño
+            responsable = Usuario.activos.get(idusuario=nuevo_responsable)
+            if responsable.rol.nombre_rol == rol_vendedor:#if responsable.rol.nombre_rol in ["Administrador", "Dueño"]:
+                # AJAX
+                if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                 return JsonResponse({
+                  "ok": False,
+                  "errores": ["No puedes asignar oportunidades a administradores o dueños."]
+                 })    
+                # NO AJAX
+                messages.error(request, "No puedes asignar oportunidades a administradores o dueños.")
+                return redirect("oportunidades:kanban")
+
+            oportunidad.save()
+            # AJAX OK
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                return JsonResponse({"ok": True})
+            # NO AJAX OK
+            messages.success(request, "Oportunidad actualizada correctamente.")
+            return redirect("oportunidades:kanban")
+
+        except Exception:
+            # AJAX
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                    return JsonResponse({
+                        "ok": False,
+                        "errores": ["No se pudo realizar la actualizacion de esta oportunidad"]
+                    })    
+            # NO AJAX
+            messages.error(request,"Ocurrió un error al actualizar la oportunidad. Inténtalo de nuevo.")
+            return redirect("oportunidades:kanban")
+       
+    return redirect("oportunidades:kanban")
+
+'''
+def editar_oportunidad(request, pk):
+    oportunidad = Oportunidad.activos.get(pk=pk)
+    clientes = Cliente.activos.all()
+    etapas = EtapaVentas.objects.all()
+    usuarios = Usuario.activos.all()
+
+    if request.method == "POST":
+        try:
+            oportunidad.nombreoportunidad = request.POST.get("nombreoportunidad")
+            oportunidad.valor_estimado = request.POST.get("valor_estimado")
+            oportunidad.fecha_cierre_estimada = request.POST.get("fecha_cierre_estimada")
+            oportunidad.comentarios = request.POST.get("comentarios")
+
+            oportunidad.cliente_oportunidad_id = request.POST.get("cliente_oportunidad")
+            oportunidad.etapa_ventas_id = request.POST.get("etapa_ventas")
+
+            nuevo_responsable = request.POST.get("usuario_responsable")
+            oportunidad.usuario_responsable_id = nuevo_responsable
+
+            # VALIDACIÓN: no asignar a admin/dueño
+            responsable = Usuario.activos.get(idusuario=nuevo_responsable)
+            if responsable.rol.nombre_rol in ["Administrador", "Dueño"]:
+                messages.error(request, "No puedes asignar oportunidades a administradores o dueños.")
+                return redirect("oportunidades:kanban")
+
+            oportunidad.save()
+            messages.success(request, "Oportunidad actualizada correctamente.")
+            return redirect("oportunidades:kanban")
+
+        except Exception:
+            messages.error(
+                request,
+                "Ocurrió un error al actualizar la oportunidad. Inténtalo de nuevo."
+            )
+            return redirect("oportunidades:kanban")
+
+    # AJAX modal
+    if (
+        request.headers.get("HX-Request") == "true" or
+        request.headers.get("x-requested-with") == "XMLHttpRequest"
+    ):
+        return render(request, "oportunidades/_editar.html", {
+            "oportunidad": oportunidad,
+            "clientes": clientes,
+            "etapas": etapas,
+            "usuarios": usuarios,
+        })
+
+    return render(request, "oportunidades/editar.html", {
+        "oportunidad": oportunidad,
+        "clientes": clientes,
+        "etapas": etapas,
+        "usuarios": usuarios,
+    })
+
+'''
 
 def eliminar_oportunidad(request, pk):#si funciona,faltan los mensaks-e
     # Buscar solo activas, pero manejar error si no existe
     oportunidad = get_object_or_404(Oportunidad.activos, pk=pk)
-
+    #.....
     # --- POST: eliminar ---
     if request.method == "POST":
         oportunidad.eliminar_logico()
-        return redirect("oportunidades:kanban")   # o kanban si prefieres
+        messages.success(request, "Oportunidad eliminada correctamente.")#nuevo
+        return redirect("oportunidades:kanban")   
 
     # --- AJAX GET: Solo devolver contenido del modal ---
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
@@ -153,7 +301,7 @@ def eliminar_oportunidad(request, pk):#si funciona,faltan los mensaks-e
             "oportunidad": oportunidad
         })
 
-    # --- GET normal (esto es prueba)                                         (no debería llegar aquí desde UI) ---
+    # --- GET normal (esto es prueba)                                        
     return redirect("oportunidades:kanban")#return redirect("oportunidades:listar")
 
 def buscar_clientes(request):#funciona :D
@@ -175,14 +323,14 @@ def buscar_clientes(request):#funciona :D
         for c in clientes
     ], safe=False)
 
-def buscar_vendedores(request):#prueba
+def buscar_vendedores(request):#funciono :D
     texto = request.GET.get("q", "").strip()
 
     #agarra la sesion del usuario 
     usuario_id = request.session.get("idusuario")
     usuario = Usuario.activos.filter(idusuario=usuario_id).first()
     
-    usuarios = queryset_usuarios_segun_rol(usuario)
+    usuarios = queryset_usuarios_segun_rol(usuario)#filtros de busqueda
    
     vendedores = usuarios.filter(
         nombre__icontains=texto
@@ -190,24 +338,6 @@ def buscar_vendedores(request):#prueba
         apellidopaterno__icontains=texto
     )
 
-    '''
-    vendedores = Usuario.activos.filter( 
-        rol__nombre_rol__iexact="Vendedor"#solo muestra vendedores(en general, ahorita lo compongo)
-        ).filter(
-            nombre__icontains=texto
-        ) | Usuario.activos.filter(
-            nombre__icontains=texto
-        )
-
-    #
-    vendedores = Usuario.activos.filter(
-        rol__nombre_rol__iexact="Vendedor"#solo muestra vendedores(en general, ahorita lo compongo)
-    ).filter(
-        nombre__icontains=texto
-    ) | Usuario.activos.filter(
-        nombre__icontains=texto
-    )
-    '''
     return JsonResponse([
         {
             "id": v.idusuario,
@@ -253,17 +383,6 @@ def ajax_buscar_vendedor(request):#tambien checar aqui lo de los roles....
         usuarios = usuarios.filter(nombre__icontains=q)
 
     res = [{'id': u.idusuario, 'display': f"{u.nombre} {u.apellidopaterno}"} for u in usuarios[:15]]
-    
-    '''
-    from usuario.models import RolUsuario, Usuario
-    rol_v = RolUsuario.objects.filter(nombre_rol__iexact='Vendedor').first()
-    if rol_v:
-        qs = Usuario.activos.filter(rol=rol_v, nombre__icontains=q)[:15] if q else Usuario.activos.filter(rol=rol_v)[:15]
-    else:
-        qs = Usuario.activos.filter(nombre__icontains=q)[:15] if q else Usuario.activos.all()[:15]
-    res = [{'id': u.idusuario, 'display': f"{u.nombre} {u.apellidopaterno}"} for u in qs]
-   
-    '''
 
     return JsonResponse(res, safe=False)
 

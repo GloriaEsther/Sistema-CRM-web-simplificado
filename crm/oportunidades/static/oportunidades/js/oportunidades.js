@@ -102,19 +102,26 @@ function hookupCrearForm() {
   form.addEventListener('submit', function(ev) {
     ev.preventDefault();
     const data = new FormData(form);
-    fetch('/oportunidades/crear/', {
+    fetch('/oportunidades/crear/', {//
       method: 'POST',
-      headers: { 'X-CSRFToken': getCsrf() },
+      headers: { 'X-CSRFToken': getCsrf(),'X-Requested-With': 'XMLHttpRequest' },
       body: data
-    }).then(r => {
-      if (r.redirected) window.location = r.url;
-      else return r.text();
-    }).then(txt => {
-      // si devuelve html con errores mostrar alert
-      if (txt && txt.includes('<form')) {
-        alert('Errores en el formulario, revisa los campos.');
-      }
-    }).catch(e => alert('Error al crear oportunidad.'));
+    }).then(async r => {
+      const data = await r.json();
+        if (data.ok) {
+            // éxito
+            mostrarModalMensajes([{ level: "success", text: "Oportunidad creada correctamente." }]);
+        } else {
+            // errores
+            const msgs = data.errores.map(e => ({ level: "danger", text: e }));
+            mostrarModalMensajes(msgs);
+        }
+    }).catch(e => {
+        mostrarModalMensajes([
+            { level: "danger", text: "Error inesperado al crear oportunidad." }
+        ]);
+    });
+    //.catch(e => console.log('Error al crear oportunidad.'));//             .catch(e => alert('Error al crear oportunidad.'));
   });
 }
 
@@ -128,14 +135,23 @@ function hookupEditarForm() {
     const data = new FormData(form);
     fetch('/oportunidades/editar/' + id + '/', {
       method: 'POST',
-      headers: { 'X-CSRFToken': getCsrf() },
+      headers: { 'X-CSRFToken': getCsrf(),'X-Requested-With': 'XMLHttpRequest' },
       body: data
-    }).then(r => {
-      if (r.redirected) window.location = r.url;
-      else return r.text();
-    }).then(txt => {
-      if (txt && txt.includes('<form')) alert('Errores en la edición.');
-    }).catch(e => alert('Error al editar oportunidad.'));
+    }).then(async r => {
+      const data = await r.json();
+        if (data.ok) {
+            // éxito
+            mostrarModalMensajes([{ level: "success", text: "Oportunidad actualizada." }]);
+        } else {
+            // errores
+            const msgs = data.errores.map(e => ({ level: "danger", text: e }));
+            mostrarModalMensajes(msgs);
+        }
+    }).catch(e => {
+        mostrarModalMensajes([
+            { level: "danger", text: "Error inesperado al actualizar oportunidad." }
+        ]);
+    });
   });
 }
 
@@ -149,12 +165,23 @@ function hookupEliminarForm() {
     const data = new FormData(form);
     fetch('/oportunidades/eliminar/' + id + '/', {
       method: 'POST',
-      headers: { 'X-CSRFToken': getCsrf() },
+      headers: { 'X-CSRFToken': getCsrf(),'X-Requested-With': 'XMLHttpRequest' },
       body: data
-    }).then(r => {
-      if (r.redirected) window.location = r.url;
-      else alert('No se pudo eliminar.');
-    }).catch(e => alert('Error al eliminar.'));
+    }).then(async r => {
+      const data = await r.json();
+        if (data.ok) {
+            // éxito
+            mostrarModalMensajes([{ level: "success", text: "Oportunidad eliminada correctamente." }]);
+        } else {
+            // errores
+            const msgs = data.errores.map(e => ({ level: "danger", text: e }));
+            mostrarModalMensajes(msgs);
+        }
+    }).catch(e => {
+        mostrarModalMensajes([
+            { level: "danger", text: "Error inesperado al eliminar oportunidad." }
+        ]);
+    });
   });
 }
 
@@ -202,3 +229,5 @@ function busquedaAjax() {
     });
   });
 }
+/**te quedaste en arreglar aqui.. y corregir el documento para almanza */
+/** */

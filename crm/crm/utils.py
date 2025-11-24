@@ -21,7 +21,7 @@ def require_roles(allowed_roles):#restringe roles (quien accede a que)
         return _wrapped
     return decorator
 
-def queryset_usuarios_segun_rol(usuario):#prueba , en teoria servira de filtro en las busquedas
+def queryset_usuarios_segun_rol(usuario):#es un filtro en las busquedas de usuarios :D
     rol = usuario.rol.nombre_rol
 
     if rol in ["Administrador", "Dueño"]:
