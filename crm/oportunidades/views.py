@@ -27,11 +27,7 @@ def kanban(request):#si funciona :D
         if hasattr(request, 'context') else None
     })
 
-def crear_oportunidad(request): #Si funciona :D...espera 
-    #Obtener los datos de cliente y etapas de venta.....
-    clientes = Cliente.activos.all()
-    etapas = EtapaVentas.objects.all()#
-   
+def crear_oportunidad(request): #Si funciona :D
     usuario_id = request.session.get('idusuario')#se obtiene la sesion del usuario logueado
     usuario_creador =Usuario.activos.filter(idusuario=usuario_id).first()
     
@@ -53,11 +49,11 @@ def crear_oportunidad(request): #Si funciona :D...espera
         if form.is_valid():
             try:
                 op = form.save(commit=False)
-                vendedor = op.usuario_responsable#prueba
-                if vendedor.rol.id_rol in rol_admin:#if vendedor.rol.id_rol in [r.id_rol for r in rol_admin]
+                vendedor = op.usuario_responsable
+                if vendedor.rol.id_rol in rol_admin:
                     messages.error(request, " No puedes asignar oportunidades a administradores o dueños.")
                     return redirect("oportunidades:crear")
-                
+                op.usuario_registro = usuario_creador#guardar quien registro la oportunidad
                 op.save()
                 messages.success(request, "Oportunidad creada correctamente.")
                 return redirect('oportunidades:kanban')
@@ -70,13 +66,8 @@ def crear_oportunidad(request): #Si funciona :D...espera
                     messages.error(request, f"{field}: {err}")
     else:
         form = OportunidadForm()
-    return render(request, 'oportunidades/crear.html', {
-        'form': form,
-        'clientes': clientes,
-        'vendedores': vendedores
-    })
-
-
+    redirect('oportunidades:kanban')
+    
 @require_POST#funciona :D
 def mover_oportunidad(request, pk):
     # endpoint AJAX que recibe nueva etapa id
@@ -90,7 +81,7 @@ def mover_oportunidad(request, pk):
     return JsonResponse({'ok': True, 'nueva_etapa': etapa.nombre_etapa})
 
 def listar_oportunidades(request):#si funciona 
-    oportunidades = Oportunidad.activos.all()# oportunidades = Oportunidad.activos.all
+    oportunidades = Oportunidad.activos.all()
     return render(request, "oportunidades/listar.html", {
         "oportunidades": oportunidades
     })
@@ -138,14 +129,22 @@ def editar_oportunidad(request, pk):#prueba
     })
 
 
-def eliminar_oportunidad(request, pk):#si funciona,faltan los mensaks-e
+'''def eliminar_oportunidad(request, pk):#si funciona,faltan los mensaks-e
+    usuario_id=request.session.get("idusuario")
+    usuario_logueado = get_object_or_404(Usuario, idusuario=usuario_id)
     # Buscar solo activas, pero manejar error si no existe
     oportunidad = get_object_or_404(Oportunidad.activos, pk=pk)
 
-    # --- POST: eliminar ---
     if request.method == "POST":
+        #esto es prueba
+       if usuario_logueado.rol.nombre_rol == "Vendedor":
+        if oportunidad.usuario_registro != usuario_logueado.idusuario:#si el usuario logueado no es el que registro la oportunidad..
+            messages.error(request, "No puedes eliminar oportunidades que no registraste.")
+            return redirect("oportunidades:kanban")
+
         oportunidad.eliminar_logico()
-        return redirect("oportunidades:kanban")   # o kanban si prefieres
+        messages.success(request, "Oportunidad eliminada.")
+        return redirect("oportunidades:kanban")  
 
     # --- AJAX GET: Solo devolver contenido del modal ---
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
@@ -153,8 +152,41 @@ def eliminar_oportunidad(request, pk):#si funciona,faltan los mensaks-e
             "oportunidad": oportunidad
         })
 
-    # --- GET normal (esto es prueba)                                         (no debería llegar aquí desde UI) ---
-    return redirect("oportunidades:kanban")#return redirect("oportunidades:listar")
+    # --- GET normal --
+    return redirect("oportunidades:kanban")
+'''
+
+def eliminar_oportunidad(request, pk):
+    usuario_id = request.session.get("idusuario")
+    usuario_logueado = get_object_or_404(Usuario, idusuario=usuario_id)
+
+    # Buscar oportunidad activa
+    oportunidad = get_object_or_404(Oportunidad.activos, pk=pk)
+
+    if request.method == "POST":
+
+        # --- Validación para Vendedor ---
+        if usuario_logueado.rol.nombre_rol == "Vendedor":
+
+            # Comparar contra el ID del usuario que registró la oportunidad
+            if oportunidad.usuario_registro != usuario_logueado.idusuario:
+                messages.error(request, "No puedes eliminar oportunidades que no registraste.")
+                return redirect("oportunidades:kanban")
+
+        # --- Si pasa la validación, eliminar ---
+        oportunidad.eliminar_logico()
+        messages.success(request, "Oportunidad eliminada.")
+        return redirect("oportunidades:kanban")
+
+    # --- AJAX GET: Solo devolver contenido del modal ---
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        return render(request, "oportunidades/_eliminar_confirmar.html", {
+            "oportunidad": oportunidad
+        })
+
+    # GET normal
+    return redirect("oportunidades:kanban")
+
 
 def buscar_clientes(request):#funciona :D
     texto = request.GET.get("q", "").strip()
