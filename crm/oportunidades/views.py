@@ -15,7 +15,6 @@ from django.db.models import Q
 def kanban(request):#si funciona :D
     etapas = EtapaVentas.objects.all()
     data = {}
-    # data será dict { etapa.nombre: queryset }
     for e in etapas:
         data[e.nombre_etapa] = Oportunidad.activos.filter(etapa_ventas=e).order_by('-fecha_registro')
     form_crear = OportunidadForm()
@@ -128,34 +127,6 @@ def editar_oportunidad(request, pk):#prueba
         "usuarios": usuarios,
     })
 
-
-'''def eliminar_oportunidad(request, pk):#si funciona,faltan los mensaks-e
-    usuario_id=request.session.get("idusuario")
-    usuario_logueado = get_object_or_404(Usuario, idusuario=usuario_id)
-    # Buscar solo activas, pero manejar error si no existe
-    oportunidad = get_object_or_404(Oportunidad.activos, pk=pk)
-
-    if request.method == "POST":
-        #esto es prueba
-       if usuario_logueado.rol.nombre_rol == "Vendedor":
-        if oportunidad.usuario_registro != usuario_logueado.idusuario:#si el usuario logueado no es el que registro la oportunidad..
-            messages.error(request, "No puedes eliminar oportunidades que no registraste.")
-            return redirect("oportunidades:kanban")
-
-        oportunidad.eliminar_logico()
-        messages.success(request, "Oportunidad eliminada.")
-        return redirect("oportunidades:kanban")  
-
-    # --- AJAX GET: Solo devolver contenido del modal ---
-    if request.headers.get("x-requested-with") == "XMLHttpRequest":
-        return render(request, "oportunidades/_eliminar_confirmar.html", {
-            "oportunidad": oportunidad
-        })
-
-    # --- GET normal --
-    return redirect("oportunidades:kanban")
-'''
-
 def eliminar_oportunidad(request, pk):
     usuario_id = request.session.get("idusuario")
     usuario_logueado = get_object_or_404(Usuario, idusuario=usuario_id)
@@ -165,15 +136,15 @@ def eliminar_oportunidad(request, pk):
 
     if request.method == "POST":
 
-        # --- Validación para Vendedor ---
+        # --- validación para Vendedor ---
         if usuario_logueado.rol.nombre_rol == "Vendedor":
 
-            # Comparar contra el ID del usuario que registró la oportunidad
-            if oportunidad.usuario_registro != usuario_logueado.idusuario:
+            # comparar el ID del usuario que registró la oportunidad
+            if oportunidad.usuario_registro != usuario_logueado:
                 messages.error(request, "No puedes eliminar oportunidades que no registraste.")
                 return redirect("oportunidades:kanban")
-
-        # --- Si pasa la validación, eliminar ---
+            
+        # --- si pasa la validación, eliminar ---
         oportunidad.eliminar_logico()
         messages.success(request, "Oportunidad eliminada.")
         return redirect("oportunidades:kanban")
