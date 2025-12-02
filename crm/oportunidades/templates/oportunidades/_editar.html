@@ -4,14 +4,13 @@
     <form id="formEditar" class="modal-content" method="post">
       {% csrf_token %}
       <input type="hidden" id="editar-id" name="idoportunidad">
+
       <div class="modal-header">
         <h5 class="modal-title">Editar Oportunidad</h5>
         <button class="btn-close" data-bs-dismiss="modal"></button>
       </div>
+
       <div class="modal-body">
-        <!-- Contenedor para mensajes de error -->
-        <div class="alert alert-danger d-none error-container"></div>
-        
         <div class="mb-2">
           <label class="form-label">Nombre</label>
           <input name="nombreoportunidad" id="editar-nombre" class="form-control" required>
@@ -60,11 +59,21 @@
           <textarea name="comentarios" id="editar-comentarios" class="form-control" rows="3"></textarea>
         </div>
 
+        <!-- Buscador (se muestra como panel in-page) prueba...-->
+        <div id="editar-buscarPanel" style="display:none;">
+          <hr>
+          <div class="mb-2">
+            <input type="text" id="editar-buscar-input" class="form-control" placeholder="Buscar por nombre o apellido" oninput="busquedaAjax()">
+          </div>
+          <div id="editar-buscar-resultados" class="list-group"></div>
+        </div>
+
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
         <button type="submit" class="btn btn-primary">Guardar cambios</button>
       </div>
+
     </form>
   </div>
 </div>

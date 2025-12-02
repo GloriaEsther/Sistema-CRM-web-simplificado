@@ -2,7 +2,16 @@
 {% load static %}
 {% load dict_extras %}
 
-{% block title %}Pipeline de Oportunidades{% endblock %}
+<header class="navbar bg-primary text-white p-3">
+  <div class="container-fluid d-flex align-items-center">
+    <h4 class="mb-0">Mis Oportunidades</h4>
+    <div class="ms-auto">
+      <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#modalCrear">+ Crear Oportunidad</button>
+    </div>
+    <!--botones de cerrar sesion -->
+    <div class="ms-auto">
+      <a  href="{% url 'usuario:cerrar_sesion' %}" class="btn btn-light">Cerrar Sesión</a>
+    </div>
 
 {% block content %}
 
@@ -65,8 +74,5 @@
 <script id="mensajesData" type="application/json">
   {{ messages_json|safe }}
 </script>
-
-<script src="{% static 'js/modal_global.js' %}"></script>
-<script src="{% static 'oportunidades/js/oportunidades.js' %}"></script>
-
-{% endblock %}
+</body>
+</html>

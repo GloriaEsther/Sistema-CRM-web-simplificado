@@ -25,9 +25,16 @@ class Oportunidad(models.Model):
    #Claves Foraneas
     cliente_oportunidad = models.ForeignKey(Cliente, on_delete=models.PROTECT, db_column='cliente_oportunidad')
     etapa_ventas = models.ForeignKey('ventas.EtapaVentas', on_delete=models.PROTECT, db_column='etapa_ventas')#referencia 'nombreapp.Model' en este caso, ventas.EtapadeVenta
-    usuario_responsable = models.ForeignKey(Usuario, on_delete=models.PROTECT, db_column='usuario_responsable')
-
-
+    usuario_responsable = models.ForeignKey(Usuario, on_delete=models.PROTECT, related_name="oportunidades_asignadas_por",db_column='usuario_responsable')
+    #pruebas
+    usuario_registro = models.ForeignKey(#quien registro q
+        Usuario,
+        on_delete=models.PROTECT,
+        related_name="oportunidades_registradas_por",
+        null=False,
+        db_column='usuario_registro'
+    )#esto apenas lo agregue -> esto no lo tenia
+    
     activos = ActivoManager()
     todos = models.Manager()
     objects = models.Manager()
