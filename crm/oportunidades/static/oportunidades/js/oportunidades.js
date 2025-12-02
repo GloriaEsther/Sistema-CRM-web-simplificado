@@ -202,3 +202,18 @@ function busquedaAjax() {
     });
   });
 }
+
+//esto es prueba... para editar oportunidad ....
+/**
+ * function seleccionarCliente(id, nombre, modalSelector) {
+  document.querySelector(modalSelector + ' #editar-cliente-display').value = nombre;
+  document.querySelector(modalSelector + ' #editar-cliente-id').value = id;
+}
+
+function seleccionarVendedor(id, nombre, modalSelector) {
+  document.querySelector(modalSelector + ' #editar-usuario-display').value = nombre;
+  document.querySelector(modalSelector + ' #editar-usuario-id').value = id;
+}
+ * 
+ */
+

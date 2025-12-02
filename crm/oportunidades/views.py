@@ -12,6 +12,7 @@ from django.db import IntegrityError
 from django.core import serializers
 from django.db.models import Q
 
+#rol_admin = RolUsuario.objects.filter(nombre_rol__in=["Administrador", "Dueño"])
 def kanban(request):#si funciona :D
     etapas = EtapaVentas.objects.all()
     data = {}
@@ -85,6 +86,8 @@ def listar_oportunidades(request):#si funciona
         "oportunidades": oportunidades
     })
 
+'''
+
 def editar_oportunidad(request, pk):#prueba
     oportunidad = Oportunidad.activos.get(pk=pk)
     clientes = Cliente.activos.all()
@@ -126,6 +129,252 @@ def editar_oportunidad(request, pk):#prueba
         "etapas": etapas,
         "usuarios": usuarios,
     })
+
+'''
+
+# por si acaso....
+'''
+def editar_oportunidad(request, pk):#prueba
+    #oportunidad = Oportunidad.activos.get(pk=pk)
+    oportunidad = get_object_or_404(Oportunidad.activos, pk=pk)
+    clientes = Cliente.activos.all()
+    etapas = EtapaVentas.objects.all()
+    # usuarios = Usuario.activos.all()
+    # Obtener usuarios según reglas de negocio
+    usuario_id = request.session.get("idusuario")
+    usuario_logueado = get_object_or_404(Usuario, idusuario=usuario_id)
+
+    rol_vendedor = RolUsuario.objects.filter(nombre_rol__iexact="Vendedor").first()
+    rol_admin = RolUsuario.objects.filter(nombre_rol__in=["Administrador", "Dueño"])
+
+    if usuario_logueado.rol.nombre_rol in ["Administrador", "Dueño"]:
+        usuarios = Usuario.activos.all()
+    elif usuario_logueado.rol.nombre_rol == "Vendedor":
+        usuarios = Usuario.activos.filter(rol=rol_vendedor)
+    else:
+        usuarios = Usuario.activos.none()
+    # Si es POST -> guardar cambios
+    if request.method == "POST":
+        oportunidad.nombreoportunidad = request.POST.get("nombreoportunidad")
+        oportunidad.valor_estimado = request.POST.get("valor_estimado")
+        oportunidad.fecha_cierre_estimada = request.POST.get("fecha_cierre_estimada")
+        oportunidad.comentarios = request.POST.get("comentarios")
+
+        oportunidad.cliente_oportunidad = request.POST.get("cliente_oportunidad")
+        oportunidad.etapa_ventas = request.POST.get("etapa_ventas")
+        oportunidad.usuario_responsable = request.POST.get("usuario_responsable")
+      
+       # Validación: no asignar administradores a vendedores
+        usuario_responsable = Usuario.activos.filter(idusuario=usuario_responsable).first()
+        if usuario_responsable and usuario_responsable.rol.id_rol in [r.id_rol for r in rol_admin]:#prueba
+            messages.error(request, "No puedes asignar oportunidades a administradores o dueños.")
+            return redirect("oportunidades:kanban")
+
+        # Asignar el usuario responsable validado
+        oportunidad.usuario_responsable = usuario_responsable
+
+        oportunidad.save()
+
+        messages.success(request, "Oportunidad actualizada.")
+        return redirect("oportunidades:kanban")# return redirect("oportunidades:listar")
+
+    # AJAX/HTMX -> solo devolver el modal
+    if (
+        request.headers.get("HX-Request") == "true" or
+        request.headers.get("x-requested-with") == "XMLHttpRequest"
+    ):
+        return render(request, "oportunidades/_editar.html", {
+            "oportunidad": oportunidad,
+            "clientes": clientes,
+            "etapas": etapas,
+            "usuarios": usuarios,
+        })
+
+    # Vista normal
+    return render(request, "oportunidades/editar.html", {
+        "oportunidad": oportunidad,
+        "clientes": clientes,
+        "etapas": etapas,
+        "usuarios": usuarios,
+    })
+
+
+    prueba...
+
+def editar_oportunidad(request, pk):
+    oportunidad = get_object_or_404(Oportunidad.activos, pk=pk)
+    clientes = Cliente.activos.all()
+    etapas = EtapaVentas.objects.all()
+
+    # Obtener usuarios según reglas de negocio
+    usuario_id = request.session.get("idusuario")
+    usuario_logueado = get_object_or_404(Usuario, idusuario=usuario_id)
+
+    rol_vendedor = RolUsuario.objects.filter(nombre_rol__iexact="Vendedor").first()
+    rol_admin = RolUsuario.objects.filter(nombre_rol__in=["Administrador", "Dueño"])
+
+    if usuario_logueado.rol.nombre_rol in ["Administrador", "Dueño"]:
+        usuarios = Usuario.activos.all()
+    elif usuario_logueado.rol.nombre_rol == "Vendedor":
+        usuarios = Usuario.activos.filter(rol=rol_vendedor)
+    else:
+        usuarios = Usuario.activos.none()
+
+    # Si es POST -> guardar cambios
+    if request.method == "POST":
+        oportunidad.nombreoportunidad = request.POST.get("nombreoportunidad")
+        oportunidad.valor_estimado = request.POST.get("valor_estimado")
+        oportunidad.fecha_cierre_estimada = request.POST.get("fecha_cierre_estimada")
+        oportunidad.comentarios = request.POST.get("comentarios")
+
+        oportunidad.cliente_oportunidad = request.POST.get("cliente_oportunidad")
+        oportunidad.etapa_ventas = request.POST.get("etapa_ventas")
+        usuario_responsable_id = request.POST.get("usuario_responsable")
+
+        # Validación: no asignar administradores a vendedores
+        usuario_responsable = Usuario.activos.filter(idusuario=usuario_responsable_id).first()
+        if usuario_responsable and usuario_responsable.rol.id_rol in [r.id_rol for r in rol_admin]:
+            messages.error(request, "No puedes asignar oportunidades a administradores o dueños.")
+            return redirect("oportunidades:kanban")
+
+        # Asignar el usuario responsable validado
+        oportunidad.usuario_responsable = usuario_responsable
+
+        oportunidad.save()
+        messages.success(request, "Oportunidad actualizada correctamente.")
+        return redirect("oportunidades:kanban")
+
+    # AJAX/HTMX -> solo devolver el modal
+    if (
+        request.headers.get("HX-Request") == "true" or
+        request.headers.get("x-requested-with") == "XMLHttpRequest"
+    ):
+        return render(request, "oportunidades/_editar.html", {
+            "oportunidad": oportunidad,
+            "clientes": clientes,
+            "etapas": etapas,
+            "usuarios": usuarios,
+        })
+
+    # Vista normal
+    return render(request, "oportunidades/editar.html", {
+        "oportunidad": oportunidad,
+        "clientes": clientes,
+        "etapas": etapas,
+        "usuarios": usuarios,
+    })
+
+'''
+
+'''
+
+def editar_oportunidad(request, pk):#apenas lo estas probando...
+    oportunidad = get_object_or_404(Oportunidad.activos, pk=pk)
+    clientes = Cliente.activos.all()
+    etapas = EtapaVentas.objects.all()
+
+    # Obtener usuarios según reglas de negocio
+    usuario_id = request.session.get("idusuario")
+    usuario_logueado = get_object_or_404(Usuario, idusuario=usuario_id)
+
+    rol_vendedor = RolUsuario.objects.filter(nombre_rol__iexact="Vendedor").first()
+    rol_admin = RolUsuario.objects.filter(nombre_rol__in=["Administrador", "Dueño"])
+
+    if usuario_logueado.rol.nombre_rol in ["Administrador", "Dueño"]:
+        usuarios = Usuario.activos.all()
+    elif usuario_logueado.rol.nombre_rol == "Vendedor":
+        usuarios = Usuario.activos.filter(rol=rol_vendedor)
+    else:
+        usuarios = Usuario.activos.none()
+
+    # Si es POST -> guardar cambios
+    if request.method == "POST":
+        oportunidad.nombreoportunidad = request.POST.get("nombreoportunidad")
+        oportunidad.valor_estimado = request.POST.get("valor_estimado")
+        oportunidad.fecha_cierre_estimada = request.POST.get("fecha_cierre_estimada")
+        oportunidad.comentarios = request.POST.get("comentarios")
+
+        oportunidad.cliente_oportunidad_id = request.POST.get("cliente_oportunidad")
+        oportunidad.etapa_ventas_id = request.POST.get("etapa_ventas")
+        usuario_responsable_id = request.POST.get("usuario_responsable")
+
+        # Validación: no asignar administradores a vendedores
+        usuario_responsable = Usuario.activos.filter(idusuario=usuario_responsable_id).first()
+        if usuario_responsable and usuario_responsable.rol.id_rol in [r.id_rol for r in rol_admin]:
+            messages.error(request, "No puedes asignar oportunidades a administradores o dueños.")
+            return redirect("oportunidades:kanban")
+
+        # Asignar el usuario responsable validado
+        oportunidad.usuario_responsable = usuario_responsable
+
+        oportunidad.save()
+        messages.success(request, "Oportunidad actualizada correctamente.")
+        return redirect("oportunidades:kanban")
+
+    # AJAX/HTMX -> solo devolver el modal
+    if (
+        request.headers.get("HX-Request") == "true" or
+        request.headers.get("x-requested-with") == "XMLHttpRequest"
+    ):
+        return render(request, "oportunidades/_editar.html", {
+            "oportunidad": oportunidad,
+            "clientes": clientes,
+            "etapas": etapas,
+            "usuarios": usuarios,
+        })
+
+    # Vista normal
+    return render(request, "oportunidades/editar.html", {
+        "oportunidad": oportunidad,
+        "clientes": clientes,
+        "etapas": etapas,
+        "usuarios": usuarios,
+    })
+'''
+
+
+def editar_oportunidad(request, pk):#prueba
+    oportunidad = Oportunidad.activos.get(pk=pk)
+    clientes = Cliente.activos.all()
+    etapas = EtapaVentas.objects.all()
+    usuarios = Usuario.activos.all()
+
+    # Si es POST -> guardar cambios
+    if request.method == "POST":
+        oportunidad.nombreoportunidad = request.POST.get("nombreoportunidad")
+        oportunidad.valor_estimado = request.POST.get("valor_estimado")
+        oportunidad.fecha_cierre_estimada = request.POST.get("fecha_cierre_estimada")
+        oportunidad.comentarios = request.POST.get("comentarios")
+
+        oportunidad.cliente_oportunidad_id = request.POST.get("cliente_oportunidad")
+        oportunidad.etapa_ventas_id = request.POST.get("etapa_ventas")
+        oportunidad.usuario_responsable_id = request.POST.get("usuario_responsable")
+
+        oportunidad.save()
+
+        messages.success(request, "Oportunidad actualizada.")
+        return redirect("oportunidades:kanban")# return redirect("oportunidades:listar")
+
+    # AJAX/HTMX -> solo devolver el modal
+    if (
+        request.headers.get("HX-Request") == "true" or
+        request.headers.get("x-requested-with") == "XMLHttpRequest"
+    ):
+        return render(request, "oportunidades/_editar.html", {
+            "oportunidad": oportunidad,
+            "clientes": clientes,
+            "etapas": etapas,
+            "usuarios": usuarios,
+        })
+
+    # Vista normal
+    return render(request, "oportunidades/editar.html", {
+        "oportunidad": oportunidad,
+        "clientes": clientes,
+        "etapas": etapas,
+        "usuarios": usuarios,
+    })
+
 
 def eliminar_oportunidad(request, pk):
     usuario_id = request.session.get("idusuario")
