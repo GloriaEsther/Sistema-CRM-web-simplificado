@@ -333,8 +333,9 @@ def editar_oportunidad(request, pk):#apenas lo estas probando...
 '''
 
 
-def editar_oportunidad(request, pk):#prueba
-    oportunidad = Oportunidad.activos.get(pk=pk)
+def editar_oportunidad(request, pk):#funciona todo menos en ambiar cliente o usuario responsable
+   # oportunidad = Oportunidad.activos.get(pk=pk)
+    oportunidad = get_object_or_404(Oportunidad.activos, pk=pk)
     clientes = Cliente.activos.all()
     etapas = EtapaVentas.objects.all()
     usuarios = Usuario.activos.all()
@@ -346,15 +347,30 @@ def editar_oportunidad(request, pk):#prueba
         oportunidad.fecha_cierre_estimada = request.POST.get("fecha_cierre_estimada")
         oportunidad.comentarios = request.POST.get("comentarios")
 
-        oportunidad.cliente_oportunidad_id = request.POST.get("cliente_oportunidad")
+        #oportunidad.cliente_oportunidad_id = request.POST.get("cliente_oportunidad")
         oportunidad.etapa_ventas_id = request.POST.get("etapa_ventas")
-        oportunidad.usuario_responsable_id = request.POST.get("usuario_responsable")
+        #oportunidad.usuario_responsable_id = request.POST.get("usuario_responsable")
 
-        oportunidad.save()
+        # Obtener los IDs del POST
+        cliente_id = request.POST.get("cliente_oportunidad")
+        usuario_id = request.POST.get("usuario_responsable")
 
-        messages.success(request, "Oportunidad actualizada.")
-        return redirect("oportunidades:kanban")# return redirect("oportunidades:listar")
+        # Asignar Cliente
+        if cliente_id and cliente_id.isdigit():
+            # Buscamos el objeto Cliente antes de asignarlo
+            oportunidad.cliente_oportunidad = get_object_or_404(Cliente, pk=cliente_id)
+        # Asignar Usuario Responsable (Lo que más te urge)
+        if usuario_id and usuario_id.isdigit():
+            # Buscamos el objeto Usuario antes de asignarlo
+            oportunidad.usuario_responsable = get_object_or_404(Usuario, pk=usuario_id)
 
+        try:
+            oportunidad.save()
+            messages.success(request, "Oportunidad actualizada.")
+            return redirect("oportunidades:kanban")
+        except Exception as e:
+            # Capturar cualquier error de base de datos o Foreign Key
+            messages.error(request, f"Error al guardar la oportunidad: {e}")
     # AJAX/HTMX -> solo devolver el modal
     if (
         request.headers.get("HX-Request") == "true" or

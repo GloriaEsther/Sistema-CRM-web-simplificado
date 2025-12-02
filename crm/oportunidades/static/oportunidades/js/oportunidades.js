@@ -160,24 +160,35 @@ function hookupEliminarForm() {
 
 /* --------------- BÚSQUEDA AJAX: cliente y vendedor --------------- */
 let currentSearchTarget = null; // '#modalCrear' o '#modalEditar'
+// Obtener el prefijo ('crear' o 'editar')
+function getPrefix() {
+    if (!currentSearchTarget) return '';
+    const base = currentSearchTarget.split('|')[0];
+    return base.includes('Crear') || base.includes('crear') ? 'crear' : 'editar';
+}
+
 function abrirBuscarCliente(modalSelector) {
   currentSearchTarget = modalSelector;
-  // mostrar panel de busqueda dentro del modal (usa el panel con id buscarPanel)
-  document.getElementById('buscarPanel').style.display = 'block';
-  document.getElementById('buscar-input').focus();
+  const prefix = getPrefix();
+  // mostrar panel de busqueda dentro del modal (usa el panel con id -buscarPanel)
+  document.getElementById(prefix +'-buscarPanel').style.display = 'block';
+  document.getElementById(prefix +'-buscar-input').focus();
 }
 
 function abrirBuscarVendedor(modalSelector) {
   currentSearchTarget = modalSelector + '|vendedor';
-  document.getElementById('buscarPanel').style.display = 'block';
-  document.getElementById('buscar-input').focus();
+  const prefix = getPrefix();
+  document.getElementById(prefix + '-buscarPanel').style.display = 'block';
+  document.getElementById(prefix + '-buscar-input').focus();
 }
 
 function busquedaAjax() {
-  const q = document.getElementById('buscar-input').value;
+  const prefix = getPrefix();
+  const q = document.getElementById(prefix + '-buscar-input').value;
+  const cont = document.getElementById(prefix + '-buscar-resultados');
   const url = currentSearchTarget && currentSearchTarget.includes('vendedor') ? '/oportunidades/ajax/buscar_vendedor/?q=' + encodeURIComponent(q) : '/oportunidades/ajax/buscar_cliente/?q=' + encodeURIComponent(q);
+  
   fetch(url).then(r => r.json()).then(arr => {
-    const cont = document.getElementById('buscar-resultados');
     cont.innerHTML = '';
     arr.forEach(item => {
       const a = document.createElement('a');
@@ -189,31 +200,15 @@ function busquedaAjax() {
         // llenar el modal correcto (crear o editar)
         if (!currentSearchTarget) return;
         let isV = currentSearchTarget.includes('vendedor');
-        let base = currentSearchTarget.split('|')[0];
-        // si base '#modalCrear' entonces usar campos crear-...
-        const prefix = base.includes('Crear') || base.includes('crear') ? 'crear' : 'editar';
+        // Asignación de valores al campo de visualización y al campo oculto de ID
         document.getElementById(prefix + (isV ? '-usuario-display' : '-cliente-display')).value = item.display;
         document.getElementById(prefix + (isV ? '-usuario-id' : '-cliente-id')).value = item.id;
-        // hide panel
-        document.getElementById('buscarPanel').style.display = 'none';
-        document.getElementById('buscar-input').value = '';
+                
+        // Ocultar el panel de búsqueda correcto
+        document.getElementById(prefix + '-buscarPanel').style.display = 'none';
+        document.getElementById(prefix + '-buscar-input').value = '';
       };
       cont.appendChild(a);
     });
   });
 }
-
-//esto es prueba... para editar oportunidad ....
-/**
- * function seleccionarCliente(id, nombre, modalSelector) {
-  document.querySelector(modalSelector + ' #editar-cliente-display').value = nombre;
-  document.querySelector(modalSelector + ' #editar-cliente-id').value = id;
-}
-
-function seleccionarVendedor(id, nombre, modalSelector) {
-  document.querySelector(modalSelector + ' #editar-usuario-display').value = nombre;
-  document.querySelector(modalSelector + ' #editar-usuario-id').value = id;
-}
- * 
- */
-
