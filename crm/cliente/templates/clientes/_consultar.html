@@ -1,0 +1,38 @@
+<!-- Modal Consultar Cliente -->
+<div class="modal fade" id="modalConsultarCliente" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">Detalles del Cliente</h5>
+                <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="consultar-body">
+                <!-- Se rellena por JS -->
+                <div class="row mb-2">
+                    <div class="col-md-6"><strong>Nombre Completo:</strong> <span id="cons-nombre"></span> <span id="cons-apellido-paterno"></span> <span id="cons-apellido-materno"></span></div>
+                    <div class="col-md-6"><strong>Correo Electrónico:</strong> <span id="cons-correo"></span></div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-6"><strong>Teléfono:</strong> <span id="cons-telefono"></span></div>
+                    <div class="col-md-6"><strong>Fecha Nacimiento:</strong> <span id="cons-fecha-nacimiento"></span></div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-6"><strong>RFC:</strong> <span id="cons-rfc"></span></div>
+                    <div class="col-md-6"><strong>Estado:</strong> <span id="cons-estado" class="badge bg-primary"></span></div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-6"><strong>Frecuencia de Compra:</strong> <span id="cons-frecuencia" class="badge bg-success"></span></div>
+                    <div class="col-md-6"><strong>Último Contacto:</strong> <span id="cons-ultimo-contacto"></span></div>
+                </div>
+
+                <hr>
+                <p><strong>Dirección:</strong> <span id="cons-direccion"></span></p>
+                <p><strong>Comentarios:</strong></p>
+                <div id="cons-comentarios" class="border rounded p-3 bg-light text-muted"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Regresar</button>
+            </div>
+        </div>
+    </div>
+</div>

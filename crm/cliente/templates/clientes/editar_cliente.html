@@ -1,0 +1,97 @@
+<!-- Modal Editar Cliente -->
+<div class="modal fade" id="modalEditarCliente" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <!-- NOTA: Usamos el ID del formulario 'formEditarCliente' para el JS -->
+        <form id="formEditarCliente" class="modal-content" method="post">
+            {% csrf_token %}
+            <input type="hidden" id="editar-id" name="idcliente">
+
+            <div class="modal-header bg-warning text-white">
+                <h5 class="modal-title">Editar Cliente</h5>
+                <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                
+                <h6 class="mb-3 text-primary">Datos Personales</h6>
+
+                <div class="mb-2 row">
+                    <div class="col-md-4">
+                        <label class="form-label">Nombre *</label>
+                        <input name="nombre" id="editar-nombre" class="form-control" required maxlength="45">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Apellido Paterno *</label>
+                        <input name="apellidopaterno" id="editar-apellidopaterno" class="form-control" required maxlength="45">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Apellido Materno</label>
+                        <input name="apellidomaterno" id="editar-apellidomaterno" class="form-control" maxlength="45">
+                    </div>
+                </div>
+
+                <div class="mb-2 row">
+                    <div class="col-md-4">
+                        <label class="form-label">Teléfono *</label>
+                        <input name="numerotelcli" id="editar-numerotelcli" class="form-control" type="tel" required maxlength="15">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Correo Electrónico *</label>
+                        <input name="correo" id="editar-correo" class="form-control" type="email" required maxlength="100">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha de Nacimiento</label>
+                        <input name="fecha_nacimiento" id="editar-fecha_nacimiento" class="form-control" type="date">
+                    </div>
+                </div>
+
+                <h6 class="mb-3 mt-4 text-primary">Información Comercial</h6>
+
+                <div class="mb-2 row">
+                    <div class="col-md-4">
+                        <label class="form-label">RFC</label>
+                        <input name="rfc" id="editar-rfc" class="form-control" maxlength="13">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Estado del Cliente *</label>
+                        <select name="estado_cliente" id="editar-estado-cliente" class="form-select" required>
+                            {% for e in EstadoClienteCat.objects.all %}
+                                <option value="{{ e.idestadocli }}">{{ e.nombre_estado }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Frecuencia de Compra *</label>
+                        <select name="frecuencia_compra" id="editar-frecuencia-compra" class="form-select" required>
+                            {% for f in FrecuenciaClienteCat.objects.all %}
+                                <option value="{{ f.idfrecuenciacli }}">{{ f.nombre_frecuencia }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mb-2 row">
+                    <div class="col-md-8">
+                        <label class="form-label">Dirección</label>
+                        <input name="direccion" id="editar-direccion" class="form-control" maxlength="255">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha Último Contacto</label>
+                        <input name="fecha_ultimocontacto" id="editar-fecha_ultimocontacto" class="form-control" type="date">
+                    </div>
+                </div>
+
+                <div class="mb-2">
+                    <label class="form-label">Comentarios</label>
+                    <textarea class="form-control" name="comentarios" id="editar-comentarios" rows="3"></textarea>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar cambios</button>
+            </div>
+
+        </form>
+    </div>
+</div>

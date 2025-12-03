@@ -20,5 +20,3 @@ urlpatterns = [
     path('ajax/buscar_cliente/', views.ajax_buscar_cliente, name='ajax_buscar_cliente'),
     path('ajax/buscar_vendedor/', views.ajax_buscar_vendedor, name='ajax_buscar_vendedor'),
 ]
-
-#descarga e instala apa 7 en word aun estas a tiempo (20/11/2025->03:25 am)
