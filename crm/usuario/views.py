@@ -1,106 +1,72 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from .forms import UsuarioForm,LoginForm
-from .models import Usuario, PreferenciaUsuario
+from .models import Usuario, PreferenciaUsuario,RolUsuario
 from django.contrib import messages
 from django.db import IntegrityError
 from django.contrib.auth.hashers import check_password 
 from crm.utils import require_roles# es un decorador de roles y el login_required simple.
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
+from django.utils import timezone
 
-@require_roles(['Dueño'])
-def registrar_usuario(request):
-    registrador_id = request.session.get('idusuario')
-    usuario_registrador = None
-    
-    if not registrador_id:
-         # Si el decorador falla o la sesión expira (no creo :b)
-         messages.error(request, "Acceso denegado. Debes ser Dueño y estar logueado.")
-         return redirect('usuario:iniciar_sesion')
-         
-    try:
-        #Obtener la instancia real del usuario usando el id de sesion 
-        usuario_registrador = Usuario.activos.get(idusuario=registrador_id)
-        
-    except Usuario.DoesNotExist:
-        # En caso de una sesión corrupta
-        messages.error(request, "Tu sesión es inválida. Inicia sesión nuevamente.")
-        request.session.flush()
-        return redirect('usuario:iniciar_sesion')
-    
+def registrar_usuario(request):#usuario=dueño del micronegocio
     if request.method == 'POST':
         form = UsuarioForm(request.POST)
         if form.is_valid():
             try:
                 nuevo_usuario = form.save(commit=False)
-                # Asignar el Dueño logueado como el creador del registro
-                nuevo_usuario.usuario_registro = usuario_registrador
+                rol_dueno = RolUsuario.objects.filter(nombre_rol__iexact="Dueño").first()
+                nuevo_usuario.owner_id = None
+                nuevo_usuario.rol = rol_dueno#el rol por default es dueno peor aqui se dice explicitamente
                 nuevo_usuario.save()
-
-                messages.success(request, f"Usuario {nuevo_usuario.nombre} registrado correctamente.")
-                # Redirigimos al mismo formulario para permitir que el Dueño siga registrando
-                return redirect('usuario:registrar_usuario')
-                                
+                messages.success(request, f"Usuario {nuevo_usuario.nombre} registrado correctamente.")               
+                return redirect('oportunidades:kanban')#se redirige a pantalla de inicio (porque antes estaba asi)return redirect('usuario:registrar_usuario')               
             except IntegrityError:
-                # Si falla la unicidad (correo, RFC, CURP, etc.)
-                messages.error(request, "Error: Ya existe un usuario con uno de los datos ingresados (correo, RFC o CURP).")
-                # Pasamos 'duplicado': True para que el template muestre el modal
-                return render(request, 'usuario/registrar_usuario.html', {'form': form, 'duplicado': True})
-            
+                messages.error(request, "Error: Usuario ya existente")
+                return render(request, 'usuario/registrar_usuario.html', {'form': form, 'duplicado': True})     
             except Exception as e:
                 messages.error(request, f"Ocurrió un error inesperado al registrar: {e}")
-        
+
     else: # GET request
         form = UsuarioForm()
     return render(request, 'usuario/registrar_usuario.html', {
-        'form': form,
-        # Si 'duplicado' no fue definido en el try/except, se asume False o se omite
-        'duplicado': 'duplicado' in locals() 
+        'form': form
     })
 
-def iniciar_sesion(request):#funciona
-
-    # Si ya está logueado -> redirigir
+#registrar equipo luego lo hago 
+def iniciar_sesion(request):
     if request.session.get('idusuario'):
         return redirect('oportunidades:kanban')#pipeline ventas
-
     if request.method == 'POST':
         form = LoginForm(request.POST)   
         
         if form.is_valid():
             correo = form.cleaned_data['correo']
             contrasena = form.cleaned_data['contrasena']
-
-            #Verificar usuario y contraseña (usando tu lógica actual)
+            #Verificar usuario y contraseña 
             usuario = Usuario.activos.filter(correo=correo).first()
             
             if usuario and check_password(contrasena, usuario.contrasena):
-                
-                #Limpiar cualquier sesión previa
                 request.session.flush()
-
-                #Crear sesión nueva (USANDO TU LÓGICA PERSONALIZADA)
+                #Crear sesión nueva 
                 request.session['idusuario'] = usuario.idusuario
                 request.session['nombre'] = usuario.nombre
-                request.session['rol'] = usuario.rol.nombre_rol
-
-                #messages.success(request, f"Bienvenido {usuario.nombre}")
+                messages.success(request, f"Bienvenido {usuario.nombre}")
                 #Redirigir al inicio de la aplicación para usuarios logueados
                 return redirect('oportunidades:kanban') # Usar dashboard en lugar de inicio
             else:
                 # Error de credenciales
-               # messages.error(request, "Credenciales incorrectas (correo o contraseña).")#si funciona pero mejor lo quite
+                messages.error(request, "Credenciales incorrectas (correo o contraseña).")
                 return render(request, 'usuario/login.html', {
                     'form': form,
                     'mostrar_modal': True,
                     'modal_titulo': 'Error de Ingreso',
                     'modal_mensaje': 'Verifica tu correo electrónico o contraseña.'
                 })
-
     else:
         form = LoginForm()
 
-    return render(request, 'usuario/login.html', {'form': form})
+    return render(request, 'usuario/login.html', {'form': form,'timestamp': timezone.now().timestamp()})
 
 #@require_roles(['Dueño', 'Administrador'])
 def listar_usuarios(request):#consultar usuarios (en lo basico si funciona)

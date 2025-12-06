@@ -27,7 +27,9 @@
     <!-- Barra de Búsqueda -->
     <div class="mb-3">
         <form method="get" class="d-flex" action="{% url 'cliente:listar_clientes' %}">
-            <input type="search" name="q" class="form-control me-2" placeholder="Buscar por nombre o apellido..." value="{{ request.GET.q }}">
+            <input type="search" name="q" class="form-control me-2"
+            placeholder="Buscar..." value="{{ request.GET.q|default:'' }}">
+
             <button class="btn btn-outline-secondary" type="submit">Buscar</button>
             {% if request.GET.q %}<a href="{% url 'cliente:listar_clientes' %}" class="btn btn-outline-danger ms-2">Limpiar</a>{% endif %}
         </form>
@@ -90,10 +92,7 @@
 {% include "clientes/_consultar.html" %}
 {% include "clientes/editar_cliente.html" %}
 {% include "clientes/_eliminar_confirmar.html" %}
-<style src="{%static 'cliente/css/clientes.css'%}"></style>
-{% endblock %}
+<link rel="stylesheet" href="{%static 'clientes/css/clientes.css'%}">
+<script src="{% static 'clientes/js/clientes.js' %}"></script>
 
-<!-- 5. Inclusión del JavaScript (después del bloque content para tener acceso a los elementos) -->
-{% block scripts %}
-    <script src="{% static 'cliente/js/clientes.js' %}"></script>
 {% endblock %}

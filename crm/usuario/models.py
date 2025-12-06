@@ -46,30 +46,27 @@ class Usuario(models.Model):
     numerotel = models.CharField(max_length=10)
     correo = models.CharField(unique=True, max_length=100)
     contrasena = models.CharField(max_length=255)
-    rol = models.ForeignKey(RolUsuario, on_delete=models.PROTECT, db_column='rol')
+    rol = models.ForeignKey(RolUsuario, on_delete=models.SET_DEFAULT, default=1,db_column='rol')
     #Dueño
-    rfc = models.CharField(max_length=13, blank=True, null=True)
+    rfc = models.CharField(max_length=13, blank=True, null=True,unique=True)
     direccion = models.CharField(max_length=255, blank=True, null=True)
-    curp = models.CharField(max_length=18, blank=True, null=True)
     local_Fijo = models.CharField(db_column='local_Fijo', max_length=2, choices=LOCAL_FIJO_OPCIONES, blank=True, null=True)
     nombre_negocio = models.CharField(max_length=100, blank=True, null=True)
-
-     # Opcionales
-    nss = models.CharField(max_length=11, blank=True, null=True)
-    curp = models.CharField(max_length=18, blank=True, null=True)
-
+    curp = models.CharField(max_length=18, blank=True, null=True,unique=True)
+    # Opcionales
+    nss = models.CharField(max_length=11, blank=True, null=True,unique=True)
     #Sistema
     fecha_registro = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
     activo = models.BooleanField(default=True)
     fecha_eliminacion = models.DateTimeField(blank=True, null=True)
-    usuario_registro = models.ForeignKey(#quien registro a quien
+    owner_id = models.ForeignKey(#quien registro a quien antes usuario_registro
         'self',
-        on_delete=models.PROTECT,
-        null=True,
-        db_column='usuario_registro'
+        on_delete=models.SET_NULL,
+        null=True,#False
+        blank= True,
+        db_column='owner_id'
     )
-
     activos = ActivoManager()
     todos = models.Manager()
     
@@ -89,7 +86,5 @@ class Usuario(models.Model):
             self.fecha_eliminacion = timezone.now()
             self.save()
 
-    #def __str__(self):
-     #   return f"{self.nombre} {self.apellidopaterno} {self.apellidomaterno} {self.usuario_registro}" #{self.rol} {self.correo} {self.activo}
     def __str__(self):
      return f"{self.nombre} {self.apellidopaterno} {self.apellidomaterno}".strip()

@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 
-app_name = 'cliente'#haber si funciona por alguna razon encuentra pero si dice clientes no cliente jajajaj(ahorita checo)
+app_name = 'cliente'
 urlpatterns = [
     path('crear/', views.crear_cliente, name='crear_cliente'),
     path('listar/', views.listar_clientes, name='listar_clientes'),

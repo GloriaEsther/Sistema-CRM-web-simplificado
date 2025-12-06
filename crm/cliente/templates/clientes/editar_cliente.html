@@ -55,7 +55,7 @@
                     <div class="col-md-4">
                         <label class="form-label">Estado del Cliente *</label>
                         <select name="estado_cliente" id="editar-estado-cliente" class="form-select" required>
-                            {% for e in EstadoClienteCat.objects.all %}
+                            {% for e in estados %}
                                 <option value="{{ e.idestadocli }}">{{ e.nombre_estado }}</option>
                             {% endfor %}
                         </select>
@@ -63,7 +63,7 @@
                     <div class="col-md-4">
                         <label class="form-label">Frecuencia de Compra *</label>
                         <select name="frecuencia_compra" id="editar-frecuencia-compra" class="form-select" required>
-                            {% for f in FrecuenciaClienteCat.objects.all %}
+                            {% for f in frecuencia %}
                                 <option value="{{ f.idfrecuenciacli }}">{{ f.nombre_frecuencia }}</option>
                             {% endfor %}
                         </select>

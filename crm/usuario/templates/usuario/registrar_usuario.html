@@ -116,16 +116,7 @@
               </div>
 
               <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label for="id_rol" class="form-label">Rol</label>
-                  {% render_field form.rol class="form-select" add_error_class="is-invalid" %}
-                  {% for error in form.rol.errors %}
-                      <div class="invalid-feedback d-block">
-                          {{ error }}
-                      </div>
-                  {% endfor %}
-                </div>
-                <div class="col-md-6 mb-3" id="localFijoContainer" style="display:none;">
+                <div class="col-md-6 mb-3" id="localFijoContainer">
                   <label for="id_local_Fijo" class="form-label">Local Fijo</label>
                   {% render_field form.local_Fijo class="form-control" add_error_class="is-invalid"%}
                   {% for error in form.local_Fijo.errors %}
@@ -166,22 +157,12 @@
                 </button>
                 <a href="{% url 'usuario:inicio' %}" class="btn btn-secondary w-50">
                   Cancelar
-                </a>
-                <!--<a href="{% url 'oportunidades:kanban' %}" class="btn btn-secondary w-50">
-                  Regresar
-                </a>-->
-                
+                </a>                
               </div>
-              <div class="text-center mt-3">
-                <a href="{% url 'oportunidades:kanban' %}">Regresar</a>
-              </div>
-              <!--<div class="text-center mt-3">
-                <a href="{% url 'oportunidades:kanban' %}">Regresar</a>
-              </div> -->
               
-              <!--<div class="text-center mt-3">
+              <div class="text-center mt-3">
                 <a href="{% url 'usuario:iniciar_sesion' %}">¿Ya tienes cuenta? Inicia sesión</a>
-              </div> -->
+              </div>
             </form>
           </div>
         </div>
@@ -223,7 +204,7 @@
         </div>
         <div class="modal-body">
           Has ingresado datos opcionales.  
-          ¿Deseas guardarlos junto con tu registro?
+          ¿Deseas guardar?
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" id="descartarOpcionales" data-bs-dismiss="modal">No, descartar</button>
@@ -309,6 +290,6 @@
   </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   
-  <script src="{% static 'usuario/js/registro.js' %}"></script>
+  <script src="{% static 'usuario/js/registro.js' %}?v={{ timestamp }}"></script>
 </body>
 </html>

@@ -16,7 +16,7 @@ class Oportunidad(models.Model):
     fecha_cierre_estimada = models.DateTimeField()
     #Opcional
     
-    comentarios = models.TextField(null=True, blank=True)#comentarios = models.TextField(null=True)
+    comentarios = models.TextField(null=True, blank=True)
    #Sistema
     activo = models.BooleanField(default=True)
     fecha_registro = models.DateTimeField(auto_now_add=True)
@@ -26,15 +26,20 @@ class Oportunidad(models.Model):
     cliente_oportunidad = models.ForeignKey(Cliente, on_delete=models.PROTECT, db_column='cliente_oportunidad')
     etapa_ventas = models.ForeignKey('ventas.EtapaVentas', on_delete=models.PROTECT, db_column='etapa_ventas')#referencia 'nombreapp.Model' en este caso, ventas.EtapadeVenta
     usuario_responsable = models.ForeignKey(Usuario, on_delete=models.PROTECT, related_name="oportunidades_asignadas_por",db_column='usuario_responsable')
-    #pruebas
-    usuario_registro = models.ForeignKey(#quien registro q
+    creado_por = models.ForeignKey(#quien registro q antes usuario_registro
         Usuario,
         on_delete=models.PROTECT,
-        related_name="oportunidades_registradas_por",
+        related_name="op_creada_por",
         null=False,
-        db_column='usuario_registro'
-    )#esto apenas lo agregue -> esto no lo tenia
-    
+        db_column='creado_por'
+    )#
+    owner_id= models.ForeignKey(#negocio al que le pertenece oportunidad
+        Usuario,
+        on_delete=models.PROTECT,
+        related_name="op_negocio",
+        null=False,
+        db_column='owner_id'
+    )
     activos = ActivoManager()
     todos = models.Manager()
     objects = models.Manager()

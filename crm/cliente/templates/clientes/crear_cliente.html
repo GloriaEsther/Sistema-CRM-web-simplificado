@@ -30,7 +30,7 @@
                 <div class="mb-2 row">
                     <div class="col-md-4">
                         <label class="form-label">Teléfono *</label>
-                        <input name="numerotelcli" class="form-control" type="tel" required maxlength="15">
+                        <input name="numerotelcli" class="form-control" type="tel" required maxlength="10">
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Correo Electrónico *</label>
@@ -52,7 +52,7 @@
                     <div class="col-md-4">
                         <label class="form-label">Estado del Cliente</label>
                         <select name="estado_cliente" class="form-select">
-                            {% for e in EstadoClienteCat.objects.all %}
+                            {% for e in estados %}
                                 <option value="{{ e.idestadocli }}">{{ e.nombre_estado }}</option>
                             {% endfor %}
                         </select>
@@ -60,7 +60,7 @@
                     <div class="col-md-4">
                         <label class="form-label">Frecuencia de Compra </label>
                         <select name="frecuencia_compra" class="form-select">
-                            {% for f in FrecuenciaClienteCat.objects.all %}
+                            {% for f in frecuencias%}
                                 <option value="{{ f.idfrecuenciacli }}">{{ f.nombre_frecuencia }}</option>
                             {% endfor %}
                         </select>

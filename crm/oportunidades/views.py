@@ -52,7 +52,7 @@ def crear_oportunidad(request):
                 if vendedor.rol.id_rol in rol_admin:
                     messages.error(request, " No puedes asignar oportunidades a administradores o dueños.")
                     return redirect("oportunidades:crear")
-                op.usuario_registro = usuario_creador
+                op.creado_por = usuario_creador
                 op.save()
                 messages.success(request, "Oportunidad creada correctamente.")
                 return redirect('oportunidades:kanban')
@@ -152,7 +152,7 @@ def eliminar_oportunidad(request, pk):
         
         if usuario_logueado.rol.nombre_rol == "Vendedor":
 
-            if oportunidad.usuario_registro != usuario_logueado:
+            if oportunidad.creado_por != usuario_logueado:
                 messages.error(request, "No puedes eliminar oportunidades que no registraste.")
                 return redirect("oportunidades:kanban")
             

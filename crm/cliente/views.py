@@ -15,7 +15,7 @@ def crear_cliente(request):
     registrador_id = request.session.get('idusuario')
     usuario_registrador = Usuario.activos.get(idusuario=registrador_id)
    
-    if not usuario_registrador:
+    if usuario_registrador is None:
         messages.error(request, "No se encontró el usuario en sesión.")
         return redirect('usuario:inicio')
 
@@ -49,13 +49,20 @@ def crear_cliente(request):
 @require_roles(['Dueño','Administrador','Vendedor'])
 def listar_clientes(request):
     q = request.GET.get('q','')
+    estados = EstadoClienteCat.objects.all()
+    frecuencias = FrecuenciaClienteCat.objects.all()
+
     if q:
         clientes = Cliente.objects.filter(activo=True).filter(
             models.Q(nombre__icontains=q) | models.Q(apellidopaterno__icontains=q) | models.Q(apellidomaterno__icontains=q)
         )
     else:
         clientes = Cliente.activos.all()#Cliente.objects.filter(activo=True)
-    return render(request, 'clientes/listar.html', {'clientes': clientes})
+    return render(request, 'clientes/listar.html', {
+        'clientes': clientes,
+        'estados': estados,
+        'frecuencias': frecuencias,
+    })
 
 
 
@@ -93,7 +100,7 @@ def eliminar_cliente(request, pk):
 def editar_cliente(request, pk):
    # oportunidad = get_object_or_404(Oportunidad.activos, pk=pk)
     cliente = get_object_or_404(Cliente, pk=pk)
-    estado = EstadoClienteCat.objects.all()
+    estados = EstadoClienteCat.objects.all()
     frecuencia=FrecuenciaClienteCat.objects.all()#no se si implementar lo de activos o no 
    
     if request.method == "POST":
@@ -123,7 +130,7 @@ def editar_cliente(request, pk):
     ):
         return render(request, "clientes/listar.html", {
             "cliente": cliente,
-            "estado": estado,
+            "estado": estados,
             "frecuencia": frecuencia,
         })
 
