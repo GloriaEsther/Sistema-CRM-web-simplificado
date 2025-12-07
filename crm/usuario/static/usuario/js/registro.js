@@ -2,12 +2,11 @@ document.addEventListener("DOMContentLoaded", function () {
     // Obtener elementos
     const localFijoContainer = document.getElementById("localFijoContainer");
     const localFijoInput = document.getElementById("id_local_Fijo");
-    const nssInput = document.getElementById("id_nss");
     const rfcInput = document.getElementById("id_rfc");
-    const direccionInput = document.getElementById("id_direccion");
-    const curpInput = document.getElementById("id_curp");
+    const nombre_negocioInput=document.getElementById("id_nombre_negocio");
+    //const direccionInput = document.getElementById("id_direccion");//temporalmente lo quite :b
     const btnGuardar = document.getElementById("btnGuardar");
-
+    
     const form = document.getElementById("registroForm");
     // Iniciar objetos de modal
     // Se inicializan aquí para que el código pueda llamarlos con .show()
@@ -26,8 +25,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (localFijoContainer) {
         localFijoContainer.style.display = "block";//siempre visible
+        
     }
-    
+    // Mostrar/ocultar campos si Local Fijo = "Si"
+    if (localFijoInput) {
+        if (localFijoInput.value !== "Si") {
+            nombre_negocioInput.closest(".col-md-6").style.display = "none";
+            rfcInput.closest(".col-md-6").style.display = "none";
+        }
+
+        localFijoInput.addEventListener("change", function () {
+            if (this.value === "Si") {
+                nombre_negocioInput.closest(".col-md-6").style.display = "block";
+                rfcInput.closest(".col-md-6").style.display = "block";
+            } else {
+                nombre_negocioInput.closest(".col-md-6").style.display = "none";
+                rfcInput.closest(".col-md-6").style.display = "none";
+            }
+        });
+    }
     function camposVacios() {
         const obligatorios = [
             { id: "id_nombre", label: "Nombre" },
@@ -78,12 +94,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         const tieneOpcionales =
-            (nssInput && nssInput.value.trim() !== "") ||
             (localFijoInput && localFijoInput.value.trim() !== "") ||
             (rfcInput && rfcInput.value.trim() !== "") ||
-            (direccionInput && direccionInput.value.trim() !== "") ||
-            (curpInput && curpInput.value.trim() !== "");
-
+            (nombre_negocioInput && nombre_negocioInput.value.trim() !== "");
+           // (direccionInput && direccionInput.value.trim() !== "") ||
         if (tieneOpcionales) {
             modalConfirmar.show();
         } else {
@@ -101,11 +115,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     btnDescartar.addEventListener("click", function () {
-        if (nssInput) nssInput.value = "";
         if (localFijoInput) localFijoInput.value = "";
         if (rfcInput) rfcInput.value = "";
-        if (direccionInput) direccionInput.value = "";
-        if (curpInput) curpInput.value = "";
+        if(nombre_negocioInput)nombre_negocioInput.value="";
+        //if (direccionInput) direccionInput.value = "";
         form.submit();
     });
 });

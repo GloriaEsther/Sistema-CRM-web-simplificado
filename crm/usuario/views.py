@@ -33,7 +33,7 @@ def registrar_usuario(request):#usuario=dueño del micronegocio
         'form': form
     })
 
-#registrar equipo luego lo hago 
+
 def iniciar_sesion(request):
     if request.session.get('idusuario'):
         return redirect('oportunidades:kanban')#pipeline ventas
@@ -52,10 +52,8 @@ def iniciar_sesion(request):
                 request.session['idusuario'] = usuario.idusuario
                 request.session['nombre'] = usuario.nombre
                # messages.success(request, f"Bienvenido {usuario.nombre}")
-                #Redirigir al inicio de la aplicación para usuarios logueados
                 return redirect('oportunidades:kanban') # Usar dashboard en lugar de inicio
             else:
-                # Error de credenciales
                 #messages.error(request, "Credenciales incorrectas (correo o contraseña).")
                 return render(request, 'usuario/login.html', {
                     'form': form,
