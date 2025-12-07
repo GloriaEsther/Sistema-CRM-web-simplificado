@@ -19,7 +19,7 @@ def registrar_usuario(request):#usuario=dueño del micronegocio
                 nuevo_usuario.owner_id = None
                 nuevo_usuario.rol = rol_dueno#el rol por default es dueno peor aqui se dice explicitamente
                 nuevo_usuario.save()
-                messages.success(request, f"Usuario {nuevo_usuario.nombre} registrado correctamente.")               
+                #messages.success(request, f"Usuario {nuevo_usuario.nombre} registrado correctamente.")               
                 return redirect('oportunidades:kanban')#se redirige a pantalla de inicio (porque antes estaba asi)return redirect('usuario:registrar_usuario')               
             except IntegrityError:
                 messages.error(request, "Error: Usuario ya existente")
@@ -33,7 +33,7 @@ def registrar_usuario(request):#usuario=dueño del micronegocio
         'form': form
     })
 
-#registrar equipo luego lo hago 
+
 def iniciar_sesion(request):
     if request.session.get('idusuario'):
         return redirect('oportunidades:kanban')#pipeline ventas
@@ -51,12 +51,10 @@ def iniciar_sesion(request):
                 #Crear sesión nueva 
                 request.session['idusuario'] = usuario.idusuario
                 request.session['nombre'] = usuario.nombre
-                messages.success(request, f"Bienvenido {usuario.nombre}")
-                #Redirigir al inicio de la aplicación para usuarios logueados
+               # messages.success(request, f"Bienvenido {usuario.nombre}")
                 return redirect('oportunidades:kanban') # Usar dashboard en lugar de inicio
             else:
-                # Error de credenciales
-                messages.error(request, "Credenciales incorrectas (correo o contraseña).")
+                #messages.error(request, "Credenciales incorrectas (correo o contraseña).")
                 return render(request, 'usuario/login.html', {
                     'form': form,
                     'mostrar_modal': True,
@@ -68,7 +66,7 @@ def iniciar_sesion(request):
 
     return render(request, 'usuario/login.html', {'form': form,'timestamp': timezone.now().timestamp()})
 
-#@require_roles(['Dueño', 'Administrador'])
+@require_roles(['Dueño', 'Administrador'])
 def listar_usuarios(request):#consultar usuarios (en lo basico si funciona)
     usuarios = Usuario.activos.all().order_by('idusuario')
     return render(request, 'usuario/listar_usuarios.html', {'usuarios': usuarios})

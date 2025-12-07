@@ -10,8 +10,7 @@ class UsuarioForm(forms.ModelForm):
         model = Usuario
         fields = [
             'nombre', 'apellidopaterno', 'apellidomaterno',
-            'numerotel', 'correo', 'contrasena', 'rfc', 'direccion',
-            'curp', 'local_Fijo', 'nss','nombre_negocio'
+            'numerotel', 'correo', 'contrasena', 'rfc', 'local_Fijo','nombre_negocio'
         ]
         widgets = {
             'contrasena': forms.PasswordInput(attrs={'class': 'form-control'}),
@@ -32,23 +31,12 @@ class UsuarioForm(forms.ModelForm):
         data = super().clean()
         correo = data.get('correo')
         rfc = data.get('rfc')
-        curp = data.get('curp')
-
-        # Validar campos obligatorios vacíos
-        #campos_obligatorios = ['nombre', 'apellidopaterno', 'correo', 'contrasena']# , 'apellidomaterno','rol','rfc', 'curp''direccion'
-        #faltantes = [campo for campo in campos_obligatorios if not data.get(campo)]
-
-        
-        #if faltantes:
-         #   raise forms.ValidationError(f"Faltan campos obligatorios: {', '.join(faltantes)}")
-
+       
         # Validar duplicados
         if correo and Usuario.todos.filter(correo=correo).exists():#activos
             self.add_error('correo', "Ya existe un usuario con ese correo.")
         if rfc and Usuario.todos.filter(rfc=rfc).exists():
             self.add_error('rfc', "Ya existe un usuario con ese RFC.")
-        if curp and Usuario.todos.filter(curp=curp).exists():
-            self.add_error('curp', "Ya existe un usuario con esa CURP.")
         return data
     
     def save(self, commit=True):

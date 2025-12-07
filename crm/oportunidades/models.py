@@ -32,13 +32,13 @@ class Oportunidad(models.Model):
         related_name="op_creada_por",
         null=False,
         db_column='creado_por'
-    )#
-    owner_id= models.ForeignKey(#negocio al que le pertenece oportunidad
+    )
+    negocio_oportunidad = models.ForeignKey(#negocio al que le pertenece oportunidad antes owner_id
         Usuario,
         on_delete=models.PROTECT,
         related_name="op_negocio",
         null=False,
-        db_column='owner_id'
+        db_column='negocio_oportunidad'
     )
     activos = ActivoManager()
     todos = models.Manager()

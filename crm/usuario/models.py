@@ -49,12 +49,8 @@ class Usuario(models.Model):
     rol = models.ForeignKey(RolUsuario, on_delete=models.SET_DEFAULT, default=1,db_column='rol')
     #Dueño
     rfc = models.CharField(max_length=13, blank=True, null=True,unique=True)
-    direccion = models.CharField(max_length=255, blank=True, null=True)
     local_Fijo = models.CharField(db_column='local_Fijo', max_length=2, choices=LOCAL_FIJO_OPCIONES, blank=True, null=True)
     nombre_negocio = models.CharField(max_length=100, blank=True, null=True)
-    curp = models.CharField(max_length=18, blank=True, null=True,unique=True)
-    # Opcionales
-    nss = models.CharField(max_length=11, blank=True, null=True,unique=True)
     #Sistema
     fecha_registro = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
