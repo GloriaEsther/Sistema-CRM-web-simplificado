@@ -13,35 +13,52 @@ from django.core import serializers
 from django.db.models import Q
 
 def kanban(request):
+    usuario_id = request.session.get('idusuario') 
+
+    if not usuario_id:
+        return redirect('usuario:iniciar_sesion') 
+    
+    usuario=Usuario.activos.get(idusuario=usuario_id)
+
     etapas = EtapaVentas.objects.all()
     data = {}
+
+    # Regla por rol
+    es_dueno = usuario.rol.nombre_rol in ["Dueño", "Administrador"]
+    es_vendedor = usuario.rol.nombre_rol == "Vendedor"
+
     for e in etapas:
-        data[e.nombre_etapa] = Oportunidad.activos.filter(etapa_ventas=e).order_by('-fecha_registro')
+        
+        if es_dueno:
+            # Dueño/admin ve las oportunidades del negocio
+            qs = Oportunidad.activos.filter(
+                negocio_oportunidad=usuario,
+                etapa_ventas=e
+            )
+        elif es_vendedor:
+            # Vendedor solo ve lo que él atiende
+            qs = Oportunidad.activos.filter(
+                usuario_responsable=usuario,
+                etapa_ventas=e
+            )
+        else:
+            qs = Oportunidad.activos.none()
+
+        data[e.nombre_etapa] = qs.order_by('-fecha_registro')
     form_crear = OportunidadForm()
     return render(request, 'oportunidades/kanban.html', {
         'etapas': etapas, 
         'data': data,
-        'form_crear': form_crear,
-        'preferencias': request.context.get('preferencias', None) 
-        if hasattr(request, 'context') else None
+        'form_crear': form_crear
     })
 
 def crear_oportunidad(request): 
     usuario_id = request.session.get('idusuario')
-    usuario_creador =Usuario.activos.filter(idusuario=usuario_id).first()
-    
-    #Se obtienen los roles del sistema 
-    rol_vendedor = RolUsuario.objects.filter(nombre_rol__iexact="Vendedor").first()
+    usuario =Usuario.activos.filter(idusuario=usuario_id).first()
     rol_admin = RolUsuario.objects.filter(nombre_rol__in=["Administrador", "Dueño"])
-   
-    if usuario_creador.rol.nombre_rol in ["Administrador", "Dueño"]:
-        vendedores = Usuario.activos.all()
 
-    elif usuario_creador.rol.nombre_rol == "Vendedor":
-        vendedores = Usuario.activos.filter(rol=rol_vendedor)
-
-    else:
-     vendedores = Usuario.activos.none()
+    if not usuario:
+        return redirect('usuario:iniciar_sesion')
 
     if request.method == 'POST':
         form = OportunidadForm(request.POST)
@@ -52,7 +69,8 @@ def crear_oportunidad(request):
                 if vendedor.rol.id_rol in rol_admin:
                     messages.error(request, " No puedes asignar oportunidades a administradores o dueños.")
                     return redirect("oportunidades:crear")
-                op.creado_por = usuario_creador
+                op.creado_por = usuario
+                op.negocio_oportunidad =usuario
                 op.save()
                 messages.success(request, "Oportunidad creada correctamente.")
                 return redirect('oportunidades:kanban')
@@ -64,6 +82,7 @@ def crear_oportunidad(request):
                     messages.error(request, f"{field}: {err}")
     else:
         form = OportunidadForm()
+
     redirect('oportunidades:kanban')
     
 @require_POST
@@ -96,10 +115,7 @@ def editar_oportunidad(request, pk):
         oportunidad.fecha_cierre_estimada = request.POST.get("fecha_cierre_estimada")
         oportunidad.comentarios = request.POST.get("comentarios")
 
-        #oportunidad.cliente_oportunidad_id = request.POST.get("cliente_oportunidad")
         oportunidad.etapa_ventas_id = request.POST.get("etapa_ventas")
-        #oportunidad.usuario_responsable_id = request.POST.get("usuario_responsable")
-
         # Obtener los IDs del POST
         cliente_id = request.POST.get("cliente_oportunidad")
         usuario_id = request.POST.get("usuario_responsable")
@@ -131,7 +147,6 @@ def editar_oportunidad(request, pk):
             "usuarios": usuarios,
         })
 
-    
     return render(request, "oportunidades/editar.html", {
         "oportunidad": oportunidad,
         "clientes": clientes,
@@ -144,30 +159,25 @@ def eliminar_oportunidad(request, pk):
     usuario_id = request.session.get("idusuario")
     usuario_logueado = get_object_or_404(Usuario, idusuario=usuario_id)
 
-   
     oportunidad = get_object_or_404(Oportunidad.activos, pk=pk)
 
     if request.method == "POST":
-
-        
+ 
         if usuario_logueado.rol.nombre_rol == "Vendedor":
 
             if oportunidad.creado_por != usuario_logueado:
                 messages.error(request, "No puedes eliminar oportunidades que no registraste.")
                 return redirect("oportunidades:kanban")
-            
-        
+               
         oportunidad.eliminar_logico()
         messages.success(request, "Oportunidad eliminada.")
         return redirect("oportunidades:kanban")
 
-  
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
         return render(request, "oportunidades/_eliminar_confirmar.html", {
             "oportunidad": oportunidad
         })
-
-   
+ 
     return redirect("oportunidades:kanban")
 
 
@@ -235,7 +245,7 @@ def ajax_consultar_oportunidad(request, pk):
 def ajax_buscar_cliente(request):
     q = request.GET.get('q', '').strip()
     qs = Cliente.activos.filter(nombre__icontains=q)[:15] if q else Cliente.activos.all()[:15]
-    res = [{'id': c.idcliente, 'display': f"{c.nombre} {c.apellidopaterno}"} for c in qs]
+    res = [{'id': c.idcliente, 'display': f"{c.nombre} {c.apellidopaterno} {c.apellidomaterno}"} for c in qs]
     return JsonResponse(res, safe=False)
 
 def ajax_buscar_vendedor(request):
@@ -244,11 +254,11 @@ def ajax_buscar_vendedor(request):
     usuario_id = request.session.get("idusuario")
     usuario = Usuario.activos.filter(idusuario=usuario_id).first()
 
-    usuarios = queryset_usuarios_segun_rol(usuario)
+    usuarios = queryset_usuarios_segun_rol(usuario)#filtros de mostrar vendedores segun el rol
 
     if q:
         usuarios = usuarios.filter(nombre__icontains=q)
 
-    res = [{'id': u.idusuario, 'display': f"{u.nombre} {u.apellidopaterno}"} for u in usuarios[:15]]
+    res = [{'id': u.idusuario, 'display': f"{u.nombre} {u.apellidopaterno} {u.apellidomaterno}"} for u in usuarios[:15]]
     
     return JsonResponse(res, safe=False)

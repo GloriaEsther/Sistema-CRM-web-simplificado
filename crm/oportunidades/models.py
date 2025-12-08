@@ -14,8 +14,7 @@ class Oportunidad(models.Model):
     nombreoportunidad = models.CharField(max_length=45)
     valor_estimado = models.DecimalField(max_digits=10, decimal_places=2)
     fecha_cierre_estimada = models.DateTimeField()
-    #Opcional
-    
+   #Opcionales
     comentarios = models.TextField(null=True, blank=True)
    #Sistema
     activo = models.BooleanField(default=True)
@@ -26,7 +25,7 @@ class Oportunidad(models.Model):
     cliente_oportunidad = models.ForeignKey(Cliente, on_delete=models.PROTECT, db_column='cliente_oportunidad')
     etapa_ventas = models.ForeignKey('ventas.EtapaVentas', on_delete=models.PROTECT, db_column='etapa_ventas')#referencia 'nombreapp.Model' en este caso, ventas.EtapadeVenta
     usuario_responsable = models.ForeignKey(Usuario, on_delete=models.PROTECT, related_name="oportunidades_asignadas_por",db_column='usuario_responsable')
-    creado_por = models.ForeignKey(#quien registro q antes usuario_registro
+    creado_por = models.ForeignKey(#quien registro que ahora es dueno, a futuro un nuevo empleado del dueno
         Usuario,
         on_delete=models.PROTECT,
         related_name="op_creada_por",
@@ -35,7 +34,7 @@ class Oportunidad(models.Model):
     )
     negocio_oportunidad = models.ForeignKey(#negocio al que le pertenece oportunidad antes owner_id
         Usuario,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,#on_delete=models.PROTECT,
         related_name="op_negocio",
         null=False,
         db_column='negocio_oportunidad'
