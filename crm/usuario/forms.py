@@ -48,6 +48,56 @@ class UsuarioForm(forms.ModelForm):
             usr.save()
         return usr
     
+class EmpleadoForm(forms.ModelForm):
+    
+    rol = forms.ModelChoiceField(
+        queryset=RolUsuario.objects.filter(nombre_rol__in=['Vendedor', 'Administrador']),
+        label="Rol del empleado",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    class Meta:
+        model = Usuario
+        fields = [
+            'nombre', 
+            'apellidopaterno', 
+            'apellidomaterno',
+            'numerotel', 
+            'correo', 
+            'contrasena','rol'
+        ]
+        widgets = {
+            'contrasena': forms.PasswordInput(attrs={'class': 'form-control'}),
+        }
+
+    # Validación de la contraseña
+    def clean_contrasena(self):
+        contrasena = self.cleaned_data.get('contrasena')
+        if len(contrasena) < 10:
+            raise ValidationError("La contraseña debe tener al menos 10 caracteres.")
+        if not re.search(r'[A-Z]', contrasena):
+            raise ValidationError("Debe contener al menos una letra mayúscula.")
+        if not re.search(r'\d', contrasena):
+            raise ValidationError("Debe contener al menos un número.")
+        return contrasena
+
+    def clean(self):
+        data = super().clean()
+        correo = data.get('correo')
+
+        # Validar duplicados
+        if correo and Usuario.todos.filter(correo=correo).exists():
+            self.add_error("correo", "Ya existe un usuario con ese correo.")
+        return data
+
+    def save(self, commit=True):
+        usr = super().save(commit=False)
+        # hash
+        if usr.contrasena and not usr.contrasena.startswith('pbkdf2_'):
+            usr.contrasena = make_password(usr.contrasena)
+        if commit:
+            usr.save()
+        return usr
+
 class LoginForm(forms.Form):
     correo = forms.EmailField(label="Correo electrónico", widget=forms.EmailInput(attrs={'class': 'form-control'}))
     contrasena = forms.CharField(label="Contraseña", widget=forms.PasswordInput(attrs={'class': 'form-control'}))

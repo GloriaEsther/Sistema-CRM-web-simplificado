@@ -34,7 +34,7 @@ class Oportunidad(models.Model):
     )
     negocio_oportunidad = models.ForeignKey(#negocio al que le pertenece oportunidad antes owner_id
         Usuario,
-        on_delete=models.CASCADE,#on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="op_negocio",
         null=False,
         db_column='negocio_oportunidad'
@@ -52,6 +52,9 @@ class Oportunidad(models.Model):
             self.activo = False
             self.fecha_eliminacion = timezone.now()
             self.save()
+
+    def mismos_usuarios_de_mi_negocio(self):#prueba
+     return Usuario.activos.filter(owner_id=self.owner_id)
 
     def __str__(self): 
         return f"{self.nombreoportunidad} {self.valor_estimado} {self.fecha_cierre_estimada} {self.etapa_ventas} {self.comentarios} {self.cliente_oportunidad} (Responsable: {self.usuario_responsable.nombre})"#{self.usuario_responsable.nombre}

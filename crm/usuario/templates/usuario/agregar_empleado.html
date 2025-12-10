@@ -1,0 +1,226 @@
+{% load static %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agregar Contacto</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-10 col-lg-8 col-xl-6">
+        <div class="card shadow-sm border-0">
+          <div class="card-body p-4">
+            <h2 class="mb-4 text-center fw-bold text-primary">Registrar Empleado</h2>
+
+            <form method="POST" id="EmpleadoForm" class="needs-validation" novalidate>
+              {% csrf_token %}
+
+              {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+              {% endif %}
+
+
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <label for="id_nombre" class="form-label">Nombre</label>
+                  {% render_field form.nombre class="form-control" add_error_class="is-invalid"%}
+                  {% for error in form.nombre.errors %}
+                      <div class="invalid-feedback d-block">
+                          {{ error }}
+                      </div>
+                  {% endfor %}
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="id_apellidopaterno" class="form-label">Apellido Paterno</label>
+                  {% render_field form.apellidopaterno class="form-control" add_error_class="is-invalid" %}
+                  {% for error in form.apellidopaterno.errors %}
+                      <div class="invalid-feedback d-block">
+                          {{ error }}
+                      </div>
+                  {% endfor %}
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="id_apellidomaterno" class="form-label">Apellido Materno</label>
+                  {% render_field form.apellidomaterno class="form-control" add_error_class="is-invalid" %}
+                  {% for error in form.apellidomaterno.errors %}
+                      <div class="invalid-feedback d-block">
+                          {{ error }}
+                      </div>
+                  {% endfor %}
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="id_numerotel" class="form-label">Número Telefónico</label>
+                  {% render_field form.numerotel class="form-control" add_error_class="is-invalid" %}
+                  {% for error in form.numerotel.errors %}
+                      <div class="invalid-feedback d-block">
+                          {{ error }}
+                      </div>
+                  {% endfor %}
+                  <small class="form-text text-muted">Ejemplo: 5512345678</small>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="id_correo" class="form-label">Correo Electrónico</label>
+                  {% render_field form.correo class="form-control" add_error_class="is-invalid" %}
+                  {% for error in form.correo.errors %}
+                      <div class="invalid-feedback d-block">
+                          {{ error }}
+                      </div>
+                  {% endfor %}
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="id_contrasena" class="form-label">Contraseña</label>
+                  {% render_field form.contrasena class="form-control" add_error_class="is-invalid" %}
+                  {% for error in form.contrasena.errors %}
+                      <div class="invalid-feedback d-block">
+                          {{ error }}
+                      </div>
+                  {% endfor %} 
+                  <small class="form-text text-muted">
+                    Mínimo 10 caracteres, una mayúscula y un número.
+                  </small>
+                </div>
+              </div>
+              
+               <div class="col-md-6 mb-3" id="rolContainer">
+                  <label for="id_rol" class="form-label">Rol</label>
+                  {% render_field form.rol class="form-select" add_error_class="is-invalid" %}
+                  {% for error in form.rol.errors %}
+                      <div class="invalid-feedback d-block">
+                          {{ error }}
+                      </div>
+                  {% endfor %}
+               </div>
+
+              <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-primary w-50 me-2" id="btnGuardar">
+                  Guardar
+                </button>
+                <a href="{% url 'usuario:inicio' %}" class="btn btn-secondary w-50">
+                  Cancelar
+                </a>                
+              </div>
+              
+              <div class="text-center mt-3">
+                <a href="{% url 'oportunidades:kanban' %}">Regresar</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Campos opcionales-->
+  <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-warning">
+          <h5 class="modal-title" id="confirmModalLabel">Confirmar antes de guardar</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body"> 
+          ¿Deseas guardar?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="descartarOpcionales" data-bs-dismiss="modal">No, descartar</button>
+          <button type="button" class="btn btn-primary" id="confirmarOpcionales">Sí, guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de contrasena invalida, si funciona -->
+  <div class="modal fade" id="coninvalida" tabindex="-1" aria-labelledby="coninvalidaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-warning">
+          <h5 class="modal-title" id="coninvalidaLabel">Contraseña invalida</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+        <!-- La contraseña debe tener una longitud minima de 10 caracteres. --> 
+          La contraseña debe tener:
+          <ul>
+            <li>Mínimo 10 caracteres</li>
+            <li>Al menos una letra mayúscula</li>
+            <li>Al menos un número</li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="confirmar">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!--Modal de datos duplicados-->
+  <div class="modal fade" id="duplicadoModal" tabindex="-1" aria-labelledby="duplicadoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="duplicadoModalLabel">Datos duplicados</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body text-center">
+          {% if campo_duplicado %}
+            <p>Ya existe un usuario con el <strong>{{ campo_duplicado }}</strong> ingresado.</p>
+          {% else %}
+            <p>Ya existe un usuario con alguno de los datos ingresados (correo, RFC o CURP).</p>
+          {% endif %}
+          <p>Verifica e inténtalo de nuevo.</p>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if duplicado %} <!--checa esto, una seria mandar a llamar eel archivo con esas funciones o juntar todo en un archivo pero veo mas rapido uno cada una -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var modalDuplicado = new bootstrap.Modal(document.getElementById('duplicadoModal'));
+      modalDuplicado.show();
+    });
+  </script>
+  {% endif %}
+
+  <!-- Modal de campos faltantes -->
+  <div class="modal fade" id="faltantesModal" tabindex="-1" aria-labelledby="faltantesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-warning text-dark">
+          <h5 class="modal-title" id="faltantesModalLabel">Campos obligatorios faltantes</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <p>Debes llenar los siguientes campos antes de continuar:</p>
+          <ul id="listaFaltantes"></ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script src="{% static 'usuario/js/empleado.js' %}?v={{ timestamp }}"></script>
+</body>
+</html>
