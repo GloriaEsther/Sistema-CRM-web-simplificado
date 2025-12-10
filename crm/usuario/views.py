@@ -19,13 +19,13 @@ def registrar_usuario(request):#usuario=dueño del micronegocio
             try:
                 nuevo_usuario = form.save(commit=False)
                 rol_dueno = RolUsuario.objects.filter(nombre_rol__iexact="Dueño").first()
-                nuevo_usuario.owner_id = None#usuario#nuevo_usuario.owner_id = None dueno no tiene owner_id
-                nuevo_usuario.rol = rol_dueno#el rol por default es dueno peor aqui se dice explicitamente
+                nuevo_usuario.owner_id = None#dueno no tiene owner_id
+                nuevo_usuario.rol = rol_dueno
                 print("ANTES DEL SAVE:", nuevo_usuario.idusuario)
                 nuevo_usuario.save()
                 print("DESPUÉS DEL SAVE:", nuevo_usuario.idusuario)
                 #messages.success(request, f"Usuario {nuevo_usuario.nombre} registrado correctamente.")               
-                return redirect('oportunidades:kanban')#se redirige a pantalla de inicio (porque antes estaba asi)return redirect('usuario:registrar_usuario')               
+                return redirect('oportunidades:kanban')               
             except IntegrityError:
                 messages.error(request, "Error: Usuario ya existente")
                 return render(request, 'usuario/registrar_usuario.html', {'form': form, 'duplicado': True})     
@@ -126,19 +126,19 @@ def subir_logo(request):
 '''
 
 def subir_logo(request):
-    # 1. Revisar que sea POST y que haya archivo
+    # Revisar que sea POST y que haya archivo
     if request.method == "POST" and request.FILES.get("logo"):
         
-        # 2. Requerir que el usuario esté logueado (y exista en sesión)
+        #Requerir que el usuario esté logueado (y exista en sesión)
         if not request.session.get("idusuario"):
             return redirect('usuario:iniciar_sesion') 
 
         try:
-            # 3. Obtener el usuario y su objeto de preferencias
+            #Obtener el usuario y su objeto de preferencias
             usuario = Usuario.activos.get(idusuario=request.session["idusuario"])
             preferencias, creado = PreferenciaUsuario.objects.get_or_create(usuario=usuario)
             
-            # 4. Guardar el logo usando el FileField del modelo
+            #Guardar el logo usando el FileField del modelo
             preferencias.logo = request.FILES["logo"]
             preferencias.save() # Django gestiona la subida al disco y la ruta en DB
 
@@ -146,7 +146,7 @@ def subir_logo(request):
              # Manejar si el idusuario de la sesión no existe
              pass 
 
-    # 5. Redirigir de vuelta al inicio
+    # Redirigir de vuelta al inicio
     return redirect('usuario:inicio') # Redirección con namespace 'usuario'
 
 def inicio(request):  
@@ -180,7 +180,6 @@ def inicio(request):
         "preferencias": preferencias
     })
 
-#@require_roles(['Dueño', 'Administrador'])
 def agregar_empleado(request):#solo el dueno puede registrar empleados
     usuario_id = request.session.get('idusuario')
     usuario=Usuario.activos.get(idusuario=usuario_id)

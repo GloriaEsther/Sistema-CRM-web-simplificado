@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required as dj_login_required
 from django.contrib.auth import logout
 from usuario.models import Usuario,RolUsuario
+from django.db.models import Q
 
 def require_roles(allowed_roles):#restringe roles (quien accede a que)
     def decorator(view_func):
@@ -16,19 +17,21 @@ def require_roles(allowed_roles):#restringe roles (quien accede a que)
                 if request.user.is_authenticated:
                      logout(request) 
                 #Redirigimos al LOGIN
-                return redirect('usuario:iniciar_sesion')  #('usuario:inicio') #si funciona pero es molesto sin un cerrar sesion
+                return redirect('usuario:iniciar_sesion')  
             return view_func(request, *args, **kwargs)
         return _wrapped
     return decorator
 
-def queryset_usuarios_segun_rol(usuario):#es un filtro en las busquedas de usuarios :D
+def queryset_usuarios_segun_rol(usuario):#es un filtro en las busquedas de usuario
     rol = usuario.rol.nombre_rol
 
-    if rol in ["Administrador", "Dueño"]:
-        return Usuario.activos.filter(owner_id=usuario.owner_id)#return Usuario.activos.all()
+    if rol =="Dueño":
+        return Usuario.activos.filter(Q(idusuario=usuario.idusuario) | Q(owner_id=usuario.idusuario))
+    if rol =="Administrador":
+        return Usuario.activos.filter(Q(idusuario=usuario.idusuario) | Q(owner_id=usuario.owner_id))
 
     if rol == "Vendedor":
         rol_vendedor = RolUsuario.objects.filter(nombre_rol__iexact="Vendedor").first()
-        return Usuario.activos.filter(rol=rol_vendedor,owner_id=usuario.owner_id)#Usuario.activos.filter(rol=rol_vendedor)
+        return Usuario.activos.filter(rol=rol_vendedor,owner_id=usuario.owner_id)
 
     return Usuario.activos.none()
