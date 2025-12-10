@@ -59,14 +59,13 @@ def kanban(request):
 def crear_oportunidad(request): 
     usuario_id = request.session.get('idusuario')
     usuario =Usuario.activos.filter(idusuario=usuario_id).first()
-    #rol_admin = RolUsuario.objects.filter(nombre_rol__in=["Administrador", "Dueño"])
 
     if not usuario:
         return redirect('usuario:iniciar_sesion')
 
-    # roles que no pueden ser responsables
+    # roles que no pueden ser responsables de la oportunidad registrada por vendedor
     roles_no_responsables = RolUsuario.objects.filter(
-        nombre_rol__in=["Administrador", "Dueño", "Consultor"]
+        nombre_rol__in=["Administrador", "Dueño"]
     ).values_list("id_rol", flat=True)
 
     # determinar dueño real del negocio
@@ -78,11 +77,11 @@ def crear_oportunidad(request):
             try:
                 op = form.save(commit=False)
                 vendedor = op.usuario_responsable
-                if vendedor.rol.id_rol in roles_no_responsables:#if vendedor.rol.id_rol in rol_admin: prueba
+                if vendedor.rol.id_rol in roles_no_responsables:
                     messages.error(request, " No puedes asignar oportunidades a administradores o dueños.")
                     return redirect("oportunidades:crear")
                 op.creado_por = usuario
-                op.negocio_oportunidad = negocio #op.negocio_oportunidad =usuario
+                op.negocio_oportunidad = negocio 
                 op.save()
                 messages.success(request, "Oportunidad creada correctamente.")
                 return redirect('oportunidades:kanban')
@@ -95,7 +94,7 @@ def crear_oportunidad(request):
     else:
         form = OportunidadForm()
 
-    return render(request, "oportunidades/crear.html", {"form": form})#redirect('oportunidades:kanban')
+    return render(request, "oportunidades/kanban.html", {"form": form})#redirect('oportunidades:kanban')
     
 @require_POST
 def mover_oportunidad(request, pk):
