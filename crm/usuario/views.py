@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect, get_object_or_404
-from .forms import UsuarioForm,LoginForm
+from .forms import UsuarioForm,LoginForm,EmpleadoForm
 from .models import Usuario, PreferenciaUsuario,RolUsuario
 from django.contrib import messages
 from django.db import IntegrityError
@@ -10,15 +10,20 @@ from django.core.files.storage import FileSystemStorage
 from django.utils import timezone
 
 def registrar_usuario(request):#usuario=dueño del micronegocio
+    usuario_id = request.session.get('idusuario')
+    usuario =Usuario.activos.filter(idusuario=usuario_id).first()
+    
     if request.method == 'POST':
         form = UsuarioForm(request.POST)
         if form.is_valid():
             try:
                 nuevo_usuario = form.save(commit=False)
                 rol_dueno = RolUsuario.objects.filter(nombre_rol__iexact="Dueño").first()
-                nuevo_usuario.owner_id = None
+                nuevo_usuario.owner_id = None#usuario#nuevo_usuario.owner_id = None dueno no tiene owner_id
                 nuevo_usuario.rol = rol_dueno#el rol por default es dueno peor aqui se dice explicitamente
+                print("ANTES DEL SAVE:", nuevo_usuario.idusuario)
                 nuevo_usuario.save()
+                print("DESPUÉS DEL SAVE:", nuevo_usuario.idusuario)
                 #messages.success(request, f"Usuario {nuevo_usuario.nombre} registrado correctamente.")               
                 return redirect('oportunidades:kanban')#se redirige a pantalla de inicio (porque antes estaba asi)return redirect('usuario:registrar_usuario')               
             except IntegrityError:
@@ -174,3 +179,29 @@ def inicio(request):
         "user": usuario, # <--- CAMBIAR a 'user' si usas user.is_authenticated en el template
         "preferencias": preferencias
     })
+
+#@require_roles(['Dueño', 'Administrador'])
+def agregar_empleado(request):#solo el dueno puede registrar empleados
+    usuario_id = request.session.get('idusuario')
+    usuario=Usuario.activos.get(idusuario=usuario_id)
+    # Regla por rol
+    es_dueno = usuario.rol.nombre_rol == "Dueño" #in ["Dueño"]
+    es_admin = usuario.rol.nombre_rol == "Administrador"
+    if request.method == "POST":
+        form = EmpleadoForm(request.POST)
+        if form.is_valid():
+            empleado = form.save(commit=False)
+
+            if es_dueno:# asignar dueño
+              empleado.owner_id = usuario#owner_id#empleado.owner_id = usuario
+
+            if es_admin:# asignar  del dueno
+              empleado.owner_id = usuario.owner_id      
+
+            empleado.save()
+            messages.success(request, "Empleado agregado correctamente.")
+            return redirect('oportunidades:kanban')#return redirect('usuario:listar_usuarios')
+    else:
+        form = EmpleadoForm()
+
+    return render(request, "usuario/agregar_empleado.html", {"form": form})

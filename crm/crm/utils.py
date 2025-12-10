@@ -25,10 +25,10 @@ def queryset_usuarios_segun_rol(usuario):#es un filtro en las busquedas de usuar
     rol = usuario.rol.nombre_rol
 
     if rol in ["Administrador", "Dueño"]:
-        return Usuario.activos.all()
+        return Usuario.activos.filter(owner_id=usuario.owner_id)#return Usuario.activos.all()
 
     if rol == "Vendedor":
         rol_vendedor = RolUsuario.objects.filter(nombre_rol__iexact="Vendedor").first()
-        return Usuario.activos.filter(rol=rol_vendedor)
+        return Usuario.activos.filter(rol=rol_vendedor,owner_id=usuario.owner_id)#Usuario.activos.filter(rol=rol_vendedor)
 
     return Usuario.activos.none()
