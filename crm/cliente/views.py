@@ -8,7 +8,7 @@ from usuario.models import Usuario
 from django.db import models
 from django.utils import timezone
 from django.db import IntegrityError
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponseBadRequest,HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
@@ -71,3 +71,13 @@ def cliente_eliminar(request, pk):
     cliente.eliminar_logico()
     messages.success(request, "Cliente eliminado correctamente.")
     return redirect("cliente:listar")
+
+def cliente_detalle(request, pk):
+    cliente = Cliente.activos.filter(idcliente=pk).first()
+    
+    if not cliente:
+        return HttpResponse("Cliente no encontrado", status=404)
+    
+    return render(request, "clientes/cliente_detalle.html", {
+        "cliente": cliente
+    })

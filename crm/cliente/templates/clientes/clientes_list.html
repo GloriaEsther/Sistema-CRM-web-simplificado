@@ -17,6 +17,7 @@
 
         <div class="mt-2 d-flex gap-2">
             <a href="{% url 'cliente:editar' c.idcliente %}" class="btn btn-sm btn-success">Editar</a>
+            <a href="{% url 'cliente:detalle' c.idcliente %}" class="btn btn-sm btn-success">Consultar</a>
             <a href="{% url 'cliente:eliminar' c.idcliente %}" class="btn btn-sm btn-danger"
                onclick="return confirm('¿Eliminar cliente?')">Eliminar</a>
         </div>
