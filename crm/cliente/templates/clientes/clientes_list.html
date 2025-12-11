@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h3 class="text-center my-3">Clientes</h3>
+
+<div class="text-end mb-2">
+    <a href="{% url 'cliente:crear' %}" class="btn btn-primary">+ Agregar Cliente</a>
+</div>
+
+<div class="list-group">
+    {% for c in clientes %}
+    <div class="list-group-item shadow-sm mb-2 rounded">
+
+        <div class="fw-bold">{{ c.nombre }} {{ c.apellidopaterno }} {{ c.apellidomaterno }}</div>
+        <div><strong>Tel:</strong> {{ c.numerotelcli }}</div>
+        <div><strong>Correo:</strong> {{ c.correo|default:"N/A" }}</div>
+
+        <div class="mt-2 d-flex gap-2">
+            <a href="{% url 'cliente:editar' c.idcliente %}" class="btn btn-sm btn-success">Editar</a>
+            <a href="{% url 'cliente:eliminar' c.idcliente %}" class="btn btn-sm btn-danger"
+               onclick="return confirm('¿Eliminar cliente?')">Eliminar</a>
+        </div>
+
+    </div>
+    {% empty %}
+        <p class="text-center text-muted">No hay clientes aún.</p>
+    {% endfor %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h3 class="text-center my-3">Registrar Cliente</h3>
+
+<form method="POST" class="card p-3 shadow-sm">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button class="btn btn-primary mt-3 w-100">Guardar</button>
+</form>
+
+{% endblock %}

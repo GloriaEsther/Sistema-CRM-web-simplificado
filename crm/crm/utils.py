@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required as dj_login_required
 from django.contrib.auth import logout
 from usuario.models import Usuario,RolUsuario
+from cliente.models import Cliente
 from django.db.models import Q
 
 def require_roles(allowed_roles):#restringe roles (quien accede a que)
@@ -35,3 +36,17 @@ def queryset_usuarios_segun_rol(usuario):#es un filtro en las busquedas de usuar
         return Usuario.activos.filter(rol=rol_vendedor,owner_id=usuario.owner_id)
 
     return Usuario.activos.none()
+
+def queryset_clientes_por_rol(usuario):#prueba
+    rol = usuario.rol.nombre_rol
+
+    if rol == "Dueño":
+        return Cliente.activos.filter(owner=usuario)
+
+    if rol == "Administrador":
+        return Cliente.activos.filter(owner=usuario.owner_id)
+
+    if rol == "Vendedor":
+        return Cliente.activos.filter(owner=usuario.owner_id, usuario_registro=usuario)
+
+    return Cliente.activos.none()

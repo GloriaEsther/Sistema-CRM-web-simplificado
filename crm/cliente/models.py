@@ -52,11 +52,19 @@ class Cliente(models.Model):
     activo = models.BooleanField(default=True)
     fecha_eliminacion = models.DateTimeField(null=True)
     
-   #claves foraneas(no pueden ser null)
+   #claves foraneas
     usuario_registro = models.ForeignKey(Usuario, on_delete=models.PROTECT, db_column='usuario_registro')
     frecuencia_compra = models.ForeignKey(FrecuenciaClienteCat, on_delete=models.PROTECT, db_column='frecuencia_compra')#
     estado_cliente = models.ForeignKey(EstadoClienteCat, on_delete=models.PROTECT, db_column='estado_cliente')
-    #.............
+    owner = models.ForeignKey(#esto es para distinguir los clientes de cada negocio(como owner_id pero aplicado a clientes)
+        Usuario,
+        on_delete=models.PROTECT,
+        db_column='owner_id',
+        related_name='clientes_del_negocio',
+        null=True,
+        blank=True
+    )
+    
     activos = ActivoManager()
     todos = models.Manager()
     

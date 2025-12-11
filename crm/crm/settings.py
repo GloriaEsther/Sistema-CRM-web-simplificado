@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+LOGIN_URL = 'usuario/login'
 # Application definition
 
 INSTALLED_APPS = [
@@ -126,6 +126,7 @@ USE_TZ = False#True se le cambio porque esto tambien comvierte horas normales a 
 
 #para que no de problemas static
 STATIC_URL = 'static/'
+
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
