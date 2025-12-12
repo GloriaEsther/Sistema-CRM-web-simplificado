@@ -32,8 +32,13 @@ function setupDragAndDrop() {
 
   document.querySelectorAll('.kanban-card').forEach(card => {
     card.addEventListener('dragstart', ev => {
-      ev.dataTransfer.setData('text/plain', card.getAttribute('data-id'));
+      card.classList.add("moving");//ev.dataTransfer.setData('text/plain', card.getAttribute('data-id'));
     });
+
+    card.addEventListener('dragend', () => {
+       card.classList.remove("moving");
+    });
+
   });
 }
 
