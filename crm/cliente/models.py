@@ -54,8 +54,8 @@ class Cliente(models.Model):
     
    #claves foraneas
     usuario_registro = models.ForeignKey(Usuario, on_delete=models.PROTECT, db_column='usuario_registro')
-    frecuencia_compra = models.ForeignKey(FrecuenciaClienteCat, on_delete=models.PROTECT, db_column='frecuencia_compra')#
-    estado_cliente = models.ForeignKey(EstadoClienteCat, on_delete=models.PROTECT, db_column='estado_cliente')
+    frecuencia_compra = models.ForeignKey(FrecuenciaClienteCat, on_delete=models.PROTECT, db_column='frecuencia_compra',null=True,blank=True)
+    estado_cliente = models.ForeignKey(EstadoClienteCat, on_delete=models.PROTECT, db_column='estado_cliente',null=True,blank=True)
     owner = models.ForeignKey(#esto es para distinguir los clientes de cada negocio(como owner_id pero aplicado a clientes)
         Usuario,
         on_delete=models.PROTECT,

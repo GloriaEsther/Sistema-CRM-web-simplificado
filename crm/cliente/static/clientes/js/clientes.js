@@ -1,141 +1,122 @@
-document.addEventListener('DOMContentLoaded', function() {
-    hookupCrearForm();
-    hookupEditarForm();
-    hookupEliminarForm();
-});
+document.addEventListener("DOMContentLoaded", function () {
+    const nombreInput = document.getElementById("id_nombre");
+    const apellidopaternoInput = document.getElementById("id_apellidopaterno");
+    const apellidomaternoInput = document.getElementById("id_apellidomaterno");
+    const numerotelcliInput = document.getElementById("id_numerotelcli");
+    const correoInput = document.getElementById("id_correo");
+    const rfcInput =document.getElementById("id_rfc");
+    const direccionInput =document.getElementById("id_direccion");
+    const fechanacimientoInput = document.getElementById("id_fecha_nacimiento");
+    const fechaultimocontactoInput = document.getElementById("id_fecha_ultimocontacto");
 
-function getCsrf() {
-    // Función estándar para obtener el token CSRF
-    return document.querySelector('[name=csrfmiddlewaretoken]').value;
-}
+    const frecuenciaCompraContainer = document.getElementById("frecuenciaContainer");
+    const frecuenciaCompraInput = document.getElementById("id_frecuencia_compra");
+    const estadoClienteContainer = document.getElementById("estado_clienteContainer");
+    const estadoClienteInput = document.getElementById("id_estado_cliente");
+    const comentariosInput = document.getElementById("id_comentarios");
 
-/* --------------- ABRIR MODALES Y TRAER DATOS --------------- */
-function abrirConsultar(id) {
-    // Usaremos la vista AJAX para obtener todos los detalles del cliente
-    fetch('/clientes/ajax/consultar/' + id + '/') 
-        .then(r => r.json())
-        .then(data => {
-            // Rellenar Modal Consultar Cliente
-            document.getElementById('cons-nombre').textContent = data.nombre;
-            document.getElementById('cons-apellido-paterno').textContent = data.apellidopaterno;
-            document.getElementById('cons-apellido-materno').textContent = data.apellidomaterno;
-            document.getElementById('cons-telefono').textContent = data.numerotelcli;
-            document.getElementById('cons-correo').textContent = data.correo;
-            document.getElementById('cons-direccion').textContent = data.direccion;
-            document.getElementById('cons-rfc').textContent = data.rfc || 'N/A';
-            document.getElementById('cons-fecha-nacimiento').textContent = data.fecha_nacimiento_display;
-            document.getElementById('cons-estado').textContent = data.estado_cliente;
-            document.getElementById('cons-frecuencia').textContent = data.frecuencia_compra;
-            document.getElementById('cons-ultimo-contacto').textContent = data.fecha_ultimocontacto_display;
-            document.getElementById('cons-comentarios').textContent = data.comentarios || 'Sin comentarios.';
-            
-            new bootstrap.Modal(document.getElementById('modalConsultarCliente')).show();
-        })
-        .catch(err => {
-             console.error('Error al cargar datos del cliente para consultar:', err);
-             // Puedes implementar un modal de error aquí en lugar de alert cuando tenga tiempo jajaj :')
-        });
-}
+    const btnGuardar = document.getElementById("btnGuardar");
+    const form = document.getElementById("registroClienteForm");
+   
+    const modalConfirmar = new bootstrap.Modal(document.getElementById("confirmModal"));
+    const modalFaltantes = new bootstrap.Modal(document.getElementById("faltantesModal")); 
 
-function abrirEditar(id) {
-    // Usaremos la vista AJAX para obtener todos los detalles del cliente
-    fetch('/clientes/ajax/consultar/' + id + '/')
-        .then(r => r.json())
-        .then(d => {
-            // Rellenar Modal Editar Cliente
-            document.getElementById('editar-id').value = id;
-            document.getElementById('editar-nombre').value = d.nombre;
-            document.getElementById('editar-apellidopaterno').value = d.apellidopaterno;
-            document.getElementById('editar-apellidomaterno').value = d.apellidomaterno;
-            document.getElementById('editar-numerotelcli').value = d.numerotelcli;
-            document.getElementById('editar-correo').value = d.correo;
-            document.getElementById('editar-direccion').value = d.direccion;
-            document.getElementById('editar-rfc').value = d.rfc;
-            document.getElementById('editar-fecha_nacimiento').value = d.fecha_nacimiento_iso;
-            document.getElementById('editar-fecha_ultimocontacto').value = d.fecha_ultimocontacto_iso;
-            document.getElementById('editar-comentarios').value = d.comentarios || '';
+    const btnConfirmar = document.getElementById("confirmarOpcionales");
+    const btnDescartar = document.getElementById("descartarOpcionales");
+    const btnAceptar = document.getElementById("confirmar");
 
-            // Seleccionar el valor correcto en los selects (Estado y Frecuencia)
-            document.getElementById('editar-estado-cliente').value = d.estado_cliente_id;
-            document.getElementById('editar-frecuencia-compra').value = d.frecuencia_compra_id;
-
-            new bootstrap.Modal(document.getElementById('modalEditarCliente')).show();
-        })
-        .catch(err => {
-             console.error('Error al cargar datos del cliente para editar:', err);
-        });
-}
-
-function abrirEliminar(id, nombre) {
-    // Para eliminar, solo necesitamos el ID y el nombre para la confirmación
-    document.getElementById('eliminar-id').value = id;
-    document.getElementById('elim-nombre').textContent = nombre; // Usamos el nombre que viene directo del template de la lista
-    new bootstrap.Modal(document.getElementById('modalEliminarCliente')).show();
-}
-
-/* --------------- FORM CREAR (submit por redirección o fetch) --------------- */
-function hookupCrearForm() {
-    const form = document.getElementById('formCrearCliente');
-    if (!form) return;
-    form.addEventListener('submit', function(ev) {
-        ev.preventDefault();
-        const data = new FormData(form);
-        fetch('/clientes/crear/', { // Asegúrate de que esta URL es correcta
-            method: 'POST',
-            headers: { 'X-CSRFToken': getCsrf() },
-            body: data
-        }).then(r => {
-            // Si el backend te devuelve una redirección (Solución Rápida), se recarga la página
-            if (r.redirected) window.location = r.url; 
-            else return r.text();
-        }).then(txt => {
-            if (txt && txt.includes('<form')) {
-                // Esto podría ser un HTML con errores de Django
-                alert('Errores en el formulario de creación. Revisa los campos.');
-            }
-        }).catch(e => console.error('Error al crear cliente:', e));
-    });
-}
-
-/* --------------- FORM EDITAR --------------- */
-function hookupEditarForm() {
-    const form = document.getElementById('formEditarCliente');
-    if (!form) return;
-    form.addEventListener('submit', function(ev) {
-        ev.preventDefault();
-        const id = document.getElementById('editar-id').value;
-        const data = new FormData(form);
-
-        fetch('/clientes/editar/' + id + '/', { // Asegúrate de que esta URL es correcta
-            method: 'POST',
-            headers: { 'X-CSRFToken': getCsrf() },
-            body: data
-        }).then(r => {
-            if (r.redirected) window.location = r.url;
-            else return r.text();
-        }).then(txt => {
-            if (txt && txt.includes('<form')) alert('Errores en la edición del cliente.');
-        }).catch(e => console.error('Error al editar cliente:', e));
-    });
-}
-
-/* --------------- FORM ELIMINAR --------------- */
-function hookupEliminarForm() {
-    const form = document.getElementById('formEliminarCliente');
-    if (!form) return;
-    form.addEventListener('submit', function(ev) {
-        ev.preventDefault();
-        const id = document.getElementById('eliminar-id').value;
-        const data = new FormData(form);
+    if (estadoClienteContainer) {
+        estadoClienteContainer.style.display = "block";//siempre visible
         
-        fetch('/clientes/eliminar/' + id + '/', { // Asegúrate de que esta URL es correcta
-            method: 'POST',
-            headers: { 'X-CSRFToken': getCsrf() },
-            body: data
-        }).then(r => {
-            // Asumiendo que el backend siempre redirige a listar_clientes después de un éxito
-            if (r.redirected) window.location = r.url;
-            else console.error('No se pudo eliminar, el servidor no redirigió.');
-        }).catch(e => console.error('Error al eliminar cliente:', e));
+    }
+    // Mostrar/ocultar campos si Local Fijo = "Si"
+    if (estadoClienteInput) {
+        if (estadoClienteInput.value !== "Frecuente") {
+            frecuenciaCompraInput.closest(".col-md-6").style.display = "none";
+        }
+
+        estadoClienteInput.addEventListener("change", function () {
+            if (this.value === "Frecuente") {
+                frecuenciaCompraInput.closest(".col-md-6").style.display = "block";
+            } else {
+                frecuenciaCompraInput.closest(".col-md-6").style.display = "none";
+            }
+        });
+    }
+    function camposVacios() {
+        const obligatorios = [
+            { id: "id_nombre", label: "Nombre" },
+            { id: "id_apellidopaterno", label: "Apellido Paterno" },
+            { id: "id_apellidomaterno", label: "Apellido Materno" },
+            { id: "id_numerotelcli", label: "Número Telefónico" },
+        ];
+
+        const faltantes = obligatorios.filter(campo => {
+            const el = document.getElementById(campo.id);
+            return !el || el.value.trim() === "";
+        });
+
+        if (faltantes.length > 0) {
+            const lista = document.getElementById("listaFaltantes");
+            lista.innerHTML = "";
+            faltantes.forEach(c => {
+                const li = document.createElement("li");
+                li.textContent = c.label;
+                lista.appendChild(li);
+            });
+            modalFaltantes.show();
+            return true;
+        }
+        return false;
+    }
+
+    btnGuardar.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        const datos =
+            (nombreInput && nombreInput.value.trim() !== "") ||
+            (apellidopaternoInput && apellidopaternoInput.value.trim() !== "")||
+            (apellidomaternoInput && apellidomaternoInput.value.trim() !== "") ||
+            (numerotelcliInput && numerotelcliInput.value.trim() !== "") ||
+            (correoInput && correoInput.value.trim() !== "") ||
+            (rfcInput && rfcInput.value.trim() !== "") ||
+            (direccionInput && direccionInput.value.trim() !== "") ||
+            (fechanacimientoInput && fechanacimientoInput.value.trim() !== "")||
+            (fechaultimocontactoInput && fechaultimocontactoInput.value.trim() !== "") ||
+            (frecuenciaCompraInput && frecuenciaCompraInput.value.trim() !== "") ||
+            (estadoClienteInput && estadoClienteInput.value.trim() !== "") ||
+            (comentariosInput && comentariosInput.value.trim() !== "");
+
+        if (datos) {
+            modalConfirmar.show();
+        } else {
+            form.submit();
+        }
     });
-}
+    
+    /*
+    btnAceptar.addEventListener("click", function () {
+        modalContrasena.hide();
+    });*/
+
+    btnConfirmar.addEventListener("click", function () {
+        modalConfirmar.hide();
+        form.submit();
+    });
+
+    btnDescartar.addEventListener("click", function () {
+        if (nombreInput) nombreInput.value = "";
+        if(apellidopaternoInput) apellidopaternoInput.value="";
+        if(apellidomaternoInput) apellidomaternoInput.value="";
+        if(numerotelcliInput) numerotelcliInput.value="";
+        if(correoInput) correoInput.value="";
+        if (rfcInput) rfcInput.value = "";
+        if (direccionInput) direccionInput.value = "";
+        if(fechanacimientoInput) fechanacimientoInput.value="";
+        if(fechaultimocontactoInput) fechaultimocontactoInput.value= "";
+        if(frecuenciaCompraInput)frecuenciaCompraInput.value = "";
+        if (estadoClienteInput) estadoClienteInput.value= "";
+        if(comentariosInput) comentariosInput.value= "";
+        form.submit();
+    });
+});
