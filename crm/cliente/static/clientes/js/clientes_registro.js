@@ -23,47 +23,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const btnConfirmar = document.getElementById("confirmarOpcionales");
     const btnDescartar = document.getElementById("descartarOpcionales");
-    //const btnAceptar = document.getElementById("confirmar");
 
     if (estadoClienteContainer) {
         estadoClienteContainer.style.display = "block";//siempre visible
         
     }
-    /*if (estadoClienteInput) {
-        if (estadoClienteInput.value === '3') {//Frecuente
-            frecuenciaCompraInput.style.display = "block";//frecuenciaCompraInput.closest(".col-md-6").style.display = "none";
-        }
 
-        estadoClienteInput.addEventListener("change", function () {
-            if (this.value === 3) {//"Frecuencia"
-                frecuenciaCompraInput.closest(".col-md-6").style.display = "block";
-            } else {
-                frecuenciaCompraInput.closest(".col-md-6").style.display = "none";
-            }
-        });
-    }*/
-
-    const FRECUENTE_ID = '3'; // El valor del select es un string. Asumimos 3 = Frecuente.
+    const FRECUENTE_ID = '3'; // 3 = Frecuente
 
     function toggleFrecuencia(selectedValue) {
         if (selectedValue === FRECUENTE_ID) {
             frecuenciaCompraContainer.style.display = "block";
-            // Opcional: Establecer 'required' si el campo debe ser obligatorio al mostrarse
-            // frecuenciaCompraInput.required = true; 
         } else {
             frecuenciaCompraContainer.style.display = "none";
             // Limpiamos el valor para evitar enviar datos incorrectos al servidor
             frecuenciaCompraInput.value = "";
-            // frecuenciaCompraInput.required = false;
         }
     }
     
-    // 1. Establecer el estado inicial al cargar la página (para edición o si ya tiene valor)
+    // Establecer el estado inicial al cargar la página (para edición o si ya tiene valor)
     if (estadoClienteInput && frecuenciaCompraContainer) {
         // Obtenemos el valor inicial y ajustamos la visibilidad
         toggleFrecuencia(estadoClienteInput.value); 
 
-        // 2. Escuchar los cambios
+        // Escuchar los cambios
         estadoClienteInput.addEventListener("change", function () {
             toggleFrecuencia(this.value);
         });
