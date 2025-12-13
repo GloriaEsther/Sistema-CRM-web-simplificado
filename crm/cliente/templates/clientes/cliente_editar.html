@@ -9,9 +9,9 @@
 
   <div class="crm-card">
 
-    <h4 class="crm-title text-center mb-4">Crear Cliente</h4>
+    <h4 class="crm-title text-center mb-4">Editar Cliente</h4>
 
-    <form method="POST" id="registroClienteForm" novalidate>
+    <form method="POST" id="edicionClienteForm" novalidate>
       {% csrf_token %}
 
       <div class="row">
@@ -61,7 +61,7 @@
           {% render_field form.estado_cliente class="form-control" %}
         </div>
 
-        <div class="col-md-6 mb-3" id="frecuenciaContainer">
+        <div class="col-md-6 mb-3" id="frecuenciaContaineredicion">
           <label class="form-label">Frecuencia de compra</label>
           {% render_field form.frecuencia_compra class="form-control" %}
         </div>

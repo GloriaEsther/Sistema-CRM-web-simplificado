@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-
+{% block title %}Cliente{% endblock %}
 {% block content %}
-<h2>Detalle del Cliente</h2>
-
-<div class="card p-3 shadow-sm">
+<div class="crm-section">
+  <div class="crm-card">
+    <h4 class="crm-title text-center mb-4">Detalles del Cliente</h4>
     <p><strong>Nombre:</strong> {{ cliente.nombre }} {{ cliente.apellidopaterno }} {{ cliente.apellidomaterno }}</p>
     <p><strong>Teléfono:</strong> {{ cliente.numerotelcli }}</p>
     <p><strong>Correo:</strong> {{ cliente.correo|default:""}}</p>
@@ -13,8 +13,7 @@
     <p><strong>Último contacto:</strong> {{ cliente.fecha_ultimocontacto |default:"" }}</p>
     <p><strong>Frecuencia de compra:</strong> {{ cliente.frecuencia_compra|default:""  }}</p>
     <p><strong>Estado del cliente:</strong> {{ cliente.estado_cliente|default:" "}}</p>
+    <a href="{% url 'cliente:listar' %}" class="btn btn-secondary mt-3 crm-btn">Regresar</a>
+   </div>
 </div>
-
-<a href="{% url 'cliente:listar' %}" class="btn btn-secondary mt-3">Regresar</a>
-
 {% endblock %}

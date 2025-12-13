@@ -31,7 +31,7 @@ def cliente_crear(request):
         if form.is_valid():
             cliente = form.save(commit=False)
             cliente.usuario_registro = usuario
-            cliente.owner = usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner
+            cliente.owner = usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
             cliente.save()
 
             messages.success(request, "Cliente registrado correctamente.")
@@ -59,7 +59,7 @@ def cliente_editar(request, pk):
     else:
         form = ClienteForm(instance=cliente)
 
-    return render(request, "clientes/cliente_form.html", {"form": form})
+    return render(request, "clientes/cliente_editar.html", {"form": form})
 
 
 def cliente_eliminar(request, pk):

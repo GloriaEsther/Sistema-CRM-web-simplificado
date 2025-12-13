@@ -1,13 +1,13 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-  const form = document.getElementById("registroClienteForm");
+  const form = document.getElementById("edicionClienteForm");
   if (!form) return;
 
   /* ==========================
      ELEMENTOS
   ========================== */
   const estadoCliente = document.getElementById("id_estado_cliente");
-  const frecuenciaContainer = document.getElementById("frecuenciaContainer");
+  const frecuenciaContainer = document.getElementById("frecuenciaContaineredicion");
   const frecuenciaSelect = document.getElementById("id_frecuencia_compra");
 
   const modalConfirmarEl = document.getElementById("confirmModal");
@@ -26,8 +26,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function toggleFrecuencia() {//function toggleFrecuencia() {
     if (!estadoCliente || !frecuenciaContainer) return;
+    //const valor = String(estadoCliente.value).trim();
 
-    if (estadoCliente.value === FRECUENTE_ID) {//if (estadoCliente.value === FRECUENTE_ID) {
+    if (estadoCliente.value === FRECUENTE_ID) {
       frecuenciaContainer.style.display = "block";
     } else {
       frecuenciaContainer.style.display = "none";
@@ -39,6 +40,9 @@ document.addEventListener("DOMContentLoaded", function () {
   if (estadoCliente) {
     estadoCliente.addEventListener("change", toggleFrecuencia);
   }
+ 
+  //estadoCliente.addEventListener("change", toggleFrecuencia);
+ 
 
   /* ==========================
      VALIDAR CAMPOS OBLIGATORIOS

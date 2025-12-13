@@ -1,0 +1,96 @@
+/*Variables globales*/
+:root {
+  --primary: #0d6efd;
+  --secondary: #6c757d;
+  --bg-light: #f8f9fa;
+  --radius: 14px;
+}
+
+body {
+  background: var(--bg-light);
+}
+
+/*Tarjetas*/
+.crm-card {
+  background: white;
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+}
+
+/* ===== Botones ===== */
+.crm-btn {
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+/* ===== Títulos ===== */
+.crm-title {
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.crm-mobile-nav {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: white;
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 0;
+  border-top: 1px solid #ddd;
+}
+
+.crm-mobile-nav a {
+  text-decoration: none;
+  color: #333;
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.crm-mobile-nav i {
+  font-size: 1.4rem;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  border: none;
+}
+
+.container {
+  padding: 12px;
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding: 24px;
+  }
+}
+
+/*Secciones*/
+.crm-section{
+ margin-bottom: 24px;
+}
+.crm-section-header{
+  display: flex;
+  justify-content:space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+
+@media (max-width: 768px) {
+.crm-section-header {
+flex-direction: column;
+gap: 12px;
+}
+}
+/*cliente*/
+#frecuenciaContainer {
+  display: none;
+}
+
+#frecuenciaContaineredicion {
+  display: block;
+}

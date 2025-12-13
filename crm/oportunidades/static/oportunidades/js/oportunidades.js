@@ -10,8 +10,7 @@ function getCsrf() {
   return document.querySelector('[name=csrfmiddlewaretoken]').value;
 }
 
-/* --------------- DRAG & DROP --------------- */
-function setupDragAndDrop() {
+/* --------------- DRAG & DROPfunction setupDragAndDrop() {
   const cards = () => document.querySelectorAll('.kanban-card');
   const cols = document.querySelectorAll('.kanban-column');
 
@@ -37,6 +36,49 @@ function setupDragAndDrop() {
 
     card.addEventListener('dragend', () => {
        card.classList.remove("moving");
+    });
+
+  });
+} --------------- */
+
+function setupDragAndDrop() {
+
+  const columns = document.querySelectorAll('.kanban-column');
+
+  document.querySelectorAll('.kanban-card').forEach(card => {
+
+    card.addEventListener('dragstart', ev => {
+      ev.dataTransfer.setData('text/plain', card.dataset.id);
+      card.classList.add('moving');
+    });
+
+    card.addEventListener('dragend', () => {
+      card.classList.remove('moving');
+    });
+
+  });
+
+  columns.forEach(column => {
+
+    const wrapper = column.querySelector('.cards-wrapper');
+
+    column.addEventListener('dragover', ev => {
+      ev.preventDefault();
+      ev.dataTransfer.dropEffect = 'move';
+    });
+
+    column.addEventListener('drop', ev => {
+      ev.preventDefault();
+
+      const id = ev.dataTransfer.getData('text/plain');
+      if (!id) return;
+
+      const card = document.querySelector(`.kanban-card[data-id="${id}"]`);
+      if (!card || !wrapper) return;
+
+      wrapper.appendChild(card);
+
+      moverOportunidad(id, column.dataset.etapaId);
     });
 
   });
