@@ -4,12 +4,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const localFijoInput = document.getElementById("id_local_Fijo");
     const rfcInput = document.getElementById("id_rfc");
     const nombre_negocioInput=document.getElementById("id_nombre_negocio");
-    //const direccionInput = document.getElementById("id_direccion");//temporalmente lo quite :b
     const btnGuardar = document.getElementById("btnGuardar");
-    
+    const apellidomaternoInput = document.getElementById("id_apellidopaterno");
+    const numerotelInput = document.getElementById("id_numerotel");
     const form = document.getElementById("registroForm");
-    // Iniciar objetos de modal
-    // Se inicializan aquí para que el código pueda llamarlos con .show()
     
     const modalConfirmar = new bootstrap.Modal(document.getElementById("confirmModal"));
     const modalContrasena = new bootstrap.Modal(document.getElementById("coninvalida"));
@@ -48,15 +46,19 @@ document.addEventListener("DOMContentLoaded", function () {
         const obligatorios = [
             { id: "id_nombre", label: "Nombre" },
             { id: "id_apellidopaterno", label: "Apellido Paterno" },
-            { id: "id_apellidomaterno", label: "Apellido Materno" },
-            { id: "id_numerotel", label: "Número Telefónico" },
             { id: "id_correo", label: "Correo Electrónico" },
             { id: "id_contrasena", label: "Contraseña" },
+            { id: "id_local_Fijo", label: "¿Cuenta con un local fijo?", tipo: "select"},
         ];
 
         const faltantes = obligatorios.filter(campo => {
             const el = document.getElementById(campo.id);
-            return !el || el.value.trim() === "";
+            if (!el) return true;
+
+            if (campo.tipo === "select") {
+                return el.value === "" || el.selectedIndex === 0;
+            }
+            return el.value.trim() === "";
         });
 
         if (faltantes.length > 0) {
@@ -94,10 +96,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         const tieneOpcionales =
-            (localFijoInput && localFijoInput.value.trim() !== "") ||
+            (apellidomaternoInput && apellidomaternoInput.value.trim() !== "") ||
+            (numerotelInput && numerotelInput.value.trim() !== "")||
             (rfcInput && rfcInput.value.trim() !== "") ||
             (nombre_negocioInput && nombre_negocioInput.value.trim() !== "");
-           // (direccionInput && direccionInput.value.trim() !== "") ||
         if (tieneOpcionales) {
             modalConfirmar.show();
         } else {
@@ -115,10 +117,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     btnDescartar.addEventListener("click", function () {
-        if (localFijoInput) localFijoInput.value = "";
+        if(apellidomaternoInput) apellidomaternoInput.value="";
+        if(numerotelInput) numerotelInput.value= "";
         if (rfcInput) rfcInput.value = "";
         if(nombre_negocioInput)nombre_negocioInput.value="";
-        //if (direccionInput) direccionInput.value = "";
         form.submit();
     });
 });

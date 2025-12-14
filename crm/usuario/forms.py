@@ -9,8 +9,8 @@ class UsuarioForm(forms.ModelForm):
     class Meta:
         model = Usuario
         fields = [
-            'nombre', 'apellidopaterno', 'apellidomaterno',
-            'numerotel', 'correo', 'contrasena', 'rfc', 'local_Fijo','nombre_negocio'
+            'nombre', 'apellidopaterno', 'apellidomaterno','numerotel','correo', 'contrasena', 
+            'rfc', 'local_Fijo','nombre_negocio'
         ]
         widgets = {
             'contrasena': forms.PasswordInput(attrs={'class': 'form-control'}),
@@ -39,6 +39,12 @@ class UsuarioForm(forms.ModelForm):
             self.add_error('rfc', "Ya existe un usuario con ese RFC.")
         return data
     
+    def clean_local_fijo(self):
+        local_fijo = self.cleaned_data.get('local_Fijo')
+        if not local_fijo:
+            raise forms.ValidationError("Por favor, mencione si cuenta con un local fijo o no.")#Error
+        return local_fijo
+    
     def save(self, commit=True):
         usr = super().save(commit=False)
         # hash de contraseña
@@ -63,8 +69,9 @@ class EmpleadoForm(forms.ModelForm):
             'apellidomaterno',
             'numerotel', 
             'correo', 
-            'contrasena','rol'
-        ]
+            'contrasena',
+            'rol',
+        ]#
         widgets = {
             'contrasena': forms.PasswordInput(attrs={'class': 'form-control'}),
         }
@@ -88,7 +95,13 @@ class EmpleadoForm(forms.ModelForm):
         if correo and Usuario.todos.filter(correo=correo).exists():
             self.add_error("correo", "Ya existe un usuario con ese correo.")
         return data
-
+    
+    def clean_rol(self):
+        rol = self.cleaned_data.get('rol')
+        if not rol:
+            raise forms.ValidationError("Debes seleccionar un rol.")
+        return rol
+    
     def save(self, commit=True):
         usr = super().save(commit=False)
         # hash

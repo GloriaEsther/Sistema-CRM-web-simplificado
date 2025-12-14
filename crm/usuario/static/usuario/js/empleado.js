@@ -28,11 +28,17 @@ document.addEventListener("DOMContentLoaded", function () {
             { id: "id_numerotel", label: "Número Telefónico" },
             { id: "id_correo", label: "Correo Electrónico" },
             { id: "id_contrasena", label: "Contraseña" },
+            { id: "id_rol", label: "Rol", tipo: "select"},
         ];
 
         const faltantes = obligatorios.filter(campo => {
             const el = document.getElementById(campo.id);
-            return !el || el.value.trim() === "";
+            if (!el) return true;
+
+            if (campo.tipo === "select") {
+                return el.value === "" || el.selectedIndex === 0;
+            }
+            return el.value.trim() === "";
         });
 
         if (faltantes.length > 0) {
@@ -68,20 +74,9 @@ document.addEventListener("DOMContentLoaded", function () {
             modalContrasena.show();
             return;
         }
-
-        const datos =
-            (RolInput && RolInput.value.trim() !== "") ||
-            (nombreInput && nombreInput.value.trim() !== "") ||
-            (apellidopaternoInput && apellidopaternoInput.value.trim() !== "")||
-            (apellidomaternoInput && apellidomaternoInput.value.trim() !== "") ||
-            (numerotelInput && numerotelInput.value.trim() !== "") ||
-            (correoInput && correoInput.value.trim() !== "") ||
-            (contrasenaInput && contrasenaInput.value.trim() !== "") ;
-        if (datos) {
-            modalConfirmar.show();
-        } else {
-            form.submit();
-        }
+        
+        modalConfirmar.show();
+        form.submit();
     });
 
     btnAceptar.addEventListener("click", function () {

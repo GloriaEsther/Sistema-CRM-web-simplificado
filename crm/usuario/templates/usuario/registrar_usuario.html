@@ -1,22 +1,12 @@
+{% extends 'base.html' %}
 {% load static %}
 {% load widget_tweaks %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registrarse</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
+{% block title %}Crear Cuenta{% endblock %}
 
-<body class="bg-light">
-  <div class="container mt-5">
-    <div class="row justify-content-center">
-      <div class="col-12 col-md-10 col-lg-8 col-xl-6">
-        <div class="card shadow-sm border-0">
-          <div class="card-body p-4">
-            <h2 class="mb-4 text-center fw-bold text-primary">Registrarse</h2>
-
+{% block content %}
+  <div class="crm-section">
+    <div class="crm-card">
+       <h2 class="text-center mb-4">Crear Cuenta</h2>
             <form method="POST" id="registroForm" class="needs-validation" novalidate>
               {% csrf_token %}
 
@@ -40,6 +30,7 @@
                       </div>
                   {% endfor %}
                 </div>
+
                 <div class="col-md-4 mb-3">
                   <label for="id_apellidopaterno" class="form-label">Apellido Paterno</label>
                   {% render_field form.apellidopaterno class="form-control" add_error_class="is-invalid" %}
@@ -49,6 +40,7 @@
                       </div>
                   {% endfor %}
                 </div>
+
                 <div class="col-md-4 mb-3">
                   <label for="id_apellidomaterno" class="form-label">Apellido Materno</label>
                   {% render_field form.apellidomaterno class="form-control" add_error_class="is-invalid" %}
@@ -71,6 +63,7 @@
                   {% endfor %}
                   <small class="form-text text-muted">Ejemplo: 5512345678</small>
                 </div>
+                
                 <div class="col-md-6 mb-3">
                   <label for="id_correo" class="form-label">Correo Electrónico</label>
                   {% render_field form.correo class="form-control" add_error_class="is-invalid" %}
@@ -132,8 +125,7 @@
                   {% endfor %}
                 </div>
               </div>
-
-              
+           
               <div class="d-flex justify-content-between mt-4">
                 <button type="button" class="btn btn-primary w-50 me-2" id="btnGuardar">
                   Guardar
@@ -146,10 +138,7 @@
               <div class="text-center mt-3">
                 <a href="{% url 'usuario:iniciar_sesion' %}">¿Ya tienes cuenta? Inicia sesión</a>
               </div>
-            </form>
-          </div>
-        </div>
-      </div>
+            </form> 
     </div>
   </div>
 
@@ -246,8 +235,5 @@
       </div>
     </div>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  
   <script src="{% static 'usuario/js/registro.js' %}?v={{ timestamp }}"></script>
-</body>
-</html>
+{% endblock %}

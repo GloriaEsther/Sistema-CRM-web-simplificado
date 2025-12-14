@@ -32,11 +32,10 @@ class FrecuenciaClienteCat(models.Model):
         return self.nombre_frecuencia
 
 class Cliente(models.Model):
-
     idcliente = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=45)
-    apellidopaterno = models.CharField(max_length=45)
-    apellidomaterno = models.CharField(max_length=45)
+    apellidopaterno = models.CharField(max_length=45, blank=True,null=True)
+    apellidomaterno = models.CharField(max_length=45, blank=True,null=True)
     numerotelcli = models.CharField(max_length=10)
     #Opcionales
     correo = models.CharField(max_length=100, blank=True,null=True)

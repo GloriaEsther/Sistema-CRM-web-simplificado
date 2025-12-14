@@ -16,7 +16,7 @@
 
 
         <div class="fw-bold mb-1">
-        {{ c.nombre }} {{ c.apellidopaterno }} {{ c.apellidomaterno }}
+        {{ c.nombre }} {{ c.apellidopaterno |default:""  }} {{ c.apellidomaterno |default:""  }}
         </div>
 
 

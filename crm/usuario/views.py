@@ -99,6 +99,7 @@ def editar_usuario(request, pk):
 
 @require_roles(['Dueño'])
 def eliminar_usuario(request, pk):#funciona
+    #
     usuario = get_object_or_404(Usuario, pk=pk)
     usuario.eliminar_logico()
     messages.success(request, "Usuario eliminado ")#"(lógicamente)."

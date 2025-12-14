@@ -46,8 +46,8 @@ document.addEventListener("DOMContentLoaded", function () {
   function hayCamposObligatoriosVacios() {
     const obligatorios = [
       { id: "id_nombre", label: "Nombre" },
-      { id: "id_apellidopaterno", label: "Apellido Paterno" },
-      { id: "id_apellidomaterno", label: "Apellido Materno" },
+      //{ id: "id_apellidopaterno", label: "Apellido Paterno" },
+      //{ id: "id_apellidomaterno", label: "Apellido Materno" },
       { id: "id_numerotelcli", label: "Número Telefónico" }
     ];
 
