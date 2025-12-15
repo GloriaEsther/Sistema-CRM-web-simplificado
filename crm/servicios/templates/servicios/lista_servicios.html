@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Servicios{% endblock %}
+{% block content %}
+
+<div class="crm-section">
+    <div class="crm-section-header">
+        <h4 class="crm-title">Servicios</h4>
+
+        <a href="{% url 'servicio:crear' %}" class="btn btn-primary crm-btn">
+        + Crear Servicio
+        </a>
+    </div>
+
+    {% for s in servicios %}
+    <div class="crm-card">
+
+
+        <div class="fw-bold mb-1">
+        {{ s.nombre |default:"" }}
+        </div>
+
+
+        <div class="text-muted small"> {{ s.precio }}</div>
+        {% if c.correo %}
+        <div class="text-muted small">{{ c.descripcion }}</div>
+        {% endif %}
+
+        <div class="d-grid gap-2 mt-3 d-md-flex">
+            <a href="{% url 'servicio:detalle' s.idservicio %}" class="btn btn-outline-secondary crm-btn">
+            Consultar
+            </a>
+            <a href="{% url 'servicio:editar' s.idservicio %}" class="btn btn-success crm-btn">
+            Editar
+            </a>
+            <a href="{% url 'servicio:eliminar' s.idservicio %}" class="btn btn-danger crm-btn"
+            onclick="return confirm('¿Eliminar servicio?')">
+            Eliminar
+            </a>
+      </div>
+    </div>
+    
+    {% empty %}
+    <p class="text-center text-muted">Agrega un servicio</p>
+    {% endfor %}
+</div>
+{% endblock %}

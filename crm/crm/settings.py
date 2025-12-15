@@ -39,8 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'widget_tweaks',#libreria para manejar css mas facil
     'cliente',
-    'reportes',
     'usuario',
+    'servicios',#en el nombre de las apps manda el nombre de la carpeta
+    'inventario',
     'ventas',
     'oportunidades',
 ]

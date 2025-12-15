@@ -59,6 +59,10 @@
               Clientes
             </a>
 
+            <a href="{% url 'servicio:listar' %}" class="btn btn-outline-light btn-sm">
+              Servicios
+            </a>
+
             {% if usuario.rol.nombre_rol == "Dueño" %}
             <a href="{% url 'usuario:agregar_empleado' %}" class="btn btn-outline-light btn-sm">
               Agregar empleado
@@ -92,6 +96,10 @@
         <a href="{% url 'cliente:listar' %}" class="nav-link text-white fw-semibold">
           <i class="bi bi-people"></i>
           <span>Clientes</span>
+        </a>
+        <a href="{% url 'servicio:listar' %}" class="nav-link text-white fw-semibold">
+          <!--<i class="bi bi-people"></i>-->
+          <span>Servicios</span>
         </a>
         {% if usuario.rol.nombre_rol == "Dueño" %}
           <a href="{% url 'usuario:agregar_empleado' %}" class="nav-link text-white fw-semibold">

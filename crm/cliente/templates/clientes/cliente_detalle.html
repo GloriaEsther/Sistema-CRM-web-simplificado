@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Cliente{% endblock %}
 {% block content %}
-<div class="crm-section">
-  <div class="crm-card">
+<div class="crm-form-wrapper"><!--"crm-section""-->
+  <div class="crm-form-card"><!--"crm-card"-->
     <h4 class="crm-title text-center mb-4">Detalles del Cliente</h4>
     <p><strong>Nombre:</strong> {{ cliente.nombre }} {{ cliente.apellidopaterno }} {{ cliente.apellidomaterno }}</p>
     <p><strong>Teléfono:</strong> {{ cliente.numerotelcli }}</p>

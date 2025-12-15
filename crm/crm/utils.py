@@ -6,6 +6,7 @@ from django.contrib.auth import logout
 from usuario.models import Usuario,RolUsuario
 from cliente.models import Cliente
 from django.db.models import Q
+from servicios.models import Servicio
 
 def require_roles(allowed_roles):#restringe roles (quien accede a que)
     def decorator(view_func):
@@ -49,3 +50,19 @@ def queryset_clientes_por_rol(usuario):#prueba
         return Cliente.activos.filter(owner=negocio)
 
     return Cliente.activos.none()
+
+
+
+def queryset_servicios_por_rol(usuario):
+    rol = usuario.rol.nombre_rol
+    # todos  deben ven los servicios del negocio, no solo los que crearon
+    if rol == "Dueño":
+        return Servicio.activos.filter(owner=usuario)
+
+    if rol == "Administrador":
+        return Servicio.activos.filter(owner=usuario.owner_id)
+
+    if rol == "Vendedor":
+        return Servicio.activos.filter(owner=usuario.owner_id)
+
+    return Servicio.activos.none()

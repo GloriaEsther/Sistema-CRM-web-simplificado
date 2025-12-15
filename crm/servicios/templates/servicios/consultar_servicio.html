@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Servicios{% endblock %}
+{% block content %}
+<div class="crm-form-wrapper">
+  <div class="crm-form-card">
+    <h4 class="crm-title text-center mb-4">Detalles del Servicio</h4>
+    <p><strong>Nombre:</strong> {{ servicio.nombre }} </p>
+    <p><strong>Precio:</strong> {{ servicio.precio }}</p>
+    <p><strong>Descripcion:</strong> {{ servicio.descripcion|default:""}}</p>
+    <a href="{% url 'servicio:listar' %}" class="btn btn-secondary mt-3 crm-btn">Regresar</a>
+   </div>
+</div>
+{% endblock %}
