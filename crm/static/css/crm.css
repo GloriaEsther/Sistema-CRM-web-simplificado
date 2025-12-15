@@ -10,19 +10,13 @@ body {
   background: var(--bg-light);
 }
 
-/*Tarjetas*/
+/*Tarjetas para listar clientes*/
 .crm-card {
-  width: 100%;
-    max-width: 420px;
-    background: white;
-    padding: 30px;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-  /*background: white;
+  background: white;
   border-radius: var(--radius);
   padding: 16px;
   margin-bottom: 16px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.06);*/
+  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
 }
 
 /* ===== Botones ===== */
@@ -76,20 +70,45 @@ body {
 
 /*Secciones*/
 .crm-section{
-  min-height: calc(100vh - 120px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
+   min-height: calc(100vh - 120px);
+   padding: 20px;
  /*margin-bottom: 24px;*/
 }
+/*contenedor para formularios, esto estaba antes, funcionaba pero no como quisiera
+.crm-form-section{justify-content: center;
+  align-items: center;
+  width: 100%; 
+  max-width: 420px; 
+  background: white; 
+  padding: 30px; 
+  border-radius: 16px; 
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+*/
+/*Contenedores para formularios...*/
+.crm-form-wrapper {/*Contenedor externo..*/
+  min-height: calc(100vh - 120px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.crm-form-card {/*Tarjeta del formulario como tal ...*/
+  width: 100%;
+  max-width: 420px;
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
 .crm-section-header{
   display: flex;
   justify-content:space-between;
   align-items: center;
   margin-bottom: 16px;
 }
-
 
 @media (max-width: 768px) {
 .crm-section-header {
@@ -132,4 +151,11 @@ gap: 12px;
 
 .logo-box {
     background: #ffedd5;
+}
+
+/*tamano del logo el el navbar*/
+.navbar-logo {
+  height: 60px;/* height: 52px;(el de 52px si funciona)antes 40 */
+  width: auto;
+  object-fit: contain;
 }

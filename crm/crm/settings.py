@@ -68,7 +68,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'usuario.context_processors.usuario_actual'#procesador de contexto nuevo es el que se encarga de checar su
+                'usuario.context_processors.usuario_actual'#procesador de contexto nuevo es el que se encarga de recuperar el usuario en sesion y su rol para usarlo en los templates necesarios....
             ],
         },
     },

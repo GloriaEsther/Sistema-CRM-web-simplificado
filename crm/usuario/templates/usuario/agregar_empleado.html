@@ -4,8 +4,8 @@
 {% block title %}Agregar Contacto{% endblock %}
 
 {% block content %}
-  <div class="crm-section">
-    <div class="crm-card">
+  <div class="crm-form-wrapper">
+    <div class="crm-form-card">
       <h2 class="text-center mb-4">Registrar Empleado</h2>
             <form method="POST" id="EmpleadoForm" class="needs-validation" novalidate>
               {% csrf_token %}
@@ -19,9 +19,7 @@
                 {% endfor %}
               {% endif %}
 
-
-              <div class="row">
-                <div class="col-md-4 mb-3">
+                <div class="mb-3">
                   <label for="id_nombre" class="form-label">Nombre</label>
                   {% render_field form.nombre class="form-control" add_error_class="is-invalid"%}
                   {% for error in form.nombre.errors %}
@@ -30,7 +28,8 @@
                       </div>
                   {% endfor %}
                 </div>
-                <div class="col-md-4 mb-3">
+
+                <div class="mb-3">
                   <label for="id_apellidopaterno" class="form-label">Apellido Paterno</label>
                   {% render_field form.apellidopaterno class="form-control" add_error_class="is-invalid" %}
                   {% for error in form.apellidopaterno.errors %}
@@ -39,7 +38,8 @@
                       </div>
                   {% endfor %}
                 </div>
-                <div class="col-md-4 mb-3">
+
+                <div class="mb-3">
                   <label for="id_apellidomaterno" class="form-label">Apellido Materno</label>
                   {% render_field form.apellidomaterno class="form-control" add_error_class="is-invalid" %}
                   {% for error in form.apellidomaterno.errors %}
@@ -48,10 +48,8 @@
                       </div>
                   {% endfor %}
                 </div>
-              </div>
-
-              <div class="row">
-                <div class="col-md-6 mb-3">
+              
+                <div class="mb-3">
                   <label for="id_numerotel" class="form-label">Número Telefónico</label>
                   {% render_field form.numerotel class="form-control" add_error_class="is-invalid" %}
                   {% for error in form.numerotel.errors %}
@@ -61,7 +59,7 @@
                   {% endfor %}
                   <small class="form-text text-muted">Ejemplo: 5512345678</small>
                 </div>
-                <div class="col-md-6 mb-3">
+                <div class="mb-3">
                   <label for="id_correo" class="form-label">Correo Electrónico</label>
                   {% render_field form.correo class="form-control" add_error_class="is-invalid" %}
                   {% for error in form.correo.errors %}
@@ -70,10 +68,8 @@
                       </div>
                   {% endfor %}
                 </div>
-              </div>
-
-              <div class="row">
-                <div class="col-md-6 mb-3">
+              
+                <div class="mb-3">
                   <label for="id_contrasena" class="form-label">Contraseña</label>
                   {% render_field form.contrasena class="form-control" add_error_class="is-invalid" %}
                   {% for error in form.contrasena.errors %}
@@ -85,9 +81,8 @@
                     Mínimo 10 caracteres, una mayúscula y un número.
                   </small>
                 </div>
-              </div>
               
-               <div class="col-md-6 mb-3" id="rolContainer">
+               <div class="mb-3" id="rolContainer">
                   <label for="id_rol" class="form-label">Rol*</label>
                   {% render_field form.rol class="form-select" add_error_class="is-invalid" %}
                   {% for error in form.rol.errors %}
