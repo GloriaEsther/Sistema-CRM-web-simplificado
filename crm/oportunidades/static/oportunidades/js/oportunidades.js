@@ -1,45 +1,26 @@
 // oportunidades.js
 document.addEventListener('DOMContentLoaded', function() {
   setupDragAndDrop();
-  hookupCrearForm();
   hookupEditarForm();
   hookupEliminarForm();
 });
 
 function getCsrf() {
-  return document.querySelector('[name=csrfmiddlewaretoken]').value;
+   let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, 10) === 'csrftoken=') {
+        cookieValue = decodeURIComponent(cookie.substring(10));
+        break;
+      }
+    }
+  }
+  return cookieValue;
 }
 
-/* --------------- DRAG & DROPfunction setupDragAndDrop() {
-  const cards = () => document.querySelectorAll('.kanban-card');
-  const cols = document.querySelectorAll('.kanban-column');
-
-  cols.forEach(col => {
-    col.addEventListener('dragover', ev => {
-      ev.preventDefault();
-      ev.dataTransfer.dropEffect = 'move';
-    });
-    col.addEventListener('drop', ev => {
-      ev.preventDefault();
-      const id = ev.dataTransfer.getData('text/plain');
-      if (!id) return;
-      col.appendChild(document.querySelector('.kanban-card[data-id="' + id + '"]'));
-      // Post to server to update etapa
-      moverOportunidad(id, col.getAttribute('data-etapa-id'));
-    });
-  });
-
-  document.querySelectorAll('.kanban-card').forEach(card => {
-    card.addEventListener('dragstart', ev => {
-      card.classList.add("moving");//ev.dataTransfer.setData('text/plain', card.getAttribute('data-id'));
-    });
-
-    card.addEventListener('dragend', () => {
-       card.classList.remove("moving");
-    });
-
-  });
-} --------------- */
+/* --------------- DRAG & DROPfunction --------------- */
 
 function setupDragAndDrop() {
 
@@ -85,7 +66,7 @@ function setupDragAndDrop() {
 }
 
 function moverOportunidad(idoportunidad, etapa_id) {
-  fetch(window.location.origin + '/oportunidades/mover/' + idoportunidad + '/', {
+  fetch('/oportunidades/mover/' + idoportunidad + '/', {//fetch(window.location.origin + '/oportunidades/mover/' + idoportunidad + '/', {
     method: 'POST',
     headers: {
       'X-CSRFToken': getCsrf(),
@@ -140,29 +121,6 @@ function abrirEliminar(id) {
       document.getElementById('elim-nombre').textContent = d.nombre;
       new bootstrap.Modal(document.getElementById('modalEliminar')).show();
     });
-}
-
-/* --------------- FORM CREAR (submit por fetch) --------------- */
-function hookupCrearForm() {
-  const form = document.getElementById('formCrear');
-  if (!form) return;
-  form.addEventListener('submit', function(ev) {
-    ev.preventDefault();
-    const data = new FormData(form);
-    fetch('/oportunidades/crear/', {
-      method: 'POST',
-      headers: { 'X-CSRFToken': getCsrf() },
-      body: data
-    }).then(r => {
-      if (r.redirected) window.location = r.url;
-      else return r.text();
-    }).then(txt => {
-      // si devuelve html con errores mostrar alert
-      if (txt && txt.includes('<form')) {
-        alert('Errores en el formulario, revisa los campos.');
-      }
-    }).catch(e => alert('Error al crear oportunidad.'));
-  });
 }
 
 /* --------------- FORM EDITAR --------------- */

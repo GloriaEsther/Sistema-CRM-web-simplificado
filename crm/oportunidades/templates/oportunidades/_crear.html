@@ -1,7 +1,7 @@
 <!-- Modal Crear -->
 <div class="modal fade" id="modalCrear" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
-    <form id="formCrear" class="modal-content" method="post">
+    <form id="formCrear" class="modal-content" method="post" action="{% url 'oportunidades:crear' %}">
       {% csrf_token %}
       <div class="modal-header">
         <h5 class="modal-title">Crear Oportunidad</h5>
@@ -38,8 +38,8 @@
           <div class="flex-grow-1">
             <label class="form-label">Cliente *</label>
             <div class="input-group">
-              <input type="text" id="crear-cliente-display" class="form-control" placeholder="Selecciona cliente" readonly required>
-              <input type="hidden" name="cliente_oportunidad" id="crear-cliente-id">
+              <input type="text" id="crear-cliente-display" class="form-control" placeholder="Selecciona cliente" readonly>
+              <input type="hidden" name="cliente_oportunidad" id="crear-cliente-id" required>
               <button class="btn btn-outline-secondary" type="button" onclick="abrirBuscarCliente('#modalCrear')">Buscar</button>
             </div>
           </div>
@@ -47,8 +47,8 @@
           <div class="flex-grow-1">
             <label class="form-label">Vendedor *</label>
             <div class="input-group">
-              <input type="text" id="crear-usuario-display" class="form-control" placeholder="Selecciona vendedor" readonly required>
-              <input type="hidden" name="usuario_responsable" id="crear-usuario-id">
+              <input type="text" id="crear-usuario-display" class="form-control" placeholder="Selecciona vendedor" readonly >
+              <input type="hidden" name="usuario_responsable" id="crear-usuario-id" required>
               <button class="btn btn-outline-secondary" type="button" onclick="abrirBuscarVendedor('#modalCrear')">Buscar</button>
             </div>
           </div>

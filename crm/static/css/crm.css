@@ -94,3 +94,50 @@ gap: 12px;
 #frecuenciaContaineredicion {
   display: block;
 }
+
+/*Oportunidades
+.kanban-board {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+.kanban-column {
+  min-width: 280px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.kanban-title {
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.kanban-card {
+  background: white;
+  border-radius: 10px;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.kanban-card-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.kanban-card-subtitle {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.kanban-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+*/

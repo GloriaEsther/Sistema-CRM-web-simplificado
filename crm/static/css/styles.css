@@ -2,7 +2,6 @@
     ESTILOS GENERALES
 --------------------------- */
 body {
-    /* Usaremos las fuentes de Bootstrap */
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     min-height: 100vh; /* Asegura que el cuerpo ocupe toda la altura */
 }

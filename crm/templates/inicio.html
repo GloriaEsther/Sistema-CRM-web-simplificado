@@ -11,15 +11,6 @@
         body {
             background-color: {{ preferencias.color_secundario|default:'var(--bs-white)' }}
         }
-        /* Asume que custom-purple-btn está definido en styles.css */
-        .custom-purple-btn {
-            background-color: #6f42c1; /* Ajustar a tu color real si es diferente */
-            border-color: #6f42c1;
-        }
-        .custom-purple-btn:hover {
-            background-color: #563d7c;
-            border-color: #563d7c;
-        }
     </style>
 </head>
 
@@ -43,7 +34,7 @@
                     <span class="navbar-text me-3">Bienvenido, {{ user.nombre|default:user.username }}</span>
                     
                     <a href="{% url 'usuario:cerrar_sesion' %}" class="btn btn-outline-dark">
-                            🔑 Cerrar Sesión
+                            Cerrar Sesión
                     </a>
                     
                     {%else%}
@@ -75,11 +66,11 @@
                 
                 {% if user.is_authenticated %}
                     <a href="{% url 'oportunidades:kanban' %}" class="btn btn-primary btn-lg custom-purple-btn shadow-lg">
-                        💻 Ir a la Aplicación
+                         Ir a la Aplicación
                     </a>
                 {% else %}
                     <a href="{% url 'usuario:iniciar_sesion' %}" class="btn btn-primary btn-lg custom-purple-btn shadow-lg">
-                        🔑 Iniciar Sesión
+                         Iniciar Sesión
                     </a>
                 {% endif %}
             </div>

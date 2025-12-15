@@ -19,7 +19,7 @@ def kanban(request):
         return redirect('usuario:iniciar_sesion') 
     
     usuario=Usuario.activos.get(idusuario=usuario_id)
-
+    negocio = usuario.owner_id if usuario.owner_id else usuario
     etapas = EtapaVentas.objects.all()
     data = {}
 
@@ -32,7 +32,7 @@ def kanban(request):
         if es_dueno:
             # Dueño/admin ve las oportunidades del negocio
             qs = Oportunidad.activos.filter(
-                negocio_oportunidad=usuario,
+                negocio_oportunidad=negocio,#usuario
                 etapa_ventas=e
             )
         elif es_vendedor:
@@ -53,7 +53,7 @@ def kanban(request):
     return render(request, 'oportunidades/kanban.html', {
         'etapas': etapas, 
         'data': data,
-        'form_crear': form_crear
+        'form_crear': form_crear #prueba....
     })
 
 def crear_oportunidad(request): 
@@ -69,7 +69,7 @@ def crear_oportunidad(request):
     ).values_list("id_rol", flat=True)
 
     # determinar dueño real del negocio
-    negocio = usuario.owner_id if usuario.owner_id else usuario #pruebas
+    negocio = usuario.owner_id if usuario.owner_id else usuario 
 
     if request.method == 'POST':
         form = OportunidadForm(request.POST)
@@ -77,24 +77,48 @@ def crear_oportunidad(request):
             try:
                 op = form.save(commit=False)
                 vendedor = op.usuario_responsable
-                if vendedor.rol.id_rol in roles_no_responsables:
-                    messages.error(request, " No puedes asignar oportunidades a administradores o dueños.")
-                    return redirect("oportunidades:crear")
+                
+                if usuario.rol.nombre_rol != "Dueño":#si el usuario no es rol dueno .....
+                    if vendedor.rol.id_rol in roles_no_responsables:
+                        messages.error(request, " No puedes asignar oportunidades a administradores o dueños.")
+                        return redirect("oportunidades:crear")
+                    
+                # Vendedor solo puede asignarse a sí mismo
+                if usuario.rol.nombre_rol == "Vendedor":
+                    if vendedor.idusuario != usuario.idusuario:
+                        messages.error(
+                            request,
+                            "Como vendedor, solo puedes asignarte oportunidades a ti mismo."
+                        )
+                        return redirect("oportunidades:kanban")
+                
                 op.creado_por = usuario
                 op.negocio_oportunidad = negocio 
                 op.save()
                 messages.success(request, "Oportunidad creada correctamente.")
                 return redirect('oportunidades:kanban')
-            except IntegrityError as e:
+            except IntegrityError:
                 messages.error(request, "Error al crear la oportunidad. ¿Ya existe una con mismo nombre?")
+            except Exception as e:
+                # Captura cualquier otro error de guardado/relación
+                print(f"Error grave al guardar: {e}") 
+                messages.error(request, f"Error interno: No se pudo guardar la oportunidad. {e}")
+        
         else:
+            # --- DEBUGGING CRÍTICO ---
+            print("FALLO DE VALIDACIÓN DEL FORMULARIO:")
+            print(form.errors)
+            # --- FIN DEBUGGING ---
             for field, errs in form.errors.items():
                 for err in errs:
-                    messages.error(request, f"{field}: {err}")
-    else:
-        form = OportunidadForm()
+                    field_name = field.replace('_', ' ').capitalize()
+                    messages.error(request, f"Error en '{field_name}': {err}")
+    
+                    #messages.error(request, f"{field}: {err}")
+    #else:
+     #   form = OportunidadForm()
 
-    return render(request, "oportunidades/kanban.html", {"form": form})#redirect('oportunidades:kanban')
+    return redirect('oportunidades:kanban')#return render(request, "oportunidades/kanban.html", {"form": form})#redirect('oportunidades:kanban')
     
 @require_POST
 def mover_oportunidad(request, pk):

@@ -10,7 +10,7 @@
         <form method="POST">
           {% csrf_token %}
           <div class="mb-3">
-            <label for="id_nombre" class="form-label">Correo Electrónico</label>
+            <label for="id_correo" class="form-label">Correo Electrónico</label>
                   {% render_field form.correo class="form-control" add_error_class="is-invalid"%}
                   {% for error in form.correo.errors %}
                       <div class="invalid-feedback d-block">
