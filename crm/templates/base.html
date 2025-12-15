@@ -15,16 +15,69 @@
 
 <body>
     {% if request.session.idusuario %}
-      <nav class="navbar p-3" id="topbar">
-          <div class="container d-flex justify-content-between">
-              <div class="d-flex ms-auto">
-                  <a href="{% url 'usuario:cerrar_sesion' %}" class="btn btn-outline-dark">
-                       Cerrar Sesión
-                  </a>
-              </div>
+      <nav class="navbar navbar-expand-lg px-4"
+          style="background-color:#f97316;">
+        <div class="container-fluid">
+
+          <!-- LOGO <a class="navbar-brand d-flex align-items-center text-white fw-bold" href="{% url 'oportunidades:kanban' %}">
+            {% if preferencias and preferencias.logo %}
+              <img src="{{ preferencias.logo.url }}" height="40" class="me-2 rounded">
+            {% else %}
+              <img src="{% static 'img/logo_default.png' %}" height="40" class="me-2">
+            {% endif %}
+            CRM
+          </a>-->
+          
+          {% if preferencias and preferencias.logo %}
+            <img src="{{ preferencias.logo.url }}"
+                height="40"
+                class="me-2 rounded"
+                alt="Logo negocio">
+          {% else %}
+            <img src="{% static 'img/logo_blanco_horizontal.png' %}"
+                height="40"
+                class="me-2"
+                alt="Logo default">
+          {% endif %}  
+
+          {% if usuario and usuario.rol.nombre_rol == "Dueño" %}
+            <button class="btn btn-outline-light btn-sm ms-2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalSubirLogo">
+                Cambiar logo
+            </button>
+            {% endif %}
+
+          
+          <!-- MENÚ DESKTOP -->
+          <div class="d-none d-lg-flex gap-3 ms-4">
+
+            <a href="{% url 'oportunidades:kanban' %}" class="btn btn-outline-light btn-sm">
+              Oportunidades
+            </a>
+
+            <a href="{% url 'cliente:listar' %}" class="btn btn-outline-light btn-sm">
+              Clientes
+            </a>
+
+            {% if usuario.rol.nombre_rol == "Dueño" %}
+            <a href="{% url 'usuario:agregar_empleado' %}" class="btn btn-outline-light btn-sm">
+              Agregar empleado
+            </a>
+            {% endif %}
           </div>
+
+          <!-- DERECHA -->
+          <div class="ms-auto">
+            <a href="{% url 'usuario:cerrar_sesion' %}" class="btn btn-outline-light btn-sm">
+              Cerrar sesión
+            </a>
+          </div>
+
+        </div>
       </nav>
-    {% endif %}
+      {% endif %}
+
 
     <!-- Contenido -->
     <main class="mt-4">
@@ -33,18 +86,20 @@
     
     {% if request.session.idusuario %}
       <nav class="crm-mobile-nav d-md-none">
-        <a href="{% url 'oportunidades:kanban' %}">
+        <a href="{% url 'oportunidades:kanban' %}" class="nav-link text-white fw-semibold">
           <i class="bi bi-kanban"></i>
           <span>Oportunidades</span>
         </a>
-        <a href="{% url 'cliente:listar' %}">
+        <a href="{% url 'cliente:listar' %}" class="nav-link text-white fw-semibold">
           <i class="bi bi-people"></i>
           <span>Clientes</span>
         </a>
-        <a href="{% url 'usuario:agregar_empleado' %}">
-          <i class="bi bi-person-plus"></i>
-          <span>Agregar empleado</span>
-        </a>
+        {% if usuario.rol.nombre_rol == "Dueño" %}
+          <a href="{% url 'usuario:agregar_empleado' %}" class="nav-link text-white fw-semibold">
+            <i class="bi bi-person-plus"></i>
+            <span>Agregar empleado</span>
+          </a>
+        {% endif %}
       </nav>
     {% endif %}
 
@@ -67,6 +122,34 @@
       <script id="mensajesData" type="application/json">[]</script>
   {% endif %}
   {% include "components/modal_global.html" %}
+
+  {% if request.session.idusuario and usuario.rol.nombre_rol == "Dueño" %}
+<div class="modal fade" id="modalSubirLogo" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <form method="POST"
+          action="{% url 'usuario:subir_logo' %}"
+          enctype="multipart/form-data"
+          class="modal-content">
+      {% csrf_token %}
+
+      <div class="modal-header bg-orange text-white">
+        <h5 class="modal-title">Subir logo del negocio</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <input type="file" name="logo" accept="image/*" class="form-control" required>
+        <small class="text-muted">PNG o JPG, recomendado 300x300</small>
+      </div>
+
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-orange">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %}
+
   <script src="{% static 'js/modal_global.js' %}"></script>
 </body>
 </html>

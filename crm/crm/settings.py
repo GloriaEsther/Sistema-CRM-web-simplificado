@@ -68,6 +68,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'usuario.context_processors.usuario_actual'#procesador de contexto nuevo es el que se encarga de checar su
             ],
         },
     },
@@ -115,11 +116,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'es-mx'
 
-TIME_ZONE = 'America/Mexico_City'#es por la hora,te quedaste en cehcar lo mismo en mysql y tambien en probar el backend de oportunidades y ventasm ya para empezar a hacer el forntend de una buena vez
+TIME_ZONE = 'America/Mexico_City'
 #si se pudo tu :D
 
 USE_I18N = True
-USE_TZ = False#True se le cambio porque esto tambien comvierte horas normales a UTC...
+USE_TZ = False# Se le cambio porque esto tambien comvierte horas normales a UTC...
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/

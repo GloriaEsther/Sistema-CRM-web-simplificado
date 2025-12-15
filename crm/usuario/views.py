@@ -110,31 +110,14 @@ def cerrar_sesion(request):#funciona
     messages.success(request, "Has cerrado sesión correctamente.")
     return redirect('usuario:iniciar_sesion')
 
-'''
 def subir_logo(request):
-    if request.method == "POST" and request.FILES.get("logo"):
-
-        archivo = request.FILES["logo"]
-        fs = FileSystemStorage(location="media/logos")
-        filename = fs.save(archivo.name, archivo)
-
-        # Guardamos en sesión para mostrarlo siempre
-        request.session["logo"] = "/media/logos/" + filename
-
-        return redirect('inicio')
-
-    return redirect('inicio')
-'''
-
-def subir_logo(request):
-    # Revisar que sea POST y que haya archivo
     if request.method == "POST" and request.FILES.get("logo"):
         
-        #Requerir que el usuario esté logueado (y exista en sesión)
         if not request.session.get("idusuario"):
             return redirect('usuario:iniciar_sesion') 
 
-        try:
+        usuario = Usuario.activos.get(idusuario=request.session["idusuario"])
+        '''try:
             #Obtener el usuario y su objeto de preferencias
             usuario = Usuario.activos.get(idusuario=request.session["idusuario"])
             preferencias, creado = PreferenciaUsuario.objects.get_or_create(usuario=usuario)
@@ -146,9 +129,17 @@ def subir_logo(request):
         except Usuario.DoesNotExist:
              # Manejar si el idusuario de la sesión no existe
              pass 
+ ''' 
+        if usuario.rol.nombre_rol != "Dueño":
+            return redirect("usuario:inicio")
 
-    # Redirigir de vuelta al inicio
-    return redirect('usuario:inicio') # Redirección con namespace 'usuario'
+        preferencias, _ = PreferenciaUsuario.objects.get_or_create(
+            usuario=usuario
+        )
+
+        preferencias.logo = request.FILES["logo"]
+        preferencias.save()
+    return redirect('usuario:inicio') 
 
 def inicio(request):  
     usuario = None

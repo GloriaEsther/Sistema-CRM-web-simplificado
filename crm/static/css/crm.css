@@ -12,11 +12,17 @@ body {
 
 /*Tarjetas*/
 .crm-card {
-  background: white;
+  width: 100%;
+    max-width: 420px;
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  /*background: white;
   border-radius: var(--radius);
   padding: 16px;
   margin-bottom: 16px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.06);*/
 }
 
 /* ===== Botones ===== */
@@ -35,7 +41,7 @@ body {
   position: fixed;
   bottom: 0;
   width: 100%;
-  background: white;
+  background: #f97316;/*background: white;*/
   display: flex;
   justify-content: space-around;
   padding: 8px 0;
@@ -70,7 +76,12 @@ body {
 
 /*Secciones*/
 .crm-section{
- margin-bottom: 24px;
+  min-height: calc(100vh - 120px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+ /*margin-bottom: 24px;*/
 }
 .crm-section-header{
   display: flex;
@@ -93,4 +104,32 @@ gap: 12px;
 
 #frecuenciaContaineredicion {
   display: block;
+}
+
+/*logo en el nav de base*/
+.bg-orange {
+    background-color: #f97316;
+}
+
+.btn-orange {
+    background: #f97316;
+    color: white;
+}
+
+.btn-blue{
+  background: #0d6efd;
+  color:white;
+}
+
+.btn-orange:hover {
+    background: #ea580c;
+    color: white;
+}
+/*menu pc y movil*/
+.navbar a {
+    color: white !important;
+}
+
+.logo-box {
+    background: #ffedd5;
 }

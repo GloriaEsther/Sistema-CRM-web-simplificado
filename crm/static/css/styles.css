@@ -9,9 +9,9 @@ body {
 /* --------------------------
     BOTONES PERSONALIZADOS
 --------------------------- */
-.custom-purple-btn {
-    background: #6a0dad; /* Púrpura */
-    border-color: #6a0dad;
+.custom-orange-btn {
+    background: #f97316;
+    border-color: #f97316;
     color: white;
     font-weight: 600;
     padding: 12px 35px;
@@ -19,9 +19,9 @@ body {
     transition: background-color 0.2s;
 }
 
-.custom-purple-btn:hover {
-    background: #5608a7;
-    border-color: #5608a7;
+.custom-orange-btn:hover {
+    background: #ea580c;
+    border-color: #ea580c;
     color: white;
 }
 
@@ -40,6 +40,8 @@ body {
     /* 3. Asegurar que el contenido (imagen o placeholder) se centre */
     text-align: center;
     overflow: hidden; /* Corta cualquier parte de la imagen que se salga */
+
+    background: #ffedd5;
 }
 
 /* --------------------------
