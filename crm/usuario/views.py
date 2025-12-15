@@ -117,19 +117,6 @@ def subir_logo(request):
             return redirect('usuario:iniciar_sesion') 
 
         usuario = Usuario.activos.get(idusuario=request.session["idusuario"])
-        '''try:
-            #Obtener el usuario y su objeto de preferencias
-            usuario = Usuario.activos.get(idusuario=request.session["idusuario"])
-            preferencias, creado = PreferenciaUsuario.objects.get_or_create(usuario=usuario)
-            
-            #Guardar el logo usando el FileField del modelo
-            preferencias.logo = request.FILES["logo"]
-            preferencias.save() # Django gestiona la subida al disco y la ruta en DB
-
-        except Usuario.DoesNotExist:
-             # Manejar si el idusuario de la sesión no existe
-             pass 
- ''' 
         if usuario.rol.nombre_rol != "Dueño":
             return redirect("usuario:inicio")
 
@@ -139,7 +126,7 @@ def subir_logo(request):
 
         preferencias.logo = request.FILES["logo"]
         preferencias.save()
-    return redirect('usuario:inicio') 
+    return redirect('oportunidades:kanban') #return redirect('usuario:inicio') 
 
 def inicio(request):  
     usuario = None

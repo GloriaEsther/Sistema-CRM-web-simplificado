@@ -5,78 +5,70 @@
 
 {% block content %}
 
-<div class="crm-section">
+<div class="crm-form-wrapper">
 
-  <div class="crm-card">
+  <div class="crm-form-card">
 
     <h4 class="crm-title text-center mb-4">Crear Cliente</h4>
 
     <form method="POST" id="registroClienteForm" novalidate>
       {% csrf_token %}
-
-      <div class="row">
-        <div class="col-md-4 mb-3">
+        <div class="mb-3">
           <label class="form-label">Nombre*</label>
           {% render_field form.nombre class="form-control" %}
         </div>
 
-        <div class="col-md-4 mb-3">
+        <div class="mb-3">
           <label class="form-label">Apellido Paterno</label>
           {% render_field form.apellidopaterno class="form-control" %}
         </div>
 
-        <div class="col-md-4 mb-3">
+        <div class="mb-3">
           <label class="form-label">Apellido Materno</label>
           {% render_field form.apellidomaterno class="form-control" %}
         </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-6 mb-3">
+      
+        <div class="mb-3">
           <label class="form-label">Teléfono *</label>
           {% render_field form.numerotelcli class="form-control" %}
         </div>
 
-        <div class="col-md-6 mb-3">
+        <div class="mb-3">
           <label class="form-label">Correo</label>
           {% render_field form.correo class="form-control" %}
         </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-6 mb-3">
+      
+        <div class="mb-3">
           <label class="form-label">RFC</label>
           {% render_field form.rfc class="form-control" %}
         </div>
 
-        <div class="col-md-6 mb-3">
+        <div class="mb-3">
           <label class="form-label">Dirección</label>
           {% render_field form.direccion class="form-control" %}
         </div>
-      </div>
+      
 
       <div class="row">
-        <div class="col-md-6 mb-3" id="estado_clienteContainer">
+        <div class="mb-3" id="estado_clienteContainer">
           <label class="form-label">Estado del cliente</label>
           {% render_field form.estado_cliente class="form-control" %}
         </div>
 
-        <div class="col-md-6 mb-3" id="frecuenciaContainer">
+        <div class="mb-3" id="frecuenciaContainer">
           <label class="form-label">Frecuencia de compra</label>
           {% render_field form.frecuencia_compra class="form-control" %}
         </div>
       </div>
 
-      <div class="row">
-        <div class="col-md-6 mb-3">
+      <div class="mb-3">
           <label class="form-label">Fecha nacimiento</label>
           {% render_field form.fecha_nacimiento class="form-control" %}
-        </div>
+      </div>
 
-        <div class="col-md-6 mb-3">
+      <div class="mb-3">
           <label class="form-label">Último contacto</label>
           {% render_field form.fecha_ultimocontacto class="form-control" %}
-        </div>
       </div>
 
       <div class="mb-3">
@@ -84,8 +76,8 @@
         {% render_field form.comentarios class="form-control" %}
       </div>
 
-      <div class="d-grid gap-2 d-md-flex mt-4">
-        <button type="submit" class="btn btn-primary crm-btn flex-fill">
+      <div class="d-flex justify-content-between mt-4">
+        <button type="submit" class="btn btn-orange w-50 me-2">
           Guardar
         </button>
         <a href="{% url 'cliente:listar' %}" class="btn btn-secondary crm-btn flex-fill">
