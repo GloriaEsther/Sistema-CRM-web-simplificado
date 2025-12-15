@@ -25,28 +25,27 @@ def require_roles(allowed_roles):#restringe roles (quien accede a que)
 
 def queryset_usuarios_segun_rol(usuario):#es un filtro en las busquedas de usuario
     rol = usuario.rol.nombre_rol
-
-    if rol =="Dueño":
-        return Usuario.activos.filter(Q(idusuario=usuario.idusuario) | Q(owner_id=usuario.idusuario))
-    if rol =="Administrador":
-        return Usuario.activos.filter(Q(idusuario=usuario.idusuario) | Q(owner_id=usuario.owner_id))
+    negocio = usuario if rol == "Dueño" else usuario.owner_id
+    
+    if rol in ["Dueño", "Administrador"]:
+        return Usuario.activos.filter(
+            Q(idusuario=negocio.idusuario) |
+            Q(owner_id=negocio.idusuario)
+        )
 
     if rol == "Vendedor":
-        rol_vendedor = RolUsuario.objects.filter(nombre_rol__iexact="Vendedor").first()
-        return Usuario.activos.filter(rol=rol_vendedor,owner_id=usuario.owner_id)
+        return Usuario.activos.filter(idusuario=usuario.idusuario)
 
     return Usuario.activos.none()
 
 def queryset_clientes_por_rol(usuario):#prueba
     rol = usuario.rol.nombre_rol
+    negocio = usuario if rol == "Dueño" else usuario.owner_id
 
-    if rol == "Dueño":
-        return Cliente.activos.filter(owner=usuario)
-
-    if rol == "Administrador":
-        return Cliente.activos.filter(owner=usuario.owner_id)
+    if rol in ["Dueño", "Administrador"]:
+        return Cliente.activos.filter(owner=negocio)
 
     if rol == "Vendedor":
-        return Cliente.activos.filter(owner=usuario.owner_id, usuario_registro=usuario)
+        return Cliente.activos.filter(owner=negocio)
 
     return Cliente.activos.none()

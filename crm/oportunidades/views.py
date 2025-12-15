@@ -5,7 +5,7 @@ from usuario.models import RolUsuario
 from ventas.models import Venta, EtapaVentas
 from django.views.decorators.http import require_POST
 from django.contrib import messages
-from crm.utils import require_roles,queryset_usuarios_segun_rol#permisos y filtros de busqueda (varia segun el rol)
+from crm.utils import queryset_usuarios_segun_rol,queryset_clientes_por_rol#permisos y filtros de busqueda (varia segun el rol)
 from django.utils import timezone
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.db import IntegrityError
@@ -53,7 +53,7 @@ def kanban(request):
     return render(request, 'oportunidades/kanban.html', {
         'etapas': etapas, 
         'data': data,
-        'form_crear': form_crear #prueba....
+        'form_crear': form_crear 
     })
 
 def crear_oportunidad(request): 
@@ -113,11 +113,6 @@ def crear_oportunidad(request):
                 for err in errs:
                     field_name = field.replace('_', ' ').capitalize()
                     messages.error(request, f"Error en '{field_name}': {err}")
-    
-                    #messages.error(request, f"{field}: {err}")
-    #else:
-     #   form = OportunidadForm()
-
     return redirect('oportunidades:kanban')#return render(request, "oportunidades/kanban.html", {"form": form})#redirect('oportunidades:kanban')
     
 @require_POST
@@ -142,8 +137,7 @@ def editar_oportunidad(request, pk):
     clientes = Cliente.activos.all()
     etapas = EtapaVentas.objects.all()
     usuarios = Usuario.activos.all()
-
-    
+ 
     if request.method == "POST":
         oportunidad.nombreoportunidad = request.POST.get("nombreoportunidad")
         oportunidad.valor_estimado = request.POST.get("valor_estimado")
@@ -189,7 +183,6 @@ def editar_oportunidad(request, pk):
         "usuarios": usuarios,
     })
 
-
 def eliminar_oportunidad(request, pk):
     usuario_id = request.session.get("idusuario")
     usuario_logueado = get_object_or_404(Usuario, idusuario=usuario_id)
@@ -215,49 +208,6 @@ def eliminar_oportunidad(request, pk):
  
     return redirect("oportunidades:kanban")
 
-
-def buscar_clientes(request):
-    texto = request.GET.get("q", "").strip()
-
-    clientes = Cliente.activos.filter(
-        nombre__icontains=texto
-    ) | Cliente.activos.filter(
-        apellidopaterno__icontains=texto
-    ) | Cliente.activos.filter(
-        apellidomaterno__icontains=texto
-    )
-
-    return JsonResponse([
-        {
-            "id": c.idcliente,
-            "nombre": f"{c.nombre} {c.apellidopaterno} {c.apellidomaterno}"
-        }
-        for c in clientes
-    ], safe=False)
-
-def buscar_vendedores(request):
-    texto = request.GET.get("q", "").strip()
-
-    #agarra la sesion del usuario 
-    usuario_id = request.session.get("idusuario")
-    usuario = Usuario.activos.filter(idusuario=usuario_id).first()
-    
-    usuarios = queryset_usuarios_segun_rol(usuario)
-   
-    vendedores = usuarios.filter(
-        nombre__icontains=texto
-    ) | usuarios.filter(
-        apellidopaterno__icontains=texto
-    )
-
-    return JsonResponse([
-        {
-            "id": v.idusuario,
-            "nombre": f"{v.nombre} {v.apellidopaterno} {v.apellidomaterno}"
-        }
-        for v in vendedores
-    ], safe=False)
-
 #vistas ajax
 def ajax_consultar_oportunidad(request, pk):
     o = Oportunidad.activos.get(pk=pk)
@@ -279,8 +229,25 @@ def ajax_consultar_oportunidad(request, pk):
 
 def ajax_buscar_cliente(request):
     q = request.GET.get('q', '').strip()
-    qs = Cliente.activos.filter(nombre__icontains=q)[:15] if q else Cliente.activos.all()[:15]
-    res = [{'id': c.idcliente, 'display': f"{c.nombre} {c.apellidopaterno} {c.apellidomaterno}"} for c in qs]
+    usuario_id = request.session.get("idusuario")
+    usuario = Usuario.activos.filter(idusuario=usuario_id).first()
+
+    clientes = queryset_clientes_por_rol(usuario)
+
+    if q:
+        clientes = clientes.filter(
+            Q(nombre__icontains=q) |
+            Q(apellidopaterno__icontains=q) |
+            Q(apellidomaterno__icontains=q)
+        )
+
+    clientes = clientes[:15]
+
+    res = [{
+        'id': c.idcliente,
+        'display': f"{c.nombre} {c.apellidopaterno or ''} {c.apellidomaterno or ''}".strip()
+    } for c in clientes]
+
     return JsonResponse(res, safe=False)
 
 def ajax_buscar_vendedor(request):

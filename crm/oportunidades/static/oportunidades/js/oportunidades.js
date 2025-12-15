@@ -78,6 +78,22 @@ function moverOportunidad(idoportunidad, etapa_id) {
   }).catch(err => alert('Error de red al mover oportunidad.'));
 }
 
+/*eventos de bootstrap */
+document.addEventListener('shown.bs.dropdown', function (e) {
+    const card = e.target.closest('.kanban-card');
+    if (card) {
+        card.classList.add('menu-open');
+    }
+});
+
+document.addEventListener('hidden.bs.dropdown', function (e) {
+    const card = e.target.closest('.kanban-card');
+    if (card) {
+        card.classList.remove('menu-open');
+    }
+});
+
+
 /* --------------- ABRIR MODALES Y TRAER DATOS --------------- */
 function abrirConsultar(id) {
   fetch('/oportunidades/ajax/consultar/' + id + '/')
