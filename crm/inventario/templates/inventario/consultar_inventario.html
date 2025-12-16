@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Inventario{% endblock %}
+{% block content %}
+<div class="crm-form-wrapper">
+  <div class="crm-form-card">
+    <h4 class="crm-title text-center mb-4">Detalles del Articulo</h4>
+    <p><strong>Nombre:</strong> {{ inventario.nombrearticulo }}</p>
+    <p><strong>Descripcion:</strong> {{ inventario.descripcion }}</p>
+    <p><strong>Precio por unidad:</strong> {{ inventario.precio}}</p>
+    <p><strong>Cantidad disponible:</strong> {{ inventario.cantidad_disponible|default:""  }}</p>
+    <p><strong>Tipo de Articulo:</strong> {{ inventario.tipo|default:""  }}</p>
+    <p><strong>Unidad de medida:</strong> {{ inventario.unidad|default:""  }}</p>
+    <p><strong>Proveedor:</strong> {{ inventario.proveedor |default:"" }}</p>
+    <p><strong>Comentarios:</strong> {{ inventario.comentarios |default:""  }}</p>
+    <a href="{% url 'inventario:listar' %}" class="btn btn-secondary mt-3 crm-btn">Regresar</a>
+   </div>
+</div>
+{% endblock %}

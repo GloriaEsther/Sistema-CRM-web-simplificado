@@ -72,19 +72,7 @@ body {
 .crm-section{
    min-height: calc(100vh - 120px);
    padding: 20px;
- /*margin-bottom: 24px;*/
 }
-/*contenedor para formularios, esto estaba antes, funcionaba pero no como quisiera
-.crm-form-section{justify-content: center;
-  align-items: center;
-  width: 100%; 
-  max-width: 420px; 
-  background: white; 
-  padding: 30px; 
-  border-radius: 16px; 
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-}
-*/
 /*Contenedores para formularios...*/
 .crm-form-wrapper {/*Contenedor externo..*/
   min-height: calc(100vh - 120px);
@@ -111,10 +99,13 @@ body {
 }
 
 @media (max-width: 768px) {
-.crm-section-header {
-flex-direction: column;
-gap: 12px;
-}
+  .crm-section-header {
+  flex-direction: column;
+  gap: 12px;
+  }
+  .crm-section {
+    padding-bottom: 90px; /* altura del menú móvil */
+  }
 }
 /*cliente*/
 #frecuenciaContainer {

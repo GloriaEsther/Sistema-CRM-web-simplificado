@@ -21,9 +21,7 @@
 
 
         <div class="text-muted small"> {{ s.precio }}</div>
-        {% if c.correo %}
         <div class="text-muted small">{{ c.descripcion }}</div>
-        {% endif %}
 
         <div class="d-grid gap-2 mt-3 d-md-flex">
             <a href="{% url 'servicio:detalle' s.idservicio %}" class="btn btn-outline-secondary crm-btn">

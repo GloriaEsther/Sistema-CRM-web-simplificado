@@ -7,6 +7,7 @@ from usuario.models import Usuario,RolUsuario
 from cliente.models import Cliente
 from django.db.models import Q
 from servicios.models import Servicio
+from inventario.models import Inventario
 
 def require_roles(allowed_roles):#restringe roles (quien accede a que)
     def decorator(view_func):
@@ -66,3 +67,9 @@ def queryset_servicios_por_rol(usuario):
         return Servicio.activos.filter(owner=usuario.owner_id)
 
     return Servicio.activos.none()
+
+def queryset_inventario_por_rol(usuario):
+    if usuario.rol.nombre_rol == "Dueño":
+        return Inventario.activos.filter(owner=usuario)
+    else:
+        return Inventario.activos.filter(owner=usuario.owner_id)
