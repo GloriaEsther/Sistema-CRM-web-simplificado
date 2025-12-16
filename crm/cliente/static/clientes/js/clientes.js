@@ -1,8 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   console.log("clientes.js cargado");
   const form = document.getElementById("registroClienteForm");
-  //if (!form) return;
-
   /* ==========================
      ELEMENTOS
   ========================== */
@@ -18,28 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const btnConfirmar = document.getElementById("confirmarOpcionales");
   const btnDescartar = document.getElementById("descartarOpcionales");
-
-  const modalEliminarEl = document.getElementById("modalEliminarCliente");
-
-  if (modalEliminarEl) {
-    const modalEliminar = new bootstrap.Modal(modalEliminarEl);
-
-    document.querySelectorAll(".btn-eliminar-cliente").forEach(btn => {
-      btn.addEventListener("click", e => {
-        e.preventDefault();
-        console.log("CLICK ELIMINAR", btn.dataset.id, btn.dataset.nombre);
-        const id = btn.dataset.id;
-        const nombre = btn.dataset.nombre;
-
-        document.getElementById("nombre").textContent = nombre;
-        document.getElementById("btnConfirmarEliminar").href =
-          `/clientes/${id}/eliminar/`;
-
-        modalEliminar.show();
-      });
-    });
-  }
-
+  
   if(form){//si formulario de crear existe...
     /* ==========================
       MOSTRAR / OCULTAR FRECUENCIA

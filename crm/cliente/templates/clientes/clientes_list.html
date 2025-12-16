@@ -34,10 +34,11 @@
             Editar
             </a>
             <button type="button"
-                    class="btn btn-danger crm-btn btn-eliminar-cliente"
-                    data-id="{{ c.idcliente }}"
-                    data-nombre="{{ c.nombre }}">
-            Eliminar
+                        class="btn btn-danger crm-btn btn-eliminar"
+                        data-url="{% url 'cliente:eliminar' 0 %}"
+                        data-id="{{ c.idcliente }}"
+                        data-nombre="{{ c.nombre }}">
+                Eliminar
             </button>
       </div>
     </div>
@@ -46,7 +47,6 @@
     <p class="text-center text-muted">Agrega un cliente</p>
     {% endfor %}
 </div>
-{% include "clientes/_eliminar_cliente.html" %}
-<script src="{% static 'clientes/js/clientes.js' %}?v={{ timestamp }}"></script>
-
+{% include "_modal_eliminar.html" %}
+<script src="{% static 'js/eliminar.js' %}"></script>
 {% endblock %}

@@ -33,10 +33,11 @@
             Editar
             </a>
             <button type="button"
-                    class="btn btn-danger crm-btn btn-eliminar-inventario"
-                    data-id="{{ i.idinventario }}"
-                    data-nombre="{{ i.nombrearticulo }}">
-            Eliminar
+                        class="btn btn-danger crm-btn btn-eliminar"
+                        data-url="{% url 'inventario:eliminar' 0 %}"
+                        data-id="{{ i.idinventario  }}"
+                        data-nombre="{{ i.nombrearticulo }}">
+                Eliminar
             </button>
       </div>
     </div>
@@ -45,6 +46,6 @@
     <p class="text-center text-muted">Agrega el inventario</p>
     {% endfor %}
 </div>
-{% include "inventario/_eliminar_articulo.html" %}
-<script src="{% static 'inventario/js/inventario.js' %}?v={{ timestamp }}"></script>
+{% include "_modal_eliminar.html" %}
+<script src="{% static 'js/eliminar.js' %}"></script>
 {% endblock %}

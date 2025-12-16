@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}Servicios{% endblock %}
+{% load static %}
 {% block content %}
 
 <div class="crm-section">
@@ -30,10 +31,13 @@
             <a href="{% url 'servicio:editar' s.idservicio %}" class="btn btn-success crm-btn">
             Editar
             </a>
-            <a href="{% url 'servicio:eliminar' s.idservicio %}" class="btn btn-danger crm-btn"
-            onclick="return confirm('¿Eliminar servicio?')">
-            Eliminar
-            </a>
+           <button type="button"
+                        class="btn btn-danger crm-btn btn-eliminar"
+                        data-url="{% url 'servicio:eliminar' 0 %}"
+                        data-id="{{ s.idservicio }}"
+                        data-nombre="{{ s.nombre }}">
+                Eliminar
+            </button>
       </div>
     </div>
     
@@ -41,4 +45,6 @@
     <p class="text-center text-muted">Agrega un servicio</p>
     {% endfor %}
 </div>
+{% include "_modal_eliminar.html" %}
+<script src="{% static 'js/eliminar.js' %}"></script>
 {% endblock %}

@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
  console.log("inventario.js cargado");
  const form = document.getElementById("registroInventarioForm");
-
   /* ==========================
      ELEMENTOS
   ========================== */
@@ -13,27 +12,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const btnConfirmar = document.getElementById("confirmarOpcionales");
   const btnDescartar = document.getElementById("descartarOpcionales");
-
-  const modalEliminarEl = document.getElementById("modalEliminarInventario");
-
-  if (modalEliminarEl) {
-    const modalEliminar = new bootstrap.Modal(modalEliminarEl);
-
-    document.querySelectorAll(".btn-eliminar-inventario").forEach(btn => {
-      btn.addEventListener("click", e => {
-        e.preventDefault();
-        console.log("CLICK ELIMINAR", btn.dataset.id, btn.dataset.nombre);
-        const id = btn.dataset.id;
-        const nombre = btn.dataset.nombre;
-
-        document.getElementById("nombre").textContent = nombre;
-        document.getElementById("btnConfirmarEliminar").href =
-          `/inventario/${id}/eliminar/`;
-
-        modalEliminar.show();
-      });
-    });
-  }
 
   if(form){//si formulario de crear/editar existe...
         /* ==========================
@@ -105,5 +83,3 @@ document.addEventListener("DOMContentLoaded", function () {
 
   }
 });
-
-
