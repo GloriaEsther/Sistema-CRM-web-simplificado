@@ -13,6 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils import timezone
+from time import time
 
 def clientes_list(request):
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
@@ -40,7 +41,10 @@ def cliente_crear(request):
     else:
         form = ClienteForm()
 
-    return render(request, "clientes/cliente_form.html", {"form": form})
+    return render(request, "clientes/cliente_form.html", {
+        "form": form,
+        "timestamp": int(time())
+    })
 
 
 def cliente_editar(request, pk):
@@ -59,7 +63,10 @@ def cliente_editar(request, pk):
     else:
         form = ClienteForm(instance=cliente)
 
-    return render(request, "clientes/cliente_editar.html", {"form": form})
+    return render(request, "clientes/cliente_editar.html", {
+        "form": form,
+        "timestamp": int(time())
+    })
 
 
 def cliente_eliminar(request, pk):

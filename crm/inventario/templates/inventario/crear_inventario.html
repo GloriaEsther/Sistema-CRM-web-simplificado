@@ -24,24 +24,24 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Precio por unidad</label>
+          <label class="form-label">Precio por unidad*</label>
           {% render_field form.precio class="form-control" %}
         </div>
  
         <div class="mb-3">
-          <label class="form-label">Cantidad disponible</label>
+          <label class="form-label">Cantidad disponible*</label>
           {% render_field form.cantidad_disponible class="form-control" %}
         </div>
       
         <div class="row">
+            <div class="mb-3" id="unidad">
+            <label class="form-label">Unidad de medida*</label>
+            {% render_field form.unidad class="form-control" %}
+            </div>
+
             <div class="mb-3" id="tipo">
             <label class="form-label">Tipo de Articulo</label>
             {% render_field form.tipo class="form-control" %}
-            </div>
-
-            <div class="mb-3" id="unidad">
-            <label class="form-label">Unidad de medida</label>
-            {% render_field form.unidad class="form-control" %}
             </div>
 
             <div class="mb-3" id="proveedor">

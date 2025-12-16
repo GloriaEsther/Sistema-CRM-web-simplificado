@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import HttpResponse
 from django.utils import timezone
-
+from time import time
 from .models import Servicio
 from .forms import ServicioForm
 from usuario.models import Usuario
@@ -39,7 +39,8 @@ def servicio_crear(request):
         form = ServicioForm()
 
     return render(request, "servicios/crear_servicio.html", {#"servicios/servicio_form.html"
-        "form": form
+        "form": form,
+        "timestamp": int(time())
     })
 
 def servicio_editar(request, pk):
@@ -60,7 +61,8 @@ def servicio_editar(request, pk):
         form = ServicioForm(instance=servicio)
 
     return render(request, "servicios/editar_servicio.html", {#"servicios/servicio_editar.html
-        "form": form
+        "form": form,
+        "timestamp": int(time())
     })
 
 def servicio_eliminar(request, pk):

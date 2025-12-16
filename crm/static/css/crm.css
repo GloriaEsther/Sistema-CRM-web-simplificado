@@ -62,12 +62,6 @@ body {
   padding: 12px;
 }
 
-@media (min-width: 768px) {
-  .container {
-    padding: 24px;
-  }
-}
-
 /*Secciones*/
 .crm-section{
    min-height: calc(100vh - 120px);
@@ -89,6 +83,9 @@ body {
   padding: 30px;
   border-radius: 16px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  /*lo de abajo es una prueba...*/
+  max-height: calc(100vh - 120px); /* 👈 CLAVE */
+  overflow-y: auto;  
 }
 
 .crm-section-header{
@@ -96,6 +93,12 @@ body {
   justify-content:space-between;
   align-items: center;
   margin-bottom: 16px;
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding: 24px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -107,6 +110,14 @@ body {
     padding-bottom: 90px; /* altura del menú móvil */
   }
 }
+/*en caso de que la pantalla de verdad sea muy chiquita*/
+@media (max-width: 576px) {
+  .crm-form-card {
+    padding: 20px;
+    max-height: calc(100vh - 140px); /* más espacio por menú */
+  }
+}
+
 /*cliente*/
 #frecuenciaContainer {
   display: none;

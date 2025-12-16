@@ -8,7 +8,7 @@ from .models import Inventario
 from .forms import InventarioForm
 from usuario.models import Usuario
 from crm.utils import queryset_inventario_por_rol
-
+from time import time
 #@login_required
 def inventario_list(request):
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
@@ -36,7 +36,8 @@ def inventario_crear(request):
         form = InventarioForm()
 
     return render(request, "inventario/crear_inventario.html", {
-        "form": form
+        "form": form,
+        "timestamp": int(time())
     })
 
 #@login_required
@@ -56,7 +57,8 @@ def inventario_editar(request, pk):
         form = InventarioForm(instance=articulo)
 
     return render(request, "inventario/editar_inventario.html", {
-        "form": form
+        "form": form,
+        "timestamp": int(time())
     })
 
 #@login_required

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}Clientes{% endblock %}
+{% load static %}
 {% block content %}
 
 <div class="crm-section">
@@ -32,10 +33,12 @@
             <a href="{% url 'cliente:editar' c.idcliente %}" class="btn btn-success crm-btn">
             Editar
             </a>
-            <a href="{% url 'cliente:eliminar' c.idcliente %}" class="btn btn-danger crm-btn"
-            onclick="return confirm('¿Eliminar cliente?')">
+            <button type="button"
+                    class="btn btn-danger crm-btn btn-eliminar-cliente"
+                    data-id="{{ c.idcliente }}"
+                    data-nombre="{{ c.nombre }}">
             Eliminar
-            </a>
+            </button>
       </div>
     </div>
     
@@ -43,4 +46,7 @@
     <p class="text-center text-muted">Agrega un cliente</p>
     {% endfor %}
 </div>
+{% include "clientes/_eliminar_cliente.html" %}
+<script src="{% static 'clientes/js/clientes.js' %}?v={{ timestamp }}"></script>
+
 {% endblock %}

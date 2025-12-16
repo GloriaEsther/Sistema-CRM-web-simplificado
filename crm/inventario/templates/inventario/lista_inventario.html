@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}Inventario{% endblock %}
+{% load static %}
 {% block content %}
 
 <div class="crm-section">
@@ -20,7 +21,7 @@
         </div>
 
 
-        <div class="text-muted small"> {{ i.precio }}</div>
+        <div class="text-muted small"> {{ i.cantidad_disponible }} {{i.unidad}}</div>
         <div class="text-muted small">{{ i.descripcion |default:"" }}</div>
 
 
@@ -31,10 +32,12 @@
             <a href="{% url 'inventario:editar' i.idinventario %}" class="btn btn-success crm-btn">
             Editar
             </a>
-            <a href="{% url 'inventario:eliminar' i.idinventario %}" class="btn btn-danger crm-btn"
-            onclick="return confirm('¿Eliminar inventario?')">
+            <button type="button"
+                    class="btn btn-danger crm-btn btn-eliminar-inventario"
+                    data-id="{{ i.idinventario }}"
+                    data-nombre="{{ i.nombrearticulo }}">
             Eliminar
-            </a>
+            </button>
       </div>
     </div>
     
@@ -42,4 +45,6 @@
     <p class="text-center text-muted">Agrega el inventario</p>
     {% endfor %}
 </div>
+{% include "inventario/_eliminar_articulo.html" %}
+<script src="{% static 'inventario/js/inventario.js' %}?v={{ timestamp }}"></script>
 {% endblock %}
