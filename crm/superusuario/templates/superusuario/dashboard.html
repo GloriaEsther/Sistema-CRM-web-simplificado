@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2  class="mb-4">Panel Superusuario</h2>
+<!--¿El sistema se usa?-->
+
+<div class="row g-3">
+  <div class="col-md-3">
+    <div class="card p-3 shadow-sm">
+      <h6>Total usuarios</h6>
+      <h3>{{ total_usuarios }}</h3>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card p-3 shadow-sm">
+      <h6>Usuarios activos</h6>
+      <h3>{{ usuarios_activos }}</h3>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card p-3 shadow-sm">
+      <h6>Total clientes</h6>
+      <h3>{{ total_clientes }}</h3>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card p-3 shadow-sm">
+      <h6>Total oportunidades</h6>
+      <h3>{{ total_oportunidades }}</h3>
+    </div>
+  </div>
+</div>
+
+<!--¿Quién tiene problemas usando el CRM?-->
+
+<div class="row mt-4 g-3">
+  <div class="col-md-6">
+    <div class="card p-3 border-warning">
+      <h6>Dueños sin clientes registrados</h6>
+      <h3>{{ duenos_sin_clientes }}</h3>
+      <small class="text-muted">
+        Posible falta de adopción del módulo Clientes
+      </small>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card p-3 border-secondary">
+      <h6>Dueños sin oportunidades creadas</h6>
+      <h3>{{ duenos_sin_oportunidades }}</h3>
+      <small class="text-muted">
+        Posible dificultad en el proceso de ventas
+      </small>
+    </div>
+  </div>
+</div>
+<!--¿El sistema está vivo?-->
+<div class="row mt-5">
+  <div class="col-md-6">
+    <h5>Últimos usuarios registrados</h5>
+    <ul class="list-group">
+      {% for u in usuarios|slice:":5" %}
+        <li class="list-group-item">
+          {{ u.nombre }} – {{ u.correo }}
+        </li>
+      {% empty %}
+        <li class="list-group-item text-muted">
+          Sin registros recientes
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="col-md-6">
+    <h5>Últimos clientes registrados</h5>
+    <ul class="list-group">
+      {% for c in clientes %}
+        <li class="list-group-item">
+          {{ c.nombre }} – {{ c.correo|default:"" }}
+        </li>
+      {% empty %}
+        <li class="list-group-item text-muted">
+          Sin clientes recientes
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+<h4 class="mt-5">Estado de negocios</h4>
+
+<table class="table table-sm table-bordered mt-3">
+  <thead class="table-light">
+    <tr>
+      <th>Negocio</th>
+      <th>Clientes</th>
+      <th>Oportunidades</th>
+      <th>Estado</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for n in negocios %}
+      <tr>
+        <td>{{ n.dueno.nombre }}</td>
+        <td>{{ n.clientes }}</td>
+        <td>{{ n.oportunidades }}</td>
+        <td>
+          {% if n.estado == "Activo" %}
+            <span class="badge bg-success">Activo</span>
+          {% elif n.estado == "Bajo uso" %}
+            <span class="badge bg-warning text-dark">Bajo uso</span>
+          {% else %}
+            <span class="badge bg-danger">Inactivo</span>
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+<div class="alert alert-info mt-4">
+  Este panel permite identificar patrones de uso del CRM y apoyar a los usuarios
+  con problemas de adopción del sistema.
+</div>
+{% endblock %}

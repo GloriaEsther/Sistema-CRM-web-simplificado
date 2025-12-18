@@ -8,6 +8,7 @@ from cliente.models import Cliente
 from django.db.models import Q
 from servicios.models import Servicio
 from inventario.models import Inventario
+from django.shortcuts import redirect
 
 def require_roles(allowed_roles):#restringe roles (quien accede a que)
     def decorator(view_func):
@@ -73,3 +74,25 @@ def queryset_inventario_por_rol(usuario):
         return Inventario.activos.filter(owner=usuario)
     else:
         return Inventario.activos.filter(owner=usuario.owner_id)
+
+#Superusuario...
+def solo_superusuario(view_func):
+    def wrapper(request, *args, **kwargs):
+        # Primero revisamos la sesión para rapidez
+        rol = request.session.get("rol")
+        usuario_id = request.session.get("idusuario")
+        
+        if not usuario_id or rol != "Superusuario":
+            return redirect("usuario:iniciar_sesion")
+        # if request.session.get("rol") != "Superusuario":
+        #   return redirect("usuario:login")
+        return view_func(request, *args, **kwargs)
+    return wrapper
+
+''' 
+Nota:
+Para que el decorador sea más robusto,
+ es mejor verificar directamente si el usuario existe 
+ en la base de datos y es superusuario, por si cambias 
+ el rol en la BD mientras la sesión sigue abierta.
+'''

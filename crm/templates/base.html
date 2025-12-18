@@ -14,65 +14,63 @@
 </head>
 
 <body>
+    
     {% if request.session.idusuario %}
       <nav class="navbar navbar-expand-lg px-4"
           style="background-color:#f97316;">
         <div class="container-fluid">
-
-          <!-- LOGO <a class="navbar-brand d-flex align-items-center text-white fw-bold" href="{% url 'oportunidades:kanban' %}">
+            
+          {% if request.session.rol != "Superusuario" %}<!-- menú normal del CRM.... esto es prueba -->
+  
+            <!-- LOGO -->
             {% if preferencias and preferencias.logo %}
-              <img src="{{ preferencias.logo.url }}" height="40" class="me-2 rounded">
+              <img src="{{ preferencias.logo.url }}"
+                  height="40"
+                  class="navbar-logo me-2 rounded">
             {% else %}
-              <img src="{% static 'img/logo_default.png' %}" height="40" class="me-2">
-            {% endif %}
-            CRM
-          </a>-->
-          
-          {% if preferencias and preferencias.logo %}
-            <img src="{{ preferencias.logo.url }}"
-                height="40"
-                class="navbar-logo me-2 rounded">
-          {% else %}
-            <img src="{% static 'img/logo_blanco_horizontal.png' %}"
-                height="40"
-                class="me-2"
-                alt="Logo default">
-          {% endif %}  
+              <img src="{% static 'img/logo_blanco_horizontal.png' %}"
+                  height="40"
+                  class="me-2"
+                  alt="Logo default">
+            {% endif %}  
 
-          {% if usuario and usuario.rol.nombre_rol == "Dueño" %}
-            <button class="btn btn-outline-light btn-sm ms-2"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modalSubirLogo">
-                Cambiar logo
-            </button>
-            {% endif %}
+            {% if usuario and usuario.rol.nombre_rol == "Dueño" %}
+              <button class="btn btn-outline-light btn-sm ms-2"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalSubirLogo">
+                  Cambiar logo
+              </button>
+              {% endif %}
 
-          
-          <!-- MENÚ DESKTOP -->
-          <div class="d-none d-lg-flex gap-3 ms-4">
+            
+            <!-- MENÚ DESKTOP -->
+            <div class="d-none d-lg-flex gap-3 ms-4">
 
-            <a href="{% url 'oportunidades:kanban' %}" class="btn btn-outline-light btn-sm">
-              Oportunidades
-            </a>
+              <a href="{% url 'oportunidades:kanban' %}" class="btn btn-outline-light btn-sm">
+                Oportunidades
+              </a>
 
-            <a href="{% url 'cliente:listar' %}" class="btn btn-outline-light btn-sm">
-              Clientes
-            </a>
+              <a href="{% url 'cliente:listar' %}" class="btn btn-outline-light btn-sm">
+                Clientes
+              </a>
 
-            <a href="{% url 'servicio:listar' %}" class="btn btn-outline-light btn-sm">
-              Servicios
-            </a>
+              <a href="{% url 'servicio:listar' %}" class="btn btn-outline-light btn-sm">
+                Servicios
+              </a>
 
-            <a href="{% url 'inventario:listar' %}" class="btn btn-outline-light btn-sm">
-              Inventario
-            </a>
+              <a href="{% url 'inventario:listar' %}" class="btn btn-outline-light btn-sm">
+                Inventario
+              </a>
 
-            {% if usuario.rol.nombre_rol == "Dueño" %}
-            <a href="{% url 'usuario:agregar_empleado' %}" class="btn btn-outline-light btn-sm">
-              Agregar empleado
-            </a>
-            {% endif %}
-          </div>
+              {% if usuario.rol.nombre_rol == "Dueño" %}
+              <a href="{% url 'usuario:agregar_empleado' %}" class="btn btn-outline-light btn-sm">
+                Agregar empleado
+              </a>
+              {% endif %}
+            </div>
+
+
+           {% endif %}
 
           <!-- DERECHA -->
           <div class="ms-auto">

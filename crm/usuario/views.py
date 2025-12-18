@@ -40,8 +40,16 @@ def registrar_usuario(request):#usuario=dueño del micronegocio
 
 
 def iniciar_sesion(request):
-    if request.session.get('idusuario'):
-        return redirect('oportunidades:kanban')#pipeline ventas
+    #Verificar si ya hay una sesión activa ANTES de hacer cualquier query
+    usuario_id = request.session.get('idusuario')
+    rol_sesion = request.session.get('rol')
+
+    if usuario_id:
+        if rol_sesion == "Superusuario":
+            return redirect('superusuario:dashboard')
+        return redirect('oportunidades:kanban')
+    #if request.session.get('idusuario'):#esto funcionaba...
+    #    return redirect('oportunidades:kanban')#pipeline ventas
     if request.method == 'POST':
         form = LoginForm(request.POST)   
         
@@ -54,10 +62,18 @@ def iniciar_sesion(request):
             if usuario and check_password(contrasena, usuario.contrasena):
                 request.session.flush()
                 #Crear sesión nueva 
+                #Guardar datos en sesion
                 request.session['idusuario'] = usuario.idusuario
                 request.session['nombre'] = usuario.nombre
+                request.session['rol'] = usuario.rol.nombre_rol #esto es para el decorador
                # messages.success(request, f"Bienvenido {usuario.nombre}")
-                return redirect('oportunidades:kanban') # Usar dashboard en lugar de inicio
+                
+                # Redirección según rol
+                if usuario.rol.nombre_rol == "Superusuario":
+                    return redirect('superusuario:dashboard')
+                return redirect('oportunidades:kanban')
+                              
+               # return redirect('oportunidades:kanban') # Usar dashboard en lugar de inicio
             else:
                 #messages.error(request, "Credenciales incorrectas (correo o contraseña).")
                 return render(request, 'usuario/login.html', {
@@ -69,7 +85,10 @@ def iniciar_sesion(request):
     else:
         form = LoginForm()
 
-    return render(request, 'usuario/login.html', {'form': form,'timestamp': timezone.now().timestamp()})
+    return render(request, 'usuario/login.html', {
+        'form': form,
+        'timestamp': timezone.now().timestamp()
+    })
 
 @require_roles(['Dueño', 'Administrador'])
 def listar_usuarios(request):#consultar usuarios (en lo basico si funciona)
