@@ -1,5 +1,6 @@
 from django import forms
 from .models import Inventario
+from .models import Proveedor
 
 class InventarioForm(forms.ModelForm):
     class Meta:

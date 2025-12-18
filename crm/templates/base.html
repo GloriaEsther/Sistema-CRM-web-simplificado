@@ -61,6 +61,9 @@
               <a href="{% url 'inventario:listar' %}" class="btn btn-outline-light btn-sm">
                 Inventario
               </a>
+              <a href="{% url 'proveedor:listar' %}" class="btn btn-outline-light btn-sm">
+               Proveedor
+              </a>
 
               {% if usuario.rol.nombre_rol == "Dueño" %}
               <a href="{% url 'usuario:agregar_empleado' %}" class="btn btn-outline-light btn-sm">
@@ -107,6 +110,10 @@
         <a href="{% url 'inventario:listar' %}" class="nav-link text-white fw-semibold">
           <!--<i class="bi bi-people"></i>-->
           <span>Inventario</span>
+        </a>
+        <a href="{% url 'proveedor:listar' %}" class="nav-link text-white fw-semibold">
+          <!--<i class="bi bi-people"></i>-->
+          <span>Proveedor</span>
         </a>
 
         {% if usuario.rol.nombre_rol == "Dueño" %}

@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title %}Proveedor{% endblock %}
+
+{% block content %}
+
+<div class="crm-form-wrapper">
+
+  <div class="crm-form-card">
+
+    <h4 class="crm-title text-center mb-4">Editar Proveedor</h4>
+
+    <form method="POST" id="edicionProveedorForm" novalidate>
+      {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label">Nombre*</label>
+          {% render_field form.nombre class="form-control" %}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label"> Numero</label>
+            {% render_field form.numero class="form-control" %}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Razon social*</label>
+          {% render_field form.razon_social class="form-control" %}
+        </div>
+ 
+        <div class="mb-3">
+          <label class="form-label">RFC del Proveedor*</label>
+          {% render_field form.rfc_proveedor class="form-control" %}
+        </div>
+      
+        <div class="mb-3">
+            <label class="form-label">Codigo Postal</label>
+            {% render_field form.codigo_postal class="form-control" %}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Comentarios</label>
+            {% render_field form.comentarios class="form-control" %}
+        </div>
+
+      <div class="d-flex justify-content-between mt-4">
+        <button type="submit" class="btn btn-orange w-50 me-2">
+          Guardar
+        </button>
+        <a href="{% url 'proveedor:listar' %}" class="btn btn-secondary crm-btn flex-fill">
+          Cancelar
+        </a>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+
+ <!--Confirmar-->
+  <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-warning">
+          <h5 class="modal-title" id="confirmModalLabel">Confirmar antes de guardar</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body"> 
+          ¿Deseas guardar?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="descartarOpcionales" data-bs-dismiss="modal">No, descartar</button>
+          <button type="button" class="btn btn-primary" id="confirmarOpcionales">Sí, guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!--Modal de datos duplicados-->
+  <div class="modal fade" id="duplicadoModal" tabindex="-1" aria-labelledby="duplicadoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="duplicadoModalLabel">Datos duplicados</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body text-center">
+          {% if campo_duplicado %}
+            <p>Ya existe un usuario con el <strong>{{ campo_duplicado }}</strong> ingresado.</p>
+          {% else %}
+            <p>Ya existe un usuario con alguno de los datos ingresados (correo, RFC o CURP).</p>
+          {% endif %}
+          <p>Verifica e inténtalo de nuevo.</p>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if duplicado %} 
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var modalDuplicado = new bootstrap.Modal(document.getElementById('duplicadoModal'));
+      modalDuplicado.show();
+    });
+  </script>
+  {% endif %}
+
+  <!-- Modal de campos faltantes -->
+  <div class="modal fade" id="faltantesModal" tabindex="-1" aria-labelledby="faltantesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-warning text-dark">
+          <h5 class="modal-title" id="faltantesModalLabel">Campos obligatorios faltantes</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <p>Debes llenar los siguientes campos antes de continuar:</p>
+          <ul id="listaFaltantes"></ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="{% static 'proveedor/js/proveedor.js' %}?v={{ timestamp }}"></script>
+{% endblock %}

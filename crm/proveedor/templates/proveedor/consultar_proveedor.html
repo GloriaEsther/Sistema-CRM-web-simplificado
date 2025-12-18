@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Proveedor{% endblock %}
+{% block content %}
+<div class="crm-form-wrapper">
+  <div class="crm-form-card">
+    <h4 class="crm-title text-center mb-4">Detalles del Proveedor</h4>
+    <p><strong>Nombre:</strong> {{ proveedor.nombre }}</p>
+    <p><strong>Numero:</strong> {{ proveedor.numero|default:""  }}</p>
+    <p><strong>Razon social:</strong> {{ proveedor.razon_social}}</p>
+    <p><strong>RFC del Proveedor:</strong> {{ proveedor.rfc_proveedor }}</p>
+    <p><strong>Codigo Postal:</strong> {{ proveedor.codigo_postal}}</p>
+    <p><strong>Comentarios:</strong> {{ proveedor.comentarios |default:""  }}</p>
+    <a href="{% url 'proveedor:listar' %}" class="btn btn-secondary mt-3 crm-btn">Regresar</a>
+   </div>
+</div>
+{% endblock %}

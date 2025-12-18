@@ -9,6 +9,7 @@ from django.db.models import Q
 from servicios.models import Servicio
 from inventario.models import Inventario
 from django.shortcuts import redirect
+from proveedor.models import Proveedor
 
 def require_roles(allowed_roles):#restringe roles (quien accede a que)
     def decorator(view_func):
@@ -96,3 +97,16 @@ Para que el decorador sea más robusto,
  en la base de datos y es superusuario, por si cambias 
  el rol en la BD mientras la sesión sigue abierta.
 '''
+
+def queryset_proveedores_por_rol(usuario):
+    rol = usuario.rol.nombre_rol
+    negocio = usuario if rol == "Dueño" else usuario.owner_id
+
+    if rol in ["Dueño", "Administrador"]:
+        return Proveedor.todos.filter(owner=negocio, activo=True)
+
+    if rol == "Vendedor":
+        return Proveedor.todos.none()
+
+    return Proveedor.todos.none()
+
