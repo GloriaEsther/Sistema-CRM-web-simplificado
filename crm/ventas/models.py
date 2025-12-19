@@ -53,10 +53,17 @@ class Venta(models.Model):
     #todos = models.Manager()
     objects = models.Manager() # (lo estoy probando) para compatibilidad con Django Admin
     #clave Venta...(prueba)
+    #def save(self, *args, **kwargs):
+    #    if not self.claveventa:
+    #        last_id = Venta.objects.count() + 1
+    #        self.claveventa = f"VTA{last_id:07d}"
+     #   super().save(*args, **kwargs)
+
     def save(self, *args, **kwargs):
         if not self.claveventa:
-            last_id = Venta.objects.count() + 1
-            self.claveventa = f"VTA{last_id:07d}"
+            ultimo = Venta.objects.order_by('-idventa').first()
+            next_id = ultimo.idventa + 1 if ultimo else 1
+            self.claveventa = f"VTA{next_id:07d}"
         super().save(*args, **kwargs)
 
     class Meta:

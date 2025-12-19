@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load widget_tweaks %}
-
+{% load static %}
 {% block content %}
 <div class="crm-form-wrapper">
   <div class="crm-form-card">
@@ -9,7 +9,7 @@
       Registrar venta
     </h4>
 
-    <form method="post" novalidate>
+    <form method="POST" id="registroVentaForm" novalidate>
       {% csrf_token %}
 
       <div class="mb-3">
@@ -28,7 +28,7 @@
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Total *</label>
+        <label class="form-label">Precio Total *</label>
         {% render_field form.preciototal class="form-control" %}
       </div>
 
@@ -56,4 +56,76 @@
 
   </div>
 </div>
+
+
+ <!--Confirmar-->
+  <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-warning">
+          <h5 class="modal-title" id="confirmModalLabel">Confirmar antes de guardar</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body"> 
+          ¿Deseas guardar?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="descartarOpcionales" data-bs-dismiss="modal">No, descartar</button>
+          <button type="button" class="btn btn-primary" id="confirmarOpcionales">Sí, guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!--Modal de datos duplicados-->
+  <div class="modal fade" id="duplicadoModal" tabindex="-1" aria-labelledby="duplicadoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="duplicadoModalLabel">Datos duplicados</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body text-center">
+          {% if campo_duplicado %}
+            <p>Ya existe un usuario con el <strong>{{ campo_duplicado }}</strong> ingresado.</p>
+          {% else %}
+            <p>Ya existe un usuario con alguno de los datos ingresados (correo, RFC o CURP).</p>
+          {% endif %}
+          <p>Verifica e inténtalo de nuevo.</p>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if duplicado %} 
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var modalDuplicado = new bootstrap.Modal(document.getElementById('duplicadoModal'));
+      modalDuplicado.show();
+    });
+  </script>
+  {% endif %}
+
+  <!-- Modal de campos faltantes -->
+  <div class="modal fade" id="faltantesModal" tabindex="-1" aria-labelledby="faltantesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-warning text-dark">
+          <h5 class="modal-title" id="faltantesModalLabel">Campos obligatorios faltantes</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <p>Debes llenar los siguientes campos antes de continuar:</p>
+          <ul id="listaFaltantes"></ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="{% static 'ventas/js/ventas.js' %}?v={{ timestamp }}"></script>
 {% endblock %}

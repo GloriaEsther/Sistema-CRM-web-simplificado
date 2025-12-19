@@ -37,8 +37,8 @@ def crear_venta_manual(request):
     if request.method == "POST":
         form = VentaForm(request.POST, usuario=usuario)
         if form.is_valid():
-            venta = form.save(commit=False)
-            venta.save()
+            #venta = form.save(commit=False)
+            form.save()
             messages.success(request, "Venta creada correctamente.")
             return redirect("ventas:listar")
     else:
