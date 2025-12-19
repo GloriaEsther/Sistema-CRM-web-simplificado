@@ -10,6 +10,7 @@ from servicios.models import Servicio
 from inventario.models import Inventario
 from django.shortcuts import redirect
 from proveedor.models import Proveedor
+from ventas.models import Venta
 import pandas as pd
 
 def require_roles(allowed_roles):#restringe roles (quien accede a que)
@@ -116,3 +117,22 @@ def limpiar_valor(valor):
     if pd.isna(valor):
         return None
     return str(valor).strip()
+#ventas
+def queryset_ventas_por_rol(usuario):
+    owner = (
+        usuario if usuario.rol.nombre_rol == "Dueño"
+        else usuario.owner_id
+    )
+
+    qs = Venta.objects.filter(
+        activo=True,
+        oportunidad_venta__negocio_oportunidad=owner
+    )
+
+    # Si es empleado, opcionalmente limitar
+    if usuario.rol.nombre_rol != "Dueño":
+        qs = qs.filter(
+            oportunidad_venta__usuario_responsable=usuario
+        )
+
+    return qs

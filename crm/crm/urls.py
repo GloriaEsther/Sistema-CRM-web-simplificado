@@ -11,7 +11,7 @@ urlpatterns = [
     path('usuario/', include('usuario.urls', namespace='usuario')),
     path('clientes/', include('cliente.urls',namespace='cliente')),
     path('oportunidades/', include('oportunidades.urls',namespace='oportunidades')),
-    path('ventas/', include('ventas.urls')),
+    path('ventas/', include('ventas.urls',namespace="ventas")),
     path("servicios/", include("servicios.urls",namespace="servicio")),#en el include debe coincidir el nombre de la app con el nombre de la carpeta(literal)
     path("inventario/", include("inventario.urls",namespace="inventario")),
     path("proveedor/", include("proveedor.urls", namespace="proveedor")),

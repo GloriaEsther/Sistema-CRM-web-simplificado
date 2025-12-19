@@ -50,7 +50,7 @@ class Venta(models.Model):
     oportunidad_venta = models.ForeignKey('oportunidades.Oportunidad',on_delete=models.PROTECT,db_column='oportunidad_venta')
     
     activos = ActivoManager()
-    todos = models.Manager()
+    #todos = models.Manager()
     objects = models.Manager() # (lo estoy probando) para compatibilidad con Django Admin
     #clave Venta...(prueba)
     def save(self, *args, **kwargs):
@@ -71,5 +71,3 @@ class Venta(models.Model):
 
     def __str__(self):
         return f"{self.nombreventa} ({self.claveventa}) {self.preciototal} {self.comentarios} {self.oportunidad_venta}"
-
-

@@ -65,6 +65,10 @@
                Proveedor
               </a>
 
+              <a href="{% url 'ventas:listar' %}" class="btn btn-outline-light btn-sm">
+              Ventas
+              </a>
+
               {% if usuario.rol.nombre_rol == "Dueño" %}
               <a href="{% url 'usuario:agregar_empleado' %}" class="btn btn-outline-light btn-sm">
                 Agregar empleado
@@ -114,6 +118,10 @@
         <a href="{% url 'proveedor:listar' %}" class="nav-link text-white fw-semibold">
           <!--<i class="bi bi-people"></i>-->
           <span>Proveedor</span>
+        </a>
+        <a href="{% url 'ventas:listar' %}" class="nav-link text-white fw-semibold">
+          <!--<i class="bi bi-people"></i>-->
+          <span>Ventas</span>
         </a>
 
         {% if usuario.rol.nombre_rol == "Dueño" %}

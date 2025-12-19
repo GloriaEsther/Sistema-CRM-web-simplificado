@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<h3>Ventas</h3>
+
+<form method="get" class="row g-2 mb-3">
+  <!--<div class="col-md-4">
+    <input type="date" name="desde" class="form-control">
+  </div>
+  <div class="col-md-4">
+    <input type="date" name="hasta" class="form-control">
+  </div>
+  <div class="col-md-4">
+    <button class="btn btn-primary w-100">Filtrar</button>
+  </div> -->
+       <a href="{% url 'ventas:corte_caja' %}" class="btn btn-primary crm-btn">
+        Corte de caja
+        </a>
+        <a href="{% url 'ventas:ventas_hoy' %}" class="btn btn-primary crm-btn">
+        Ventas del dia
+        </a>
+</form>
+
+<table class="table table-bordered table-sm">
+  <thead>
+    <tr>
+      <th>Clave</th>
+      <th>Nombre</th>
+      <th>Total</th>
+      <th>Estatus</th>
+      <th>Fecha</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for v in ventas %}
+    <tr>
+      <td>{{ v.claveventa }}</td>
+      <td>{{ v.nombreventa }}</td>
+      <td>${{ v.preciototal }}</td>
+      <td>{{ v.estatus_cobro }}</td>
+      <td>{{ v.fecha_registro|date:"d/m/Y H:i" }}</td>
+      <td>
+        <a href="{% url 'ventas:venta_editar' v.idventa %}"
+           class="btn btn-sm btn-warning">
+           Editar
+        </a>
+
+        <button
+            type="button"
+            class="btn btn-sm btn-danger btn-eliminar"
+            data-url="{% url 'ventas:venta_eliminar' v.idventa %}"
+            data-nombre="{{ v.nombreventa }}">
+            Eliminar
+        </button>
+      </td>
+    </tr>
+  {% empty %}
+    <tr>
+      <td colspan="6" class="text-center text-muted">
+        No hay ventas registradas
+      </td>
+    </tr>
+  {% endfor %}
+</tbody>
+
+</table>
+
+<a href="{% url 'ventas:crear_venta_manual' %}" class="btn btn-success">
+  Registrar venta
+</a>
+ 
+{% include "_modal_eliminar.html" %}
+<script src="{% static 'js/eliminar.js' %}"></script>
+{% endblock %}
