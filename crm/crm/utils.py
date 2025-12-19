@@ -10,6 +10,7 @@ from servicios.models import Servicio
 from inventario.models import Inventario
 from django.shortcuts import redirect
 from proveedor.models import Proveedor
+import pandas as pd
 
 def require_roles(allowed_roles):#restringe roles (quien accede a que)
     def decorator(view_func):
@@ -110,3 +111,8 @@ def queryset_proveedores_por_rol(usuario):
 
     return Proveedor.todos.none()
 
+#esto es prueba y es para importar cliente
+def limpiar_valor(valor):
+    if pd.isna(valor):
+        return None
+    return str(valor).strip()

@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import ClienteForm
 from .models import Cliente
 from django.contrib import messages
-from crm.utils import queryset_clientes_por_rol
+from crm.utils import queryset_clientes_por_rol,limpiar_valor
 from usuario.models import Usuario
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
@@ -91,9 +91,14 @@ def cliente_detalle(request, pk):
     return render(request, "clientes/cliente_detalle.html", {
         "cliente": cliente
     })
+#prueba..
+#def limpiar_valor(valor):
+ #                   if pd.isna(valor):
+  #                      return None
+  #                  return str(valor).strip()
+#
 
-
-def importar_clientes(request):#te quedaste en terminar de implementarlo...
+def importar_clientes(request):
     usuario = Usuario.activos.filter(
         idusuario=request.session.get("idusuario")
     ).first()
@@ -134,32 +139,61 @@ def importar_clientes(request):#te quedaste en terminar de implementarlo...
 
                 registros_omitidos = 0
                 registros_creados = 0
-
+         
                 with transaction.atomic():
-                    for _, fila in df.iterrows():
+                    for index, fila in df.iterrows():
 
                         # Limpieza de fecha
-                        fecha_nacimiento = fila.get("fecha_nacimiento")
-                        if pd.isna(fecha_nacimiento):
-                            fecha_nacimiento = None
+                        #fecha_nacimiento = fila.get("fecha_nacimiento")
+                        #if pd.isna(fecha_nacimiento):
+#                            fecha_nacimiento = None
+                        
+                        nombre = limpiar_valor(fila.get("nombre"))
+                        telefono = limpiar_valor(fila.get("numerotelcli"))
+                        rfc = limpiar_valor(fila.get("rfc"))
 
+                        # Validaciones obligatorias
+                        if not nombre:
+                            messages.error(
+                                request,
+                                f"Fila {index + 2}: El campo 'nombre' es obligatorio."
+                            )
+                            return redirect("cliente:importar")
+
+                        if not telefono:
+                            messages.error(
+                                request,
+                                f"Fila {index + 2}: El teléfono es obligatorio."
+                            )
+                            return redirect("cliente:importar")
+                        
                         # Validar RFC duplicado
                         rfc = fila.get("rfc")
+
+                        # Normalizar RFC
+                        if pd.isna(rfc) or str(rfc).strip() == "":
+                            rfc = None
+                        else:
+                            rfc = str(rfc).strip().upper()
+
                         if rfc and Cliente.todos.filter(rfc=rfc).exists():
                             registros_omitidos += 1
-                            continue
-
-                        Cliente.todos.create(
-                            nombre=fila["nombre"],
-                            apellidopaterno=fila.get("apellidopaterno"),
-                            apellidomaterno=fila.get("apellidomaterno"),
-                            numerotelcli=str(fila["numerotelcli"]),
-                            correo=fila.get("correo"),
-                            direccion=fila.get("direccion"),
+                            continue  
+                        
+                        Cliente.todos.create(                           
+                            nombre=nombre,
+                            apellidopaterno=limpiar_valor(fila.get("apellidopaterno")),
+                            apellidomaterno=limpiar_valor(fila.get("apellidomaterno")),
+                            numerotelcli=telefono,
+                            correo=limpiar_valor(fila.get("correo")),
+                            direccion=limpiar_valor(fila.get("direccion")),
                             rfc=rfc,
-                            fecha_nacimiento=fecha_nacimiento,
-                            comentarios=fila.get("comentarios"),
-
+                            fecha_nacimiento=(
+                                None if pd.isna(fila.get("fecha_nacimiento"))
+                                else fila.get("fecha_nacimiento")
+                            ),
+                            comentarios=limpiar_valor(fila.get("comentarios")),
+                            
                             usuario_registro=usuario,
                             owner=owner,
                             activo=True
@@ -177,7 +211,9 @@ def importar_clientes(request):#te quedaste en terminar de implementarlo...
             except Exception as e:
                 messages.error(
                     request,
-                    f"Error al procesar el archivo: {str(e)}"
+                    #f"Error al procesar el archivo: {str(e)}"
+                    "No se pudo importar el archivo. "
+                    "Verifica que el Excel cumpla con el formato indicado."
                 )
                 return redirect("cliente:importar")
 
