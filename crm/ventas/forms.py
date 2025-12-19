@@ -35,7 +35,13 @@ class VentaForm(forms.ModelForm):
             "cfdi",
             "comentarios",
         ]
-
+        widgets = {
+            'comentarios': forms.Textarea(attrs={
+                'rows': 3,
+                'class': 'form-control',
+                'placeholder': 'Comentarios opcionales'
+            }),
+        }
     # Validación fuerte del precio
     def clean_preciototal(self):
         precio = self.cleaned_data.get("preciototal")

@@ -37,10 +37,26 @@ def crear_venta_manual(request):
     if request.method == "POST":
         form = VentaForm(request.POST, usuario=usuario)
         if form.is_valid():
+
             #venta = form.save(commit=False)
-            form.save()
-            messages.success(request, "Venta creada correctamente.")
-            return redirect("ventas:listar")
+           # form.save()
+            #messages.success(request, "Venta creada correctamente.")
+            #return redirect("ventas:listar")
+            precio = form.cleaned_data.get("preciototal")
+
+            # VALIDACIÓN DE PRECIO
+            if precio is None or precio <= 0:
+                messages.error(
+                    request,
+                    "El precio total debe ser mayor a $0.00"
+                )
+            else:
+                form.save()
+                messages.success(
+                    request,
+                    "Venta creada correctamente."
+                )
+                return redirect("ventas:listar")
     else:
         form = VentaForm(usuario=usuario)
 
