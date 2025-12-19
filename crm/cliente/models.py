@@ -78,6 +78,4 @@ class Cliente(models.Model):
             self.save()
 
     def __str__(self):
-        return f"{self.nombre} {self.apellidopaterno} {self.apellidomaterno}"#{self.numerotelcli} {self.correo} {self.activo}#esto muestra en las consultas de shell de django
-    #
-
+        return f"{self.nombre} {self.apellidopaterno} {self.apellidomaterno}"

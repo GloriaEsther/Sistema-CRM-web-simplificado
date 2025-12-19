@@ -1,5 +1,6 @@
 from django import forms
 from .models import Cliente
+from django import forms
 
 class ClienteForm(forms.ModelForm):
     class Meta:
@@ -31,3 +32,9 @@ class ClienteForm(forms.ModelForm):
         if rfc and Cliente.todos.filter(rfc=rfc).exists():#if rfc and Cliente.activos.filter(rfc=rfc).exists():
             raise forms.ValidationError("Ya existe un cliente activo con ese RFC.")
         return data
+
+class ImportarClientesForm(forms.Form):
+    archivo = forms.FileField(
+        label="Archivo Excel",
+        help_text="Formato permitido: .xlsx"#help_text="El archivo debe contener las columnas del formulario de clientes"
+    )

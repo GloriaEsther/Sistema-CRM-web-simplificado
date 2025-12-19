@@ -1,0 +1,87 @@
+<div
+  class="modal fade"
+  id="modalExcelInfo"
+  tabindex="-1"
+  aria-labelledby="modalExcelInfoLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalExcelInfoLabel">
+          Requisitos del archivo Excel
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Cerrar"
+        ></button>
+      </div>
+
+      <div class="modal-body">
+
+        <p>
+          Para importar clientes correctamente, el archivo Excel debe cumplir
+          con los siguientes requisitos:
+        </p>
+
+        <ul>
+          <li>El archivo debe estar en formato <strong>.xlsx</strong></li>
+          <li>La primera fila debe contener los nombres de las columnas</li>
+          <li>Los nombres de las columnas deben coincidir exactamente con los siguientes:</li>
+        </ul>
+
+        <div class="alert alert-secondary">
+          <code>
+            nombre<br>
+            apellidopaterno<br>
+            apellidomaterno<br>
+            numerotelcli<br>
+            correo<br>
+            direccion<br>
+            rfc<br>
+            fecha_nacimiento<br>
+            comentarios
+          </code>
+        </div>
+
+        <p>
+          <strong>Notas importantes:</strong>
+        </p>
+
+        <ul>
+          <li>
+            Los campos internos del sistema (usuario que registra, fechas,
+            estado activo, propietario del cliente) se asignan automáticamente.
+          </li>
+          <li>
+            Si un cliente tiene un RFC ya registrado en el sistema, ese registro
+            será omitido.
+          </li>
+          <li>
+            Las fechas deben estar en formato de Excel (fecha).
+          </li>
+        </ul>
+
+        <div class="alert alert-info">
+          Este mecanismo de importación se reutiliza en otros módulos como
+          inventario y servicios.
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+        >
+          Entendido
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

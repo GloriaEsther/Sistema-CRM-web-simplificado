@@ -9,4 +9,5 @@ urlpatterns = [
     path("editar/<int:pk>/", views.cliente_editar, name="editar"),
     path("eliminar/<int:pk>/", views.cliente_eliminar, name="eliminar"),
     path("detalle/<int:pk>/", views.cliente_detalle, name="detalle"),
+    path("importar/", views.importar_clientes, name="importar"),
 ]

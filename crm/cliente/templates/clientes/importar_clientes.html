@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+
+  <h3 class="mb-3">Importar clientes desde Excel</h3>
+
+  <!-- Botón modal explicativo -->
+  <button
+    type="button"
+    class="btn btn-outline-info mb-3"
+    data-bs-toggle="modal"
+    data-bs-target="#modalExcelInfo"
+  >
+    ¿Cómo debe ser el archivo Excel?
+  </button>
+
+  <!-- Formulario -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label class="form-label">Archivo Excel (.xlsx)</label>
+          {{ form.archivo }}
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+          <a href="{% url 'cliente:listar' %}" class="btn btn-secondary">
+            Cancelar
+          </a>
+          <button type="submit" class="btn btn-primary">
+            Importar clientes
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+{% include "clientes/modal_excel_info.html" %}
+
+{% endblock %}
