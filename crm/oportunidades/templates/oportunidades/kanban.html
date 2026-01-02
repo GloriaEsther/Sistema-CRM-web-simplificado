@@ -34,11 +34,13 @@
 
                 <div class="kanban-card" draggable="true" data-id="{{ o.idoportunidad }}">
 
-                  <div class="card-menu dropdown ">
+                  <div class="card-menu dropdown dropup"><!--<div class="card-menu dropdown ">-->
                     <i class="bi bi-three-dots-vertical" data-bs-toggle="dropdown" style="cursor:pointer"></i>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="#" onclick="abrirConsultar({{ o.idoportunidad }}); return false;">Consultar</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="abrirEditar({{ o.idoportunidad }}); return false;">Editar</a></li>
+                        {% if o.cliente_oportunidad and o.cliente_oportunidad.activo%}
+                          <li><a class="dropdown-item" href="#" onclick="abrirEditar({{ o.idoportunidad }}); return false;">Editar</a></li>
+                        {% endif %}
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item text-danger" href="#" onclick="abrirEliminar({{ o.idoportunidad }}); return false;">Eliminar</a></li>
                     </ul>

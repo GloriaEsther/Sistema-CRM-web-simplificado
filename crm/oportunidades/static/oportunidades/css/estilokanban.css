@@ -1,12 +1,7 @@
-/* ===============================
-        KANBAN MOBILE-FIRST
-   =============================== */
-
   .kanban-container {
       display: flex;
       gap: 16px;
       overflow-x: auto;
-      /*padding: 18px;*/
   }
 
   .kanban-column {
@@ -16,7 +11,7 @@
       height: 78vh;
       display: flex;
       flex-direction: column;
-      overflow: visible;/* overflow: hidden; prueba...*/
+      overflow: visible;
       padding: 0;
       box-shadow: 0 4px 14px rgba(0,0,0,0.06);
       border-top: 6px solid #0d6efd;
@@ -24,7 +19,7 @@
 
   .kanban-column h5 {
       flex-shrink: 0;
-      height: 48px;              /* altura real */
+      height: 48px;              
       line-height: 32px;
       margin: 0;
       padding: 8px 0;
@@ -33,7 +28,7 @@
       position: sticky;
       top: 0;
       background: white;
-      z-index: 0;/*z-index: 10; esto hacia que la etiqueta h5 se pusiera encima de todo */
+      z-index: 0;
       border-bottom: 1px solid #e5e7eb;
   }
 
@@ -41,26 +36,19 @@
       flex: 1;
       min-height: 0;   /*esto evita que el sticky se monte */
       overflow-y: auto;
-      overflow-x: visible;/*prueba...*/
+      overflow-x: visible;
       padding: 12px;
-      /*
-      padding-right: 4px;
-      padding-top: 8px;*/
   }
 
   .kanban-card {
       position: relative;
-      z-index: 0;/*esto hace que las tarjetas no tapen los botones de abajo(z-index: 0;)*/
+      z-index: 0;
       background: white;
       border-radius: 12px;
       padding: 14px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
       margin-bottom: 12px;
       transition: transform 0.15s ease, box-shadow 0.15s ease;
-  }
-
-  .kanban-card.menu-open {
-    z-index: 50;
   }
 
   .kanban-card:hover {
@@ -70,14 +58,13 @@
 
   .card-menu {
       position: absolute;
-      top: 8px;/*prueba...*/
-      right: 8px;/*prueba...*/
-      z-index: 100;/*z-index: 0;prueba...*/
+      top: 8px;
+      right: 8px;
+      z-index: 100;
   }
 
-  /*prueba...*/
   .dropdown-menu {
-    z-index: 200; /* z-index: 1055; mayor que modales y columnas */
+    z-index: 200; 
   }
 
   .card-title {
@@ -123,9 +110,6 @@
       }
 
       .kanban-column {
-          /*width: 100%;
-          max-width: 100%;
-          padding: 16px;*/
           height: auto;
       }
 
@@ -155,7 +139,6 @@
       }
 
       .cards-wrapper {
-       /* max-height: none;*/
-        overflow: visible;
+        overflow: visible !important;
       }
   }
