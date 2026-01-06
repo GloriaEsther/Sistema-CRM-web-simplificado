@@ -15,5 +15,6 @@ urlpatterns = [
     path("servicios/", include("servicios.urls",namespace="servicio")),#en el include debe coincidir el nombre de la app con el nombre de la carpeta(literal)
     path("inventario/", include("inventario.urls",namespace="inventario")),
     path("proveedor/", include("proveedor.urls", namespace="proveedor")),
+    path("cotizacion/",include("cotizacion.urls", namespace="cotizacion")),
     path("superusuario/", include("superusuario.urls", namespace="superusuario")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,87 @@
+from django.shortcuts import render,redirect
+from usuario.models import Usuario
+from cliente.models import Cliente
+from servicios.models import Servicio
+from cotizacion.models import Cotizacion, CotizacionDetalle
+from decimal import Decimal
+from django.http import HttpResponse
+from .forms import CotizacionDetalleForm,CotizacionForm
+from django.forms import inlineformset_factory
+from time import time
+from django.contrib import messages
+from crm.utils import queryset_cotizaciones_por_rol
+
+def cotizacion_crear(request):
+    usuario = Usuario.activos.filter(
+        idusuario=request.session.get("idusuario")
+    ).first()
+
+    if not usuario:
+        return redirect("usuario:login")
+    
+    owner = usuario  if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
+    
+    clientes = Cliente.activos.filter(owner = owner)
+    servicios = Servicio.activos.filter(owner =owner)
+    
+    if request.method == "POST":
+        cliente_id = request.POST.get("cliente")
+        servicio_id = request.POST.get("servicio")
+        cantidad = int(request.POST.get("cantidad", 1))
+
+        cliente = Cliente.activos.get(idcliente=cliente_id)
+        servicio = Servicio.activos.get(idservicio=servicio_id)
+
+        print("CLIENTES:", clientes)
+        print("SERVICIOS:", servicios)
+
+        cotizacion = Cotizacion.activos.create(
+            cliente=cliente,
+            total=servicio.precio * cantidad,
+            activo=True,
+            owner=owner,
+            usuario_registro=usuario
+        )
+
+        CotizacionDetalle.activos.create(
+            cotizacion=cotizacion,
+            servicio=servicio,
+            cantidad=cantidad,
+            precio_unitario=servicio.precio,
+            subtotal=servicio.precio * cantidad,
+            activo=True
+        )
+
+        messages.success(request, "Cotización creada correctamente.")
+        return redirect("cotizacion:listar")
+    
+    return render(request, "cotizacion/crear_cotizacion.html", {
+        "clientes": clientes,
+        "servicios": servicios,
+        "timestamp": int(time())
+    })
+    
+    
+def cotizacion_detalle(request, pk):
+    cotizacion = Cotizacion.activos.filter(idcotizacion=pk).first()
+
+    if not cotizacion:
+        return HttpResponse("Cotización no encontrada", status=404)
+
+    detalles = cotizacion.detalles.filter(activo=True)
+
+    return render(request, "cotizacion/consultar_cotizacion.html", {
+        "cotizacion": cotizacion,
+        "detalles": detalles
+    })
+
+
+def cotizaciones_list(request):
+    usuario = Usuario.activos.filter(
+        idusuario=request.session.get("idusuario")
+    ).first()
+
+    cotizaciones = queryset_cotizaciones_por_rol(usuario)
+    return render(request, "cotizacion/lista_cotizaciones.html", {
+        "cotizaciones": cotizaciones
+    })

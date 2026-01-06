@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title %}Cotización{% endblock %}
+
+{% block content %}
+
+<div class="crm-form-wrapper">
+  <div class="crm-form-card">
+    <h4 class="crm-title text-center mb-4">Detalle Cotización</h4>
+    
+    <h3>Cotización #{{ cotizacion.idcotizacion }}</h3>
+    <p>Cliente: {{ cotizacion.cliente }}</p>
+    <p>Fecha: {{ cotizacion.fecha }}</p>
+
+    <table>
+      <tr>
+        <th>Servicio</th>
+        <th>Cantidad</th>
+        <th>Precio</th>
+        <th>Subtotal</th>
+      </tr>
+      {% for d in cotizacion.detalles.all %}
+      <tr>
+        <td>{{ d.servicio.nombre }}</td>
+        <td>{{ d.cantidad }}</td>
+        <td>${{ d.precio_unitario }}</td>
+        <td>${{ d.subtotal }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <h4>Total: ${{ cotizacion.total }}</h4>
+    
+    <a href="{% url 'cotizacion:listar' %}" class="btn btn-secondary mt-3 crm-btn">Regresar</a>
+  </div> 
+</div>

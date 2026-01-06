@@ -11,6 +11,7 @@ from inventario.models import Inventario
 from django.shortcuts import redirect
 from proveedor.models import Proveedor
 from ventas.models import Venta
+from cotizacion.models import Cotizacion
 import pandas as pd
 
 def require_roles(allowed_roles):#restringe roles (quien accede a que)
@@ -136,3 +137,17 @@ def queryset_ventas_por_rol(usuario):
         )
 
     return qs
+
+def queryset_cotizaciones_por_rol(usuario):
+    rol = usuario.rol.nombre_rol
+    # todos  deben ven los servicios del negocio, no solo los que crearon
+    if rol == "Dueño":
+        return Cotizacion.activos.filter(owner=usuario)
+
+    if rol == "Administrador":
+        return Cotizacion.activos.filter(owner=usuario.owner_id)
+
+    if rol == "Vendedor":
+        return Cotizacion.activos.filter(owner=usuario.owner_id)
+
+    return Cotizacion.activos.none()

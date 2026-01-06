@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'widget_tweaks',#libreria para manejar css mas facil
+    'widget_tweaks',
     'cliente',
     'usuario',
     'servicios',#en el nombre de las apps manda el nombre de la carpeta
@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'oportunidades',
     'proveedor',
     'superusuario',
+    'cotizacion',
 ]
 
 MIDDLEWARE = [

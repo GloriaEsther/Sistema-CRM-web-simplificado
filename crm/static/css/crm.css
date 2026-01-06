@@ -27,8 +27,8 @@ body {
 
 /* ===== Títulos ===== */
 .crm-title {
-  font-weight: 700;
-  margin-bottom: 12px;
+  font-weight: 800;
+  color: #1e293b;
 }
 
 .crm-mobile-nav {
@@ -69,23 +69,25 @@ body {
 }
 /*Contenedores para formularios...*/
 .crm-form-wrapper {/*Contenedor externo..*/
-  min-height: calc(100vh - 120px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;/*flex-start;*/
+  padding: 20px 10px 100px 10px ; /* padding: 20px 10px 100px 10px;Mucho espacio abajo */
+  /*min-height: calc(100vh - 120px);
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 20px;*/
 }
 
 .crm-form-card {/*Tarjeta del formulario como tal ...*/
   width: 100%;
-  max-width: 420px;
+  max-width: 480px;
   background: white;
   padding: 30px;
   border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-  /*lo de abajo es una prueba...*/
-  max-height: calc(100vh - 120px); /* 👈 CLAVE */
-  overflow-y: auto;  
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  overflow-y: auto; 
 }
 
 .crm-section-header{
@@ -117,7 +119,28 @@ body {
     max-height: calc(100vh - 140px); /* más espacio por menú */
   }
 }
+@media (min-height: 600px) {
+    .crm-form-card {
+        max-height: 85vh;
+        padding: 15px;
+    }
+    .crm-form-wrapper {
+        padding: 10px;
+        align-items: flex-start; /* En pantallas muy minis, mejor empezar arriba */
+    }
+}
 
+/* Ajuste para pantallas muy pequeñas (celulares viejos o teclado abierto) */
+@media (max-height: 600px) {
+    .crm-form-card {
+        max-height: 85vh;
+        padding: 15px;
+    }
+    .crm-form-wrapper {
+        padding: 10px;
+        align-items: flex-start; /* En pantallas muy minis, mejor empezar arriba */
+    }
+}
 /*cliente*/
 #frecuenciaContainer {
   display: none;
