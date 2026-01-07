@@ -1,9 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
-
   const form = document.getElementById("registroCotizacionForm");
   const selectServicio = document.querySelector('select[name="servicio"]');
   const inputCantidad = document.querySelector('input[name="cantidad"]');
-
   const subtotalSpan = document.getElementById("subtotal");
   const totalSpan = document.getElementById("total");
 
@@ -14,75 +12,93 @@ document.addEventListener("DOMContentLoaded", function () {
   const modalFaltantes = modalFaltantesEl ? new bootstrap.Modal(modalFaltantesEl) : null;
 
   const btnConfirmar = document.getElementById("confirmarOpcionales");
+  const btnDescartar = document.getElementById("descartarOpcionales");
 
-  if (!form) return;
+  //if(form){
+    function hayCamposObligatoriosVacios() {
+      const obligatorios = [
+        { name: "cliente", label: "Cliente" },
+        { name: "servicio", label: "Servicio" },
+        { name: "cantidad", label: "Cantidad" }
+      ];
 
-  function hayCamposObligatoriosVacios() {
-    const obligatorios = [
-      { name: "cliente", label: "Cliente" },
-      { name: "servicio", label: "Servicio" },
-      { name: "cantidad", label: "Cantidad" }
-    ];
-
-    const faltantes = obligatorios.filter(campo => {
-      const el = form.querySelector(`[name="${campo.name}"]`);
-      return !el || !el.value;
-    });
-
-    if (faltantes.length > 0 && modalFaltantes) {
-      const lista = document.getElementById("listaFaltantes");
-      lista.innerHTML = "";
-      faltantes.forEach(c => {
-        const li = document.createElement("li");
-        li.textContent = c.label;
-        lista.appendChild(li);
+      const faltantes = obligatorios.filter(campo => {
+        const el = document.getElementById(campo.id);//const el = form.querySelector(`[name="${campo.name}"]`);
+        return !el || el.value.trim()=== "";//return !el || !el.value;
       });
-      modalFaltantes.show();
-      return true;
+
+      if (faltantes.length > 0 && modalFaltantes) {
+        const lista = document.getElementById("listaFaltantes");
+        lista.innerHTML = "";
+        faltantes.forEach(c => {
+          const li = document.createElement("li");
+          li.textContent = c.label;
+          lista.appendChild(li);
+        });
+        modalFaltantes.show();
+        return true;
+      }
+      return false;
     }
-    return false;
-  }
 
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
-    if (hayCamposObligatoriosVacios()) return;
-    modalConfirmar.show();
-  });
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
 
-  btnConfirmar.addEventListener("click", function () {
-    modalConfirmar.hide();
-    form.submit();
-  });
+      if (hayCamposObligatoriosVacios()) return;
 
-  function calcularTotales() {
-    if (!selectServicio || !inputCantidad) return;
+      const tieneDatos = Array.from(form.elements).some(el =>
+        el.value && el.value.trim() !== ""
+      );
 
-    const opcionSeleccionada = selectServicio.options[selectServicio.selectedIndex];
-    const precio = parseFloat(opcionSeleccionada.dataset.precio || 0);
-    const cantidad = parseInt(inputCantidad.value || 1);
-
-    const subtotal = precio * cantidad;
-    const total = subtotal; // por ahora iguales
-
-    subtotalSpan.textContent = subtotal.toFixed(2);
-    totalSpan.textContent = total.toFixed(2);
-    //debug temporal
-    console.log({
-      precio:precio,
-      cantidad:cantidad,
-      opcion:opcionSeleccionada
+      if (tieneDatos && modalConfirmar) {
+        modalConfirmar.show();
+      } else {
+        form.submit();
+      }
     });
-  }
+    
+     if (btnConfirmar) {
+      btnConfirmar.addEventListener("click", function () {
+        modalConfirmar.hide();
+        form.submit();
+      });
+    }
 
-    // Forzar cálculo inicial
-  setTimeout(() => {
+    if (btnDescartar) {
+      btnDescartar.addEventListener("click", function () {
+        form.reset();
+        toggleFrecuencia();
+        modalConfirmar.hide();
+      });
+    }
+
+    function calcularTotales() {
+      if (!selectServicio || !inputCantidad) return;
+
+          const selectedOption = selectServicio.options[selectServicio.selectedIndex];
+          
+          // Obtenemos el precio del atributo data-precio. 
+          // Asegúrate que en el HTML diga data-precio="{{ s.precio }}"
+          let precio = 0;
+          if (selectedOption && selectedOption.value !== "") {
+              precio = parseFloat(selectedOption.getAttribute("data-precio")) || 0;
+          }
+
+          const cantidad = parseInt(inputCantidad.value) || 0;
+          const total = precio * cantidad;
+
+          // Actualizar el texto en el HTML
+          if (subtotalSpan) subtotalSpan.textContent = total.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+          if (totalSpan) totalSpan.textContent = total.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+          
+          console.log(`Calculando: ${precio} x ${cantidad} = ${total}`);
+    
+    }
+  // Escuchar cambios
+    selectServicio.addEventListener("change", calcularTotales);
+    inputCantidad.addEventListener("input", calcularTotales);
+    inputCantidad.addEventListener("change", calcularTotales);
+   // Calcular una vez al inicio por si hay valores predeterminados
     calcularTotales();
-  }, 100);
-
-  // Eventos
-  selectServicio.addEventListener("change", calcularTotales);
-  inputCantidad.addEventListener("input", calcularTotales);
-
-  // Calcular al cargar
-  calcularTotales();
+ // }
 });

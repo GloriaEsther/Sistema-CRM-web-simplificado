@@ -6,7 +6,6 @@
 
 <div class="crm-form-wrapper">
    <div class="crm-form-card">
-    
     <h4 class="crm-title text-center mb-4">Crear Cotización</h4>
    
     <form method="POST" id="registroCotizacionForm" novalidate>
@@ -20,8 +19,9 @@
 
         <label class="form-label">Servicio*</label>
         <select name="servicio" class="form-control" required>
+          <option value="" disabled selected>Selecciona un servicio</option>
         {% for s in servicios %}
-            <option value="{{ s.idservicio }}" data-precio="{{ s.precio }}">
+            <option value="{{ s.idservicio }}" data-precio="{{ s.precio |stringformat:"".2f"}}">
             {{ s.nombre }} - ${{ s.precio }}
             </option>
         {% endfor %}

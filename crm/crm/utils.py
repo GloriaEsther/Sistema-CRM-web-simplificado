@@ -140,14 +140,12 @@ def queryset_ventas_por_rol(usuario):
 
 def queryset_cotizaciones_por_rol(usuario):
     rol = usuario.rol.nombre_rol
-    # todos  deben ven los servicios del negocio, no solo los que crearon
-    if rol == "Dueño":
-        return Cotizacion.activos.filter(owner=usuario)
-
-    if rol == "Administrador":
-        return Cotizacion.activos.filter(owner=usuario.owner_id)
+    negocio = usuario if rol == "Dueño" else usuario.owner_id
+   
+    if rol in ["Dueño", "Administrador"]:
+        return Cotizacion.todos.filter(owner=negocio, activo=True)
 
     if rol == "Vendedor":
-        return Cotizacion.activos.filter(owner=usuario.owner_id)
+        return Cotizacion.todos.filter(owner=usuario.owner_id,activo =True)
 
-    return Cotizacion.activos.none()
+    return Cotizacion.todos.none()

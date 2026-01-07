@@ -9,7 +9,7 @@
   <div class="crm-form-card">
     <h4 class="crm-title text-center mb-4">Detalle Cotización</h4>
     
-    <h3>Cotización #{{ cotizacion.idcotizacion }}</h3>
+    <h4>Cotización #{{ cotizacion.idcotizacion }}</h4>
     <p>Cliente: {{ cotizacion.cliente }}</p>
     <p>Fecha: {{ cotizacion.fecha }}</p>
 
@@ -35,3 +35,4 @@
     <a href="{% url 'cotizacion:listar' %}" class="btn btn-secondary mt-3 crm-btn">Regresar</a>
   </div> 
 </div>
+{% endblock %}
