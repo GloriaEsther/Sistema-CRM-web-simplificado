@@ -10,7 +10,6 @@ from django.forms import inlineformset_factory
 from time import time
 from django.contrib import messages
 from crm.utils import queryset_cotizaciones_por_rol
-#revisa el ultimo mensaje de gemini...
 def cotizacion_crear(request):
     usuario = Usuario.activos.filter(
         idusuario=request.session.get("idusuario")
