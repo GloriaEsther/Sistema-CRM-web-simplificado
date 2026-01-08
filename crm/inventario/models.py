@@ -4,11 +4,10 @@ from django.utils import timezone
 from proveedor.models import Proveedor
 #para eliminacion logica....
 class ActivoManager(models.Manager):
-    """Devuelve solo los registros activos de usuarios (no eliminados)"""
+    """Devuelve solo los registros activos (no eliminados)"""
     def get_queryset(self):
         return super().get_queryset().filter(activo=True)
 
-#Las siguientes 3 clases son otras tablas en la bd..
 class TipoArticuloCat(models.Model):
     idtipo_articulo = models.AutoField(primary_key=True)
     nombre_tipo = models.CharField(max_length=45)
@@ -19,7 +18,6 @@ class TipoArticuloCat(models.Model):
 
     def __str__(self):
         return self.nombre_tipo
-
 
 class UnidadCat(models.Model):
     idunidad_cat = models.AutoField(primary_key=True)
@@ -43,7 +41,6 @@ class Inventario(models.Model):
     fecha_registro = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
     fecha_eliminacion = models.DateTimeField(null=True, blank=True)
-    #Claves foraneas
     usuario_registro = models.ForeignKey(Usuario, on_delete=models.PROTECT, db_column='usuario_registro')
     owner = models.ForeignKey(#esto es para distinguir los clientes de cada negocio(como owner_id pero aplicado a clientes)
         Usuario,

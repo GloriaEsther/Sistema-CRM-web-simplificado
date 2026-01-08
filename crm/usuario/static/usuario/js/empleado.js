@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Obtener elementos
     const RolContainer = document.getElementById("rolContainer");
     const RolInput = document.getElementById("id_rol");
     const nombreInput = document.getElementById("id_nombre");
@@ -10,8 +9,6 @@ document.addEventListener("DOMContentLoaded", function () {
     
     const btnGuardar = document.getElementById("btnGuardar");
     const form = document.getElementById("EmpleadoForm");
-    // Iniciar objetos de modal
-    // Se inicializan aquí para que el código pueda llamarlos con .show()
     const modalConfirmar = new bootstrap.Modal(document.getElementById("confirmModal"));
     const modalContrasena = new bootstrap.Modal(document.getElementById("coninvalida"));
     const modalFaltantes = new bootstrap.Modal(document.getElementById("faltantesModal")); 
@@ -54,8 +51,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         return false;
     }
-
-    //botones.....
 
     btnGuardar.addEventListener("click", function (e) {
         e.preventDefault();

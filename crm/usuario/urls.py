@@ -9,8 +9,7 @@ urlpatterns = [
     path('logout/', views.cerrar_sesion, name='cerrar_sesion'),
     path('inicio/', views.inicio, name='inicio'),
     path('agregar/', views.agregar_empleado, name='agregar_empleado'),
-    
-    # CRUD usuarios
+ 
     path('listar/', views.listar_usuarios, name='listar_usuarios'),
     path('editar/<int:pk>/', views.editar_usuario, name='editar_usuario'),
     path('eliminar/<int:pk>/', views.eliminar_usuario, name='eliminar_usuario'),

@@ -1,9 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
- console.log("proveedor.js cargado");
- const form = document.getElementById("registroProveedorForm");
-  /* ==========================
-     ELEMENTOS
-  ========================== */
+  const form = document.getElementById("registroProveedorForm");
   const modalConfirmarEl = document.getElementById("confirmModal");
   const modalFaltantesEl = document.getElementById("faltantesModal");
 
@@ -13,10 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const btnConfirmar = document.getElementById("confirmarOpcionales");
   const btnDescartar = document.getElementById("descartarOpcionales");
 
-  if(form){//si formulario de crear/editar existe...
-        /* ==========================
-        VALIDAR CAMPOS OBLIGATORIOS
-      ========================== */
+  if(form){
       function hayCamposObligatoriosVacios() {
         const obligatorios = [
           { id: "id_nombre", label: "Nombre*" },
@@ -46,9 +39,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return false;
       }
 
-      /* ==========================
-        CONFIRMAR ANTES DE GUARDAR
-      ========================== */
       form.addEventListener("submit", function (e) {
         e.preventDefault();
 
@@ -65,9 +55,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
 
-      /* ==========================
-        BOTONES DEL MODAL
-      ========================== */
       if (btnConfirmar) {
         btnConfirmar.addEventListener("click", function () {
           modalConfirmar.hide();
@@ -82,6 +69,5 @@ document.addEventListener("DOMContentLoaded", function () {
           modalConfirmar.hide();
         });
       }
-
   }
 });

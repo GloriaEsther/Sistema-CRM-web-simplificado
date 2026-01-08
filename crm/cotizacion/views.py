@@ -3,13 +3,11 @@ from usuario.models import Usuario
 from cliente.models import Cliente
 from servicios.models import Servicio
 from cotizacion.models import Cotizacion, CotizacionDetalle
-from decimal import Decimal
 from django.http import HttpResponse
-from .forms import CotizacionDetalleForm,CotizacionForm
-from django.forms import inlineformset_factory
 from time import time
 from django.contrib import messages
 from crm.utils import queryset_cotizaciones_por_rol
+
 def cotizacion_crear(request):
     usuario = Usuario.activos.filter(
         idusuario=request.session.get("idusuario")
@@ -31,10 +29,7 @@ def cotizacion_crear(request):
         cliente = Cliente.activos.get(idcliente=cliente_id)
         servicio = Servicio.activos.get(idservicio=servicio_id)
 
-        print("CLIENTES:", clientes)
-        print("SERVICIOS:", servicios)
-
-        cotizacion = Cotizacion.activos.create(
+        cotizacion = Cotizacion.activos.create(#checar....
             cliente=cliente,
             total=servicio.precio * cantidad,
             activo=True,
@@ -81,7 +76,6 @@ def cotizaciones_list(request):
     ).first()
 
     cotizaciones = queryset_cotizaciones_por_rol(usuario)
-    print("COTIZACIONES:", cotizaciones.count())
 
     return render(request, "cotizacion/lista_cotizaciones.html", {
         "cotizaciones": cotizaciones

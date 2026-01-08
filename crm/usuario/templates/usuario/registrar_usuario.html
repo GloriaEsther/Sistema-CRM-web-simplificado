@@ -4,8 +4,8 @@
 {% block title %}Crear Cuenta{% endblock %}
 
 {% block content %}
-  <div class="crm-form-wrapper"><!-- <div class="crm-section">-->
-    <div class="crm-form-card"><!-- <div class="crm-form-section">-->
+  <div class="crm-form-wrapper">
+    <div class="crm-form-card">
        <h2 class="text-center mb-4">Crear Cuenta</h2>
             <form method="POST" id="registroForm" class="needs-validation" novalidate>
               {% csrf_token %}
@@ -19,9 +19,7 @@
                 {% endfor %}
               {% endif %}
 
-
-              <!--<div class="row">-->
-                <div class="mb-3"><!--<div class="col-md-4 mb-3">-->
+                <div class="mb-3">
                   <label for="id_nombre" class="form-label">Nombre</label>
                   {% render_field form.nombre class="form-control" add_error_class="is-invalid"%}
                   {% for error in form.nombre.errors %}
@@ -50,9 +48,6 @@
                       </div>
                   {% endfor %}
                 </div>
-              <!--</div>-->
-
-              <!--<div class="row">-->
                 <div class="mb-3">
                   <label for="id_numerotel" class="form-label">Número Telefónico</label>
                   {% render_field form.numerotel class="form-control" add_error_class="is-invalid" %}
@@ -73,9 +68,6 @@
                       </div>
                   {% endfor %}
                 </div>
-              <!--</div>-->
-
-              <!--<div class="row">-->
                 <div class="mb-3">
                   <label for="id_contrasena" class="form-label">Contraseña</label>
                   {% render_field form.contrasena class="form-control" add_error_class="is-invalid" %}
@@ -88,7 +80,6 @@
                     Mínimo 10 caracteres, una mayúscula y un número.
                   </small>
                 </div>
-              <!--</div>-->
 
               <div class="row">
                 <div class="col-md-6 mb-3" id="localFijoContainer">
@@ -208,7 +199,7 @@
     </div>
   </div>
 
-  {% if duplicado %} <!--checa esto, una seria mandar a llamar eel archivo con esas funciones o juntar todo en un archivo pero veo mas rapido uno cada una -->
+  {% if duplicado %} 
   <script>
     document.addEventListener("DOMContentLoaded", function() {
       var modalDuplicado = new bootstrap.Modal(document.getElementById('duplicadoModal'));

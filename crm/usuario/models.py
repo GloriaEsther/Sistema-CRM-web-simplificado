@@ -47,11 +47,9 @@ class Usuario(models.Model):
     correo = models.CharField(unique=True, max_length=100)
     contrasena = models.CharField(max_length=255)
     rol = models.ForeignKey(RolUsuario, on_delete=models.SET_DEFAULT, default=1,db_column='rol')
-    #Dueño
     rfc = models.CharField(max_length=13, blank=True, null=True,unique=True)
     local_Fijo = models.CharField(db_column='local_Fijo', max_length=2, choices=LOCAL_FIJO_OPCIONES, blank=True, null=True)
     nombre_negocio = models.CharField(max_length=100, blank=True, null=True)
-    #Sistema
     fecha_registro = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
     activo = models.BooleanField(default=True)

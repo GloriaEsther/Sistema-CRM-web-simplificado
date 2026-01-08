@@ -1,9 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-
   const form = document.getElementById("registroServicioForm");
-  /* ==========================
-     ELEMENTOS
-  ========================== */
   const modalConfirmarEl = document.getElementById("confirmModal");
   const modalFaltantesEl = document.getElementById("faltantesModal");
 
@@ -15,10 +11,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
   if(form){
-    
-    /* ==========================
-      VALIDAR CAMPOS OBLIGATORIOS
-    ========================== */
     function hayCamposObligatoriosVacios() {
       const obligatorios = [
         { id: "id_nombre", label: "Nombre" },
@@ -46,9 +38,6 @@ document.addEventListener("DOMContentLoaded", function () {
       return false;
     }
 
-    /* ==========================
-      CONFIRMAR ANTES DE GUARDAR
-    ========================== */
     form.addEventListener("submit", function (e) {
       e.preventDefault();
 
@@ -65,9 +54,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-    /* ==========================
-      BOTONES DEL MODAL
-    ========================== */
     if (btnConfirmar) {
       btnConfirmar.addEventListener("click", function () {
         modalConfirmar.hide();
@@ -83,5 +69,4 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
   }
-  
 });

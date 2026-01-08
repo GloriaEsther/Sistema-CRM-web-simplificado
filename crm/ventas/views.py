@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import VentaForm
 from .models import Venta
@@ -6,11 +5,9 @@ from usuario.models import Usuario
 from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Sum, Count
-from crm.utils import require_roles,queryset_ventas_por_rol
-from datetime import datetime
+from crm.utils import queryset_ventas_por_rol
 from oportunidades.models import Oportunidad
 from time import time
-#from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 
 
@@ -18,13 +15,12 @@ def listar_ventas(request):
     # filtro por rango de fechas opcional
     fecha_inicio = request.GET.get('desde')
     fecha_fin = request.GET.get('hasta')
-    #qs = Venta.objects.filter(activo=True, oportunidad_venta__owner=owner)
     usuario = Usuario.activos.filter(
         idusuario=request.session.get("idusuario")
     ).first()
 
     qs = queryset_ventas_por_rol(usuario)
-    #qs = Venta.activos.all()
+
     if fecha_inicio and fecha_fin:
         qs = qs.filter(fecha_registro__date__range=[fecha_inicio, fecha_fin])
     return render(request, 'ventas/listar.html', {'ventas': qs})
@@ -37,11 +33,6 @@ def crear_venta_manual(request):
     if request.method == "POST":
         form = VentaForm(request.POST, usuario=usuario)
         if form.is_valid():
-
-            #venta = form.save(commit=False)
-           # form.save()
-            #messages.success(request, "Venta creada correctamente.")
-            #return redirect("ventas:listar")
             precio = form.cleaned_data.get("preciototal")
 
             # VALIDACIÓN DE PRECIO
@@ -63,10 +54,6 @@ def crear_venta_manual(request):
     return render(request, "ventas/crear.html", {
         "form": form
     })
-
-
-
-
 
 def generar_venta_desde_oportunidad(request, oportunidad_id):#en esta version mvp del crm no se va a incluir.....
     # acción: crear venta solo si oportunidad está en Cierre-Ganado y no tiene venta
@@ -189,7 +176,7 @@ def venta_eliminar(request, pk):
         idusuario=request.session.get("idusuario")
     ).first()
 
-    qs = queryset_ventas_por_rol(usuario)#Venta.activos.all()
+    qs = queryset_ventas_por_rol(usuario)
     venta = get_object_or_404(qs, idventa=pk)
 
     venta.eliminar_logico()

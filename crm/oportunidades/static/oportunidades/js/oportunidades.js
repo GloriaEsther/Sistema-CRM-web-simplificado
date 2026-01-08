@@ -1,4 +1,3 @@
-// oportunidades.js
 document.addEventListener('DOMContentLoaded', function() {
   setupDragAndDrop();
   hookupEditarForm();
@@ -19,8 +18,6 @@ function getCsrf() {
   }
   return cookieValue;
 }
-
-/* --------------- DRAG & DROPfunction --------------- */
 
 function setupDragAndDrop() {
 
@@ -66,7 +63,7 @@ function setupDragAndDrop() {
 }
 
 function moverOportunidad(idoportunidad, etapa_id) {
-  fetch('/oportunidades/mover/' + idoportunidad + '/', {//fetch(window.location.origin + '/oportunidades/mover/' + idoportunidad + '/', {
+  fetch('/oportunidades/mover/' + idoportunidad + '/', {
     method: 'POST',
     headers: {
       'X-CSRFToken': getCsrf(),
@@ -117,7 +114,6 @@ function abrirEditar(id) {
       document.getElementById('editar-id').value = id;
       document.getElementById('editar-nombre').value = d.nombre;
       document.getElementById('editar-valor').value = d.valor;
-      // d.fecha iso => YYYY-MM-DD
       document.getElementById('editar-fecha').value = d.fecha_iso || '';
       document.getElementById('editar-etapa').value = d.etapa_id;
       document.getElementById('editar-cliente-display').value = d.cliente;
@@ -180,7 +176,7 @@ function hookupEliminarForm() {
 }
 
 /* --------------- BÚSQUEDA AJAX: cliente y vendedor --------------- */
-let currentSearchTarget = null; // '#modalCrear' o '#modalEditar'
+let currentSearchTarget = null; 
 // Obtener el prefijo ('crear' o 'editar')
 function getPrefix() {
     if (!currentSearchTarget) return '';
@@ -191,7 +187,6 @@ function getPrefix() {
 function abrirBuscarCliente(modalSelector) {
   currentSearchTarget = modalSelector;
   const prefix = getPrefix();
-  // mostrar panel de busqueda dentro del modal (usa el panel con id -buscarPanel)
   document.getElementById(prefix +'-buscarPanel').style.display = 'block';
   document.getElementById(prefix +'-buscar-input').focus();
 }
@@ -224,8 +219,6 @@ function busquedaAjax() {
         // Asignación de valores al campo de visualización y al campo oculto de ID
         document.getElementById(prefix + (isV ? '-usuario-display' : '-cliente-display')).value = item.display;
         document.getElementById(prefix + (isV ? '-usuario-id' : '-cliente-id')).value = item.id;
-                
-        // Ocultar el panel de búsqueda correcto
         document.getElementById(prefix + '-buscarPanel').style.display = 'none';
         document.getElementById(prefix + '-buscar-input').value = '';
       };

@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Obtener elementos
     const localFijoContainer = document.getElementById("localFijoContainer");
     const localFijoInput = document.getElementById("id_local_Fijo");
     const rfcInput = document.getElementById("id_rfc");
@@ -17,15 +16,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const btnDescartar = document.getElementById("descartarOpcionales");
     const btnAceptar = document.getElementById("confirmar");
 
-    // --------------------------------------------------------
-    // Funciones y manejadores de eventos
-    // --------------------------------------------------------
-
     if (localFijoContainer) {
-        localFijoContainer.style.display = "block";//siempre visible
+        localFijoContainer.style.display = "block";
         
     }
-    // Mostrar/ocultar campos si Local Fijo = "Si"
     if (localFijoInput) {
         if (localFijoInput.value !== "Si") {
             nombre_negocioInput.closest(".col-md-6").style.display = "none";
@@ -74,8 +68,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         return false;
     }
-
-    //botones.....
 
     btnGuardar.addEventListener("click", function (e) {
         e.preventDefault();

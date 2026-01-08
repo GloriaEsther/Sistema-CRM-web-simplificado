@@ -96,9 +96,7 @@
   [data-etapa-id="4"] { border-top-color: #ca8a04; }
   [data-etapa-id="5"] { border-top-color: #16a34a; }
 
-  /* ===============================
-            MOBILE FIRST
-     =============================== */
+  /* Mobile First */
 
   @media (max-width: 768px) {
 

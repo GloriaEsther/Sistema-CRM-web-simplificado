@@ -4,7 +4,6 @@ from cliente.models import Cliente
 from usuario.models import Usuario
 from oportunidades.models import Oportunidad
 
-
 @solo_superusuario
 def dashboard(request):
 

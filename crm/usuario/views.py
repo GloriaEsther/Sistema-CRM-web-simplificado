@@ -4,9 +4,8 @@ from .models import Usuario, PreferenciaUsuario,RolUsuario
 from django.contrib import messages
 from django.db import IntegrityError
 from django.contrib.auth.hashers import check_password 
-from crm.utils import require_roles# es un decorador de roles y el login_required simple.
+from crm.utils import require_roles
 from django.contrib import messages
-from django.core.files.storage import FileSystemStorage
 from django.utils import timezone
 
 def registrar_usuario(request):#usuario=dueño del micronegocio
@@ -21,10 +20,7 @@ def registrar_usuario(request):#usuario=dueño del micronegocio
                 rol_dueno = RolUsuario.objects.filter(nombre_rol__iexact="Dueño").first()
                 nuevo_usuario.owner_id = None#dueno no tiene owner_id
                 nuevo_usuario.rol = rol_dueno
-                print("ANTES DEL SAVE:", nuevo_usuario.idusuario)
-                nuevo_usuario.save()
-                print("DESPUÉS DEL SAVE:", nuevo_usuario.idusuario)
-                #messages.success(request, f"Usuario {nuevo_usuario.nombre} registrado correctamente.")               
+                nuevo_usuario.save()            
                 return redirect('oportunidades:kanban')               
             except IntegrityError:
                 messages.error(request, "Error: Usuario ya existente")
@@ -32,7 +28,7 @@ def registrar_usuario(request):#usuario=dueño del micronegocio
             except Exception as e:
                 messages.error(request, f"Ocurrió un error inesperado al registrar: {e}")
 
-    else: # GET request
+    else:
         form = UsuarioForm()
     return render(request, 'usuario/registrar_usuario.html', {
         'form': form
@@ -48,8 +44,7 @@ def iniciar_sesion(request):
         if rol_sesion == "Superusuario":
             return redirect('superusuario:dashboard')
         return redirect('oportunidades:kanban')
-    #if request.session.get('idusuario'):#esto funcionaba...
-    #    return redirect('oportunidades:kanban')#pipeline ventas
+    
     if request.method == 'POST':
         form = LoginForm(request.POST)   
         
@@ -61,19 +56,15 @@ def iniciar_sesion(request):
             
             if usuario and check_password(contrasena, usuario.contrasena):
                 request.session.flush()
-                #Crear sesión nueva 
-                #Guardar datos en sesion
                 request.session['idusuario'] = usuario.idusuario
                 request.session['nombre'] = usuario.nombre
-                request.session['rol'] = usuario.rol.nombre_rol #esto es para el decorador
-               # messages.success(request, f"Bienvenido {usuario.nombre}")
+                request.session['rol'] = usuario.rol.nombre_rol 
                 
                 # Redirección según rol
                 if usuario.rol.nombre_rol == "Superusuario":
                     return redirect('superusuario:dashboard')
                 return redirect('oportunidades:kanban')
                               
-               # return redirect('oportunidades:kanban') # Usar dashboard en lugar de inicio
             else:
                 #messages.error(request, "Credenciales incorrectas (correo o contraseña).")
                 return render(request, 'usuario/login.html', {
@@ -117,14 +108,13 @@ def editar_usuario(request, pk):
 
 
 @require_roles(['Dueño'])
-def eliminar_usuario(request, pk):#funciona
-    #
+def eliminar_usuario(request, pk):
     usuario = get_object_or_404(Usuario, pk=pk)
     usuario.eliminar_logico()
-    messages.success(request, "Usuario eliminado ")#"(lógicamente)."
+    messages.success(request, "Usuario eliminado ")
     return redirect('usuario:listar_usuarios')
 
-def cerrar_sesion(request):#funciona
+def cerrar_sesion(request):
     request.session.flush()  # borra la sesión
     messages.success(request, "Has cerrado sesión correctamente.")
     return redirect('usuario:iniciar_sesion')
@@ -172,9 +162,8 @@ def inicio(request):
             messages.success(request, "Preferencias de diseño guardadas.")
             return redirect("usuario:inicio")
 
-    # Si NO está logueado, o si es un GET, renderiza la página
     return render(request, "inicio.html", {
-        "user": usuario, # <--- CAMBIAR a 'user' si usas user.is_authenticated en el template
+        "user": usuario, 
         "preferencias": preferencias
     })
 
@@ -182,22 +171,22 @@ def agregar_empleado(request):#solo el dueno puede registrar empleados
     usuario_id = request.session.get('idusuario')
     usuario=Usuario.activos.get(idusuario=usuario_id)
     # Regla por rol
-    es_dueno = usuario.rol.nombre_rol == "Dueño" #in ["Dueño"]
+    es_dueno = usuario.rol.nombre_rol == "Dueño" 
     es_admin = usuario.rol.nombre_rol == "Administrador"
     if request.method == "POST":
         form = EmpleadoForm(request.POST)
         if form.is_valid():
             empleado = form.save(commit=False)
 
-            if es_dueno:# asignar dueño
-              empleado.owner_id = usuario#owner_id#empleado.owner_id = usuario
+            if es_dueno:
+              empleado.owner_id = usuario
 
             if es_admin:# asignar  del dueno
               empleado.owner_id = usuario.owner_id      
 
             empleado.save()
             messages.success(request, "Empleado agregado correctamente.")
-            return redirect('oportunidades:kanban')#return redirect('usuario:listar_usuarios')
+            return redirect('oportunidades:kanban')
     else:
         form = EmpleadoForm()
 

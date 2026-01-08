@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import ProveedorForm
 from .models import Proveedor
@@ -6,7 +5,7 @@ from django.contrib import messages
 from crm.utils import queryset_proveedores_por_rol
 from usuario.models import Usuario
 from time import time
-from django.http import JsonResponse, HttpResponseBadRequest,HttpResponse
+from django.http import HttpResponse
 
 def proveedor_list(request):
     usuario = Usuario.activos.filter(

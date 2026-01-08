@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-
   const modalEl = document.getElementById("modalEliminar");
   if (!modalEl) return;
 
@@ -13,9 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const id = btn.dataset.id;
       const nombre = btn.dataset.nombre;
-      const baseUrl = btn.dataset.url; // viene de Django
-
-      // reemplaza el 0 por el id real
+      const baseUrl = btn.dataset.url; 
       confirmarEl.href = baseUrl.replace("0", id);
       nombreEl.textContent = nombre;
 

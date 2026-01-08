@@ -3,11 +3,10 @@ from usuario.models import Usuario
 from django.utils import timezone
 #para eliminacion logica....
 class ActivoManager(models.Manager):
-    """Devuelve solo los registros activos de usuarios (no eliminados)"""
+    """Devuelve solo los registros activos (no eliminados)"""
     def get_queryset(self):
         return super().get_queryset().filter(activo=True)
 
-#Las siguientes 2 clases son otras tablas en la bd..
 class EstadoClienteCat(models.Model):
     idestado_cliente = models.AutoField(primary_key=True)
     nombre_estado = models.CharField(max_length=45)

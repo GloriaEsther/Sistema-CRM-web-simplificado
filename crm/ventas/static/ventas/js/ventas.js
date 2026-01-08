@@ -1,11 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("ventas.js cargado");
-
   const form = document.getElementById("registroVentaForm");
-
-  /* ==========================
-     MODALES
-  ========================== */
   const modalConfirmarEl = document.getElementById("confirmModal");
   const modalFaltantesEl = document.getElementById("faltantesModal");
 
@@ -17,9 +11,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (!form) return;
 
-  /* ==========================
-     VALIDAR CAMPOS OBLIGATORIOS
-  ========================== */
   function hayCamposObligatoriosVacios() {
     const obligatorios = [
       { id: "id_nombreventa", label: "Nombre de la venta" },
@@ -49,10 +40,6 @@ document.addEventListener("DOMContentLoaded", function () {
     return false;
   }
 
-
-  /* ==========================
-     CONFIRMAR ANTES DE GUARDAR
-  ========================== */
   form.addEventListener("submit", function (e) {
     e.preventDefault();
 
@@ -61,9 +48,6 @@ document.addEventListener("DOMContentLoaded", function () {
     modalConfirmar ? modalConfirmar.show() : form.submit();
   });
 
-  /* ==========================
-     BOTONES DEL MODAL
-  ========================== */
   if (btnConfirmar) {
     btnConfirmar.addEventListener("click", function () {
       modalConfirmar.hide();

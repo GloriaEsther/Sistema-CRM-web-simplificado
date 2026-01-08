@@ -2,7 +2,6 @@ from django import forms
 from .models import Venta
 from oportunidades.models import Oportunidad
 
-
 class VentaForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
@@ -10,16 +9,13 @@ class VentaForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         if usuario:
-            # Base queryset: oportunidades activas y ganadas
             qs = Oportunidad.activos.filter(
                 etapa_ventas__nombre_etapa__iexact="Cierre-Ganado"
             )
 
-            # Dueño
             if usuario.rol.nombre_rol == "Dueño":
                 qs = qs.filter(negocio_oportunidad=usuario)
 
-            # Empleado
             else:
                 qs = qs.filter(negocio_oportunidad=usuario.owner_id)
 
@@ -42,7 +38,7 @@ class VentaForm(forms.ModelForm):
                 'placeholder': 'Comentarios opcionales'
             }),
         }
-    # Validación fuerte del precio
+    
     def clean_preciototal(self):
         precio = self.cleaned_data.get("preciototal")
 

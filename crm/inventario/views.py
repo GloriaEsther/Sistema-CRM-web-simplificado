@@ -1,15 +1,11 @@
-from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.utils import timezone
-from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse, HttpResponseBadRequest,HttpResponse
-from .models import Inventario
+#from django.contrib.auth.decorators import login_required
 from .forms import InventarioForm
 from usuario.models import Usuario
 from crm.utils import queryset_inventario_por_rol
 from time import time
-#@login_required
+
 def inventario_list(request):
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
     inventario = queryset_inventario_por_rol(usuario)
@@ -18,7 +14,6 @@ def inventario_list(request):
         "inventario": inventario
     })
 
-#@login_required
 def inventario_crear(request):
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
 
@@ -40,11 +35,9 @@ def inventario_crear(request):
         "timestamp": int(time())
     })
 
-#@login_required
 def inventario_editar(request, pk):
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
     qs = queryset_inventario_por_rol(usuario)
-
     articulo = get_object_or_404(qs, idinventario=pk)
 
     if request.method == "POST":
@@ -61,7 +54,6 @@ def inventario_editar(request, pk):
         "timestamp": int(time())
     })
 
-#@login_required
 def inventario_eliminar(request, pk):
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
     qs = queryset_inventario_por_rol(usuario)
@@ -72,10 +64,9 @@ def inventario_eliminar(request, pk):
     messages.success(request, "Artículo eliminado correctamente.")
     return redirect("inventario:listar")
 
-#@login_required
 def inventario_detalle(request, pk):
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
-    qs = queryset_inventario_por_rol(usuario)  # si usas filtro por rol
+    qs = queryset_inventario_por_rol(usuario) 
 
     inventario = get_object_or_404(qs, idinventario=pk)
 

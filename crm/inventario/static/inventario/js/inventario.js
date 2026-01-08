@@ -1,9 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
- console.log("inventario.js cargado");
- const form = document.getElementById("registroInventarioForm");
-  /* ==========================
-     ELEMENTOS
-  ========================== */
+  const form = document.getElementById("registroInventarioForm");
   const modalConfirmarEl = document.getElementById("confirmModal");
   const modalFaltantesEl = document.getElementById("faltantesModal");
 
@@ -13,10 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const btnConfirmar = document.getElementById("confirmarOpcionales");
   const btnDescartar = document.getElementById("descartarOpcionales");
 
-  if(form){//si formulario de crear/editar existe...
-        /* ==========================
-        VALIDAR CAMPOS OBLIGATORIOS
-      ========================== */
+  if(form){
       function hayCamposObligatoriosVacios() {
         const obligatorios = [
           { id: "id_nombrearticulo", label: "Nombre Articulo*" },
@@ -44,9 +37,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return false;
       }
 
-      /* ==========================
-        CONFIRMAR ANTES DE GUARDAR
-      ========================== */
       form.addEventListener("submit", function (e) {
         e.preventDefault();
 
@@ -63,9 +53,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
 
-      /* ==========================
-        BOTONES DEL MODAL
-      ========================== */
       if (btnConfirmar) {
         btnConfirmar.addEventListener("click", function () {
           modalConfirmar.hide();

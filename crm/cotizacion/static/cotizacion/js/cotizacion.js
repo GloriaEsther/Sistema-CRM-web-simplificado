@@ -1,6 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("cotizacion.js cargado correctamente");
-
   const form = document.getElementById("registroCotizacionForm");
   if (!form) return;
 
@@ -44,26 +42,11 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function calcularTotales() {
-    if (!selectServicio || !inputCantidad){
-      console.warn("Elementos no encontrados");
-    return;
-  }
-
+    if (!selectServicio || !inputCantidad) return;
     const option = selectServicio.options[selectServicio.selectedIndex];
-    console.log("Option:", option);
-    /*if (!option || !option.dataset.precio) {
-      subtotalSpan.textContent = "0.00";
-      totalSpan.textContent = "0.00";
-      return;
-    }*/
 
-    if (!option) {
-      console.warn("No hay opción seleccionada");
-      return;
-    }
-
+    if (!option) return;
     const rawPrecio = option.getAttribute("data-precio");
-    console.log("data-precio:", rawPrecio);
 
     if (!rawPrecio) {
       subtotalSpan.textContent = "0.00";
@@ -71,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
     
-    const precio = parseFloat(rawPrecio);//const precio = parseFloat(option.dataset.precio);
+    const precio = parseFloat(rawPrecio);
     const cantidad = parseInt(inputCantidad.value) || 0;
     const total = precio * cantidad;
 

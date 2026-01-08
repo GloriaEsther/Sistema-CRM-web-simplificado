@@ -5,11 +5,9 @@ from usuario.models import RolUsuario
 from ventas.models import Venta, EtapaVentas
 from django.views.decorators.http import require_POST
 from django.contrib import messages
-from crm.utils import queryset_usuarios_segun_rol,queryset_clientes_por_rol#permisos y filtros de busqueda (varia segun el rol)
-from django.utils import timezone
-from django.http import JsonResponse, HttpResponseBadRequest
+from crm.utils import queryset_usuarios_segun_rol, queryset_clientes_por_rol
+from django.http import JsonResponse
 from django.db import IntegrityError
-from django.core import serializers
 from django.db.models import Q
 
 def kanban(request):
@@ -78,7 +76,7 @@ def crear_oportunidad(request):
                 op = form.save(commit=False)
                 vendedor = op.usuario_responsable
                 
-                if usuario.rol.nombre_rol != "Dueño":#si el usuario no es rol dueno .....
+                if usuario.rol.nombre_rol != "Dueño":
                     if vendedor.rol.id_rol in roles_no_responsables:
                         messages.error(request, " No puedes asignar oportunidades a administradores o dueños.")
                         return redirect("oportunidades:crear")
@@ -100,20 +98,14 @@ def crear_oportunidad(request):
             except IntegrityError:
                 messages.error(request, "Error al crear la oportunidad. ¿Ya existe una con mismo nombre?")
             except Exception as e:
-                # Captura cualquier otro error de guardado/relación
-                print(f"Error grave al guardar: {e}") 
                 messages.error(request, f"Error interno: No se pudo guardar la oportunidad. {e}")
         
         else:
-            # --- DEBUGGING CRÍTICO ---
-            print("FALLO DE VALIDACIÓN DEL FORMULARIO:")
-            print(form.errors)
-            # --- FIN DEBUGGING ---
             for field, errs in form.errors.items():
                 for err in errs:
                     field_name = field.replace('_', ' ').capitalize()
                     messages.error(request, f"Error en '{field_name}': {err}")
-    return redirect('oportunidades:kanban')#return render(request, "oportunidades/kanban.html", {"form": form})#redirect('oportunidades:kanban')
+    return redirect('oportunidades:kanban')
     
 @require_POST
 def mover_oportunidad(request, pk):
@@ -132,7 +124,7 @@ def listar_oportunidades(request):
         "oportunidades": oportunidades
     })
 
-def editar_oportunidad(request, pk):
+def editar_oportunidad(request, pk):#revisar..no usar _editar.html si no editar.html
     oportunidad = get_object_or_404(Oportunidad.activos, pk=pk)
     clientes = Cliente.activos.all()
     etapas = EtapaVentas.objects.all()
@@ -256,7 +248,7 @@ def ajax_buscar_vendedor(request):
     usuario_id = request.session.get("idusuario")
     usuario = Usuario.activos.filter(idusuario=usuario_id).first()
 
-    usuarios = queryset_usuarios_segun_rol(usuario)#filtros de mostrar vendedores segun el rol
+    usuarios = queryset_usuarios_segun_rol(usuario)
 
     if q:
         usuarios = usuarios.filter(nombre__icontains=q)
