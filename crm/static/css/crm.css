@@ -286,3 +286,21 @@ body {
     width: 100%;
   }
 }
+
+/* Evitar overflow del input file en móvil */
+.file-input {
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* FIX DEFINITIVO para input file en mobile */
+input[type="file"] {
+  max-width: 100%;
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+}
