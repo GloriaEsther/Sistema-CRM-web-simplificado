@@ -19,6 +19,9 @@
           style="background-color:#f97316;">
         <div class="container-fluid">
             
+          <button class="hamburger navbar-toggler me-2" id="hamburger-menu" type="button">
+            <i class="bi bi-list"></i>
+          </button>
           {% if request.session.rol != "Superusuario" %}
   
             {% if preferencias and preferencias.logo %}
@@ -39,92 +42,36 @@
                   Cambiar logo
               </button>
               {% endif %}
-
-            <div class="d-none d-lg-flex gap-3 ms-4">
-
-              <a href="{% url 'oportunidades:kanban' %}" class="btn btn-outline-light btn-sm">
-                Oportunidades
-              </a>
-
-              <a href="{% url 'cliente:listar' %}" class="btn btn-outline-light btn-sm">
-                Clientes
-              </a>
-
-              <a href="{% url 'servicio:listar' %}" class="btn btn-outline-light btn-sm">
-                Servicios
-              </a>
-
-              <a href="{% url 'inventario:listar' %}" class="btn btn-outline-light btn-sm">
-                Inventario
-              </a>
-              <a href="{% url 'proveedor:listar' %}" class="btn btn-outline-light btn-sm">
-               Proveedor
-              </a>
-
-              <a href="{% url 'ventas:listar' %}" class="btn btn-outline-light btn-sm">
-              Ventas
-              </a>
-
-              {% if usuario.rol.nombre_rol == "Dueño" %}
-              <a href="{% url 'usuario:agregar_empleado' %}" class="btn btn-outline-light btn-sm">
-                Agregar empleado
-              </a>
-              {% endif %}
-            </div>
-
-
-           {% endif %}
-
-          <div class="ms-auto">
-            <a href="{% url 'usuario:cerrar_sesion' %}" class="btn btn-outline-light btn-sm">
-              Cerrar sesión
-            </a>
-          </div>
-
+          {% endif %}
         </div>
       </nav>
       {% endif %}
-
-
     <!-- Contenido -->
     <main class="mt-4">
       {% block content %}{% endblock %}
     </main>
     
     {% if request.session.idusuario %}
-      <nav class="crm-mobile-nav d-md-none">
-        <a href="{% url 'oportunidades:kanban' %}" class="nav-link text-white fw-semibold">
-          <i class="bi bi-kanban"></i>
-          <span>Oportunidades</span>
-        </a>
-        <a href="{% url 'cliente:listar' %}" class="nav-link text-white fw-semibold">
-          <i class="bi bi-people"></i>
-          <span>Clientes</span>
-        </a>
-        <a href="{% url 'servicio:listar' %}" class="nav-link text-white fw-semibold">
-          <!--<i class="bi bi-people"></i>-->
-          <span>Servicios</span>
-        </a>
+      
+      <div class="overlay" id="menu-overlay"></div>
 
-        <a href="{% url 'inventario:listar' %}" class="nav-link text-white fw-semibold">
-          <!--<i class="bi bi-people"></i>-->
-          <span>Inventario</span>
-        </a>
-        <a href="{% url 'proveedor:listar' %}" class="nav-link text-white fw-semibold">
-          <!--<i class="bi bi-people"></i>-->
-          <span>Proveedor</span>
-        </a>
-        <a href="{% url 'ventas:listar' %}" class="nav-link text-white fw-semibold">
-          <!--<i class="bi bi-people"></i>-->
-          <span>Ventas</span>
-        </a>
+      <nav class="mobile-menu" id="mobile-menu">
+        <a href="{% url 'oportunidades:kanban' %}" class="menu-item">Oportunidades</a>
+        <a href="{% url 'cliente:listar' %}" class="menu-item">Clientes</a>
+        <a href="{% url 'servicio:listar' %}" class="menu-item">Servicios</a>
+        <a href="{% url 'inventario:listar' %}" class="menu-item">Inventario</a>
+        <a href="{% url 'proveedor:listar' %}" class="menu-item">Proveedor</a>
+        <a href="{% url 'ventas:listar' %}" class="menu-item">Ventas</a>
 
         {% if usuario.rol.nombre_rol == "Dueño" %}
-          <a href="{% url 'usuario:agregar_empleado' %}" class="nav-link text-white fw-semibold">
-            <i class="bi bi-person-plus"></i>
-            <span>Agregar empleado</span>
+          <a href="{% url 'usuario:agregar_empleado' %}" class="menu-item">
+            Agregar empleado
           </a>
         {% endif %}
+
+        <a href="{% url 'usuario:cerrar_sesion' %}" class="menu-item text-danger">
+          Cerrar sesión
+        </a>
       </nav>
     {% endif %}
 
@@ -147,32 +94,33 @@
   {% include "components/modal_global.html" %}
 
   {% if request.session.idusuario and usuario.rol.nombre_rol == "Dueño" %}
-<div class="modal fade" id="modalSubirLogo" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <form method="POST"
-          action="{% url 'usuario:subir_logo' %}"
-          enctype="multipart/form-data"
-          class="modal-content">
-      {% csrf_token %}
+    <div class="modal fade" id="modalSubirLogo" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <form method="POST"
+              action="{% url 'usuario:subir_logo' %}"
+              enctype="multipart/form-data"
+              class="modal-content">
+          {% csrf_token %}
 
-      <div class="modal-header bg-orange text-white">
-        <h5 class="modal-title">Subir logo del negocio</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
+          <div class="modal-header bg-orange text-white">
+            <h5 class="modal-title">Subir logo del negocio</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
 
-      <div class="modal-body">
-        <input type="file" name="logo" accept="image/*" class="form-control" required>
-        <small class="text-muted">PNG o JPG, recomendado 300x300</small>
-      </div>
+          <div class="modal-body">
+            <input type="file" name="logo" accept="image/*" class="form-control" required>
+            <small class="text-muted">PNG o JPG, recomendado 300x300</small>
+          </div>
 
-      <div class="modal-footer">
-        <button type="submit" class="btn btn-orange">Guardar</button>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-orange">Guardar</button>
+          </div>
+        </form>
       </div>
-    </form>
-  </div>
-</div>
-{% endif %}
+    </div>
+  {% endif %}
 
   <script src="{% static 'js/modal_global.js' %}"></script>
+  <script src="{% static 'js/hamburger.js'%}"></script>
 </body>
 </html>
