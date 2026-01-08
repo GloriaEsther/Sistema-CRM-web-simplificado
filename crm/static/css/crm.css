@@ -30,13 +30,12 @@ body {
   font-weight: 800;
   color: #1e293b;
 }
-
-.crm-mobile-nav {
+/*.crm-mobile-nav {
   position: fixed;
   bottom: 0;
   width: 100%;
-  background: #f97316;/*background: white;*/
-  display: none;/*flex*/
+  background: #f97316;
+  display: none;
   justify-content: space-around;
   padding: 8px 0;
   border-top: 1px solid #ddd;
@@ -52,7 +51,8 @@ body {
 
 .crm-mobile-nav i {
   font-size: 1.4rem;
-}
+}*/
+
 
 .btn-primary {
   background-color: var(--primary);
@@ -72,13 +72,8 @@ body {
 .crm-form-wrapper {/*Contenedor externo..*/
   display: flex;
   justify-content: center;
-  align-items: flex-start;/*flex-start;*/
-  padding: 20px 10px 100px 10px ; /* padding: 20px 10px 100px 10px;Mucho espacio abajo */
-  /*min-height: calc(100vh - 120px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;*/
+  align-items: flex-start;
+  padding: 20px 10px 100px 10px ; 
 }
 
 .crm-form-card {/*Tarjeta del formulario como tal ...*/
@@ -181,22 +176,17 @@ body {
 
 /*tamano del logo el el navbar*/
 .navbar-logo {
-  height: 60px;/* height: 52px;(el de 52px si funciona)antes 40 */
+  height: 60px;
   width: auto;
   object-fit: contain;
 }
 
 /* BOTÓN HAMBURGUESA */
 .hamburger {
-  /*
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  z-index: 1051;*/
   background-color: #f97316;
   border: none;
   color: white;
-  width: 44px;/* width: 52px; height: 52px; border-radius: 50%; font-size: 1.5rem;*/
+  width: 44px;
   height: 44px;
   border-radius: 50%;
   font-size: 1.6rem;
@@ -228,22 +218,35 @@ body {
   left: -260px;
   width: 260px;
   height: 100vh;
-  background: #fff;
-  z-index: 1050;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  background: #f97316;
+  padding-top: 80px;
   transition: left 0.3s ease;
+  z-index: 1050;
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
 }
 
 .mobile-menu.active {
   left: 0;
 }
 
-/* LINKS */
-.mobile-menu .menu-item {
+.menu-item {
+  display: block;
+  padding: 12px 20px;
   text-decoration: none;
-  color: #333;
+  color: white;
   font-weight: 500;
+}
+
+.menu-item:hover{
+  background-color: rgba(255,255,255,0.2);
+}
+/*animacion del icono*/
+.hamburger i {
+  transition: transform 0.3s ease;
+}
+
+.hamburger.active i {
+  transform: rotate(90deg);
 }
