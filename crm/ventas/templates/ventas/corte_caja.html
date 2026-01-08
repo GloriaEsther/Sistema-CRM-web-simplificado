@@ -1,66 +1,71 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="crm-section"> 
+    
+  <h4 class="crm-title">Corte de Caja</h4>
+  <p><strong>Fecha:</strong> {{ fecha }}</p>
 
-<h3>Corte de Caja</h3>
-<p><strong>Fecha:</strong> {{ fecha }}</p>
+  <div class="row">
 
-<div class="row">
-  <div class="col-md-4">
-    <div class="card p-3">
-      <h6>Total vendido</h6>
-      <h4>$ {{ total_ventas }}</h4>
+    <div class="crm-form-wrapper">
+      <div class="crm-form-card">
+        <h6>Total vendido</h6>
+        <h4>$ {{ total_ventas }}</h4>
+      </div>
+    </div>
+
+    <div class="crm-form-wrapper">
+      <div class="crm-form-card">
+        <h6>Operaciones</h6>
+        <h4>{{ total_operaciones }}</h4>
+      </div>
+    </div>
+
+    <div class="crm-form-wrapper">
+      <div class="crm-form-card">
+        <h6>Ventas canceladas</h6>
+        <h4>$ {{ ventas_canceladas }}</h4>
+      </div>
     </div>
   </div>
 
-  <div class="col-md-4">
-    <div class="card p-3">
-      <h6>Operaciones</h6>
-      <h4>{{ total_operaciones }}</h4>
-    </div>
-  </div>
+  <hr>
 
-  <div class="col-md-4">
-    <div class="card p-3">
-      <h6>Ventas canceladas</h6>
-      <h4>$ {{ ventas_canceladas }}</h4>
-    </div>
-  </div>
+  <h6 class="crm-title">Detalle por estatus</h6>
+    <table class="table table-sm crm-table-responsive">
+      <thead>
+        <tr>
+          <th>Estatus</th>
+          <th>Operaciones</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in por_estatus %}
+        <tr>
+          <td data-label="Estatus">{{ e.estatus_cobro__nombre_estatus_cobro }}</td>
+          <td data-label="Cantidad">{{ e.cantidad }}</td>
+          <td data-label="Total">$ {{ e.total }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  <hr>
+    
+    <div class="crm-form-card">
+        <form method="get" class="row g-2 mt-3">
+          <div class="col-12 col-md-4">
+            <input type="date" name="desde" class="form-control">
+          </div>
+          <div class="col-12 col-md-4">
+            <input type="date" name="hasta" class="form-control">
+          </div>
+          <div class="col-12 col-md-4 d-grid">
+            <button class="btn btn-primary">Filtrar</button>
+          </div>
+        </form>
+        <a href="{% url 'ventas:listar' %}" class="btn btn-secondary mt-3 crm-btn">Regresar</a>
+      </div>
 </div>
-
-<hr>
-
-<h5>Detalle por estatus</h5>
-<table class="table table-sm">
-  <thead>
-    <tr>
-      <th>Estatus</th>
-      <th>Operaciones</th>
-      <th>Total</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for e in por_estatus %}
-    <tr>
-      <td>{{ e.estatus_cobro__nombre_estatus_cobro }}</td>
-      <td>{{ e.cantidad }}</td>
-      <td>$ {{ e.total }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-
-<hr>
-
-<form method="get" class="row g-2">
-  <div class="col-md-4">
-    <input type="date" name="desde" class="form-control">
-  </div>
-  <div class="col-md-4">
-    <input type="date" name="hasta" class="form-control">
-  </div>
-  <div class="col-md-4">
-    <button class="btn btn-primary">Filtrar</button>
-  </div>
-</form>
-<a href="{% url 'ventas:listar' %}" class="btn btn-secondary mt-3 crm-btn">Regresar</a>
 {% endblock %}

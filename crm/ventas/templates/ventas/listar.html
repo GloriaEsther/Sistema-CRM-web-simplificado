@@ -15,51 +15,49 @@
           Ventas del dia
           </a>
       </div>
-        
-  <table class="table table-bordered table-sm">
-    <thead>
-      <tr>
-        <th>Clave</th>
-        <th>Nombre</th>
-        <th>Total</th>
-        <th>Estatus</th>
-        <th>Fecha</th>
-      </tr>
-    </thead>
-    <tbody>
-    {% for v in ventas %}
-      <tr>
-        <td>{{ v.claveventa }}</td>
-        <td>{{ v.nombreventa }}</td>
-        <td>${{ v.preciototal }}</td>
-        <td>{{ v.estatus_cobro }}</td>
-        <td>{{ v.fecha_registro|date:"d/m/Y H:i" }}</td>
-        <td>
-          <a href="{% url 'ventas:venta_editar' v.idventa %}"
-            class="btn btn-sm btn-warning">
-            Editar
-          </a>
+     <table class="table table-bordered table-sm crm-table-responsive">
+          <thead>
+            <tr>
+              <th>Clave</th>
+              <th>Nombre</th>
+              <th>Total</th>
+              <th >Estatus</th>
+              <th >Fecha</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for v in ventas %}
+            <tr>
+              <td data-label="Clave">{{ v.claveventa }}</td>
+              <td data-label="Nombre">{{ v.nombreventa }}</td>
+              <td data-label="Total">${{ v.preciototal }}</td>
+              <td data-label="Estatus">{{ v.estatus_cobro }}</td>
+              <td data-label="Fecha">{{ v.fecha_registro|date:"d/m/Y H:i" }}</td>
+              <td data-label="Acciones">
+                <a href="{% url 'ventas:venta_editar' v.idventa %}"
+                  class="btn btn-sm btn-warning">
+                  Editar
+                </a>
 
-          <button
-              type="button"
-              class="btn btn-sm btn-danger btn-eliminar"
-              data-url="{% url 'ventas:venta_eliminar' v.idventa %}"
-              data-nombre="{{ v.nombreventa }}">
-              Eliminar
-          </button>
-        </td>
-      </tr>
-    {% empty %}
-      <tr>
-        <td colspan="6" class="text-center text-muted">
-          No hay ventas registradas
-        </td>
-      </tr>
-    {% endfor %}
-  </tbody>
-
-  </table>
-
+                <button
+                    type="button"
+                    class="btn btn-sm btn-danger btn-eliminar"
+                    data-url="{% url 'ventas:venta_eliminar' v.idventa %}"
+                    data-nombre="{{ v.nombreventa }}">
+                    Eliminar
+                </button>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6" class="text-center text-muted">
+                No hay ventas registradas
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    
   <a href="{% url 'ventas:crear_venta_manual' %}" class="btn btn-success">
     Registrar venta
   </a>
