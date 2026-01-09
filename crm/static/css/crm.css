@@ -304,3 +304,9 @@ input[type="file"] {
   text-overflow: ellipsis;
   box-sizing: border-box;
 }
+/*para que se vea en pc tambien*/
+@media (min-width: 992px) {
+  .navbar-expand-lg .hamburger {
+    display: flex !important;
+  }
+}

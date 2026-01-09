@@ -15,38 +15,38 @@
 <body>
     
     {% if request.session.idusuario %}
-      <nav class="navbar navbar-expand-lg px-4"
-          style="background-color:#f97316;">
-        <div class="container-fluid">
+      <nav class="navbar px-4 bg-orange">
+        <div class="container-fluid d-flex align-items-center justify-content-between">
             
-          <button class="hamburger navbar-toggler me-2" id="hamburger-menu" type="button">
+          <button class="hamburger navbar-toggler" id="hamburger-menu" type="button">
             <i class="bi bi-list"></i>
           </button>
-          {% if request.session.rol != "Superusuario" %}
-  
-            {% if preferencias and preferencias.logo %}
-              <img src="{{ preferencias.logo.url }}"
-                  height="40"
-                  class="navbar-logo me-2 rounded">
-            {% else %}
-              <img src="{% static 'img/logo_blanco_horizontal.png' %}"
-                  height="40"
-                  class="me-2"
-                  alt="Logo default">
-            {% endif %}  
 
-            {% if usuario and usuario.rol.nombre_rol == "Dueño" %}
-              <button class="btn btn-outline-light btn-sm ms-2"
-                      data-bs-toggle="modal"
-                      data-bs-target="#modalSubirLogo">
-                  Cambiar logo
-              </button>
-              {% endif %}
+          {% if request.session.rol != "Superusuario" %}
+            <div class="d-flex align-items-center gap-2">
+              {% if preferencias and preferencias.logo %}
+                <img src="{{ preferencias.logo.url }}"
+                    height="40"
+                    class="navbar-logo rounded">
+              {% else %}
+                <img src="{% static 'img/logo_blanco_horizontal.png' %}"
+                    height="40"
+                    class="navbar-logo"
+                    alt="Logo default">
+              {% endif %}  
+
+              {% if usuario and usuario.rol.nombre_rol == "Dueño" %}
+                <button class="btn btn-outline-light btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalSubirLogo">
+                    Cambiar logo
+                </button>
+                {% endif %}
+            </div>
           {% endif %}
         </div>
       </nav>
       {% endif %}
-    <!-- Contenido -->
     <main class="mt-4">
       {% block content %}{% endblock %}
     </main>
