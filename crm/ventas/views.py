@@ -30,31 +30,38 @@ def crear_venta_manual(request):
         idusuario=request.session.get("idusuario")
     ).first()
 
-    if request.method == "POST":
-        form = VentaForm(request.POST, usuario=usuario)
-        if form.is_valid():
-            precio = form.cleaned_data.get("preciototal")
+    if not usuario:
+        return redirect("usuario:login")
 
-            # VALIDACIÓN DE PRECIO
-            if precio is None or precio <= 0:
-                messages.error(
-                    request,
-                    "El precio total debe ser mayor a $0.00"
-                )
-            else:
-                form.save()
-                messages.success(
-                    request,
-                    "Venta creada correctamente."
-                )
-                return redirect("ventas:listar")
+    owner = usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
+  
+    if request.method == "POST":
+        form = VentaForm(
+            request.POST,
+            usuario=usuario, 
+            owner=owner
+        )
+        if form.is_valid():
+            venta = form.save(commit=False)
+
+            venta.owner = owner
+            venta.usuario_registro = usuario 
+
+            venta.save()
+
+            messages.success(
+                request,
+                "Venta creada correctamente."
+            )
+            return redirect("ventas:listar")
     else:
-        form = VentaForm(usuario=usuario)
+        form = VentaForm(usuario=usuario,owner=owner)
 
     return render(request, "ventas/crear.html", {
         "form": form
     })
 
+'''
 def generar_venta_desde_oportunidad(request, oportunidad_id):#en esta version mvp del crm no se va a incluir.....
     # acción: crear venta solo si oportunidad está en Cierre-Ganado y no tiene venta
     
@@ -84,14 +91,23 @@ def generar_venta_desde_oportunidad(request, oportunidad_id):#en esta version mv
     op.save()
     messages.success(request, "Venta generada desde oportunidad.")
     return redirect('ventas:listar')
+'''
 
 def corte_caja(request):
+    usuario = Usuario.activos.filter(
+        idusuario=request.session.get("idusuario")
+    ).first()
+    if not usuario:
+        return redirect("usuario:login")
+
+    owner = usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
+
     hoy = timezone.now().date()
 
     fecha_inicio = request.GET.get("desde")
     fecha_fin = request.GET.get("hasta")
 
-    qs = Venta.objects.filter(activo=True)
+    qs = Venta.objects.filter(activo=True,owner=owner)
 
     if fecha_inicio and fecha_fin:
         qs = qs.filter(
@@ -117,6 +133,7 @@ def corte_caja(request):
 
     ventas_canceladas = Venta.objects.filter(
         activo=False,
+        owner=owner,
         fecha_eliminacion__date=hoy
     ).aggregate(
         total=Sum("preciototal")
@@ -131,10 +148,19 @@ def corte_caja(request):
     })
 
 def ventas_hoy(request):
+    usuario = Usuario.activos.filter(
+        idusuario=request.session.get("idusuario")
+    ).first()
+    if not usuario:
+        return redirect("usuario:login")
+
+    owner = usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
+
     hoy = timezone.now().date()
 
     ventas = Venta.objects.filter(
         activo=True,
+        owner=owner,
         fecha_registro__date=hoy
     ).order_by("-fecha_registro")
 
@@ -152,18 +178,21 @@ def venta_editar(request, pk):
     usuario = Usuario.activos.filter(
         idusuario=request.session.get("idusuario")
     ).first()
-
+    if not usuario:
+        return redirect("usuario:login")
+    
     qs = queryset_ventas_por_rol(usuario)
     venta = get_object_or_404(qs, idventa=pk)
+    owner = usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
 
     if request.method == "POST":
-        form = VentaForm(request.POST, instance=venta, usuario=usuario)
+        form = VentaForm(request.POST, instance=venta, usuario=usuario,owner=owner)
         if form.is_valid():
             form.save()
             messages.success(request, "Venta actualizada correctamente.")
             return redirect("ventas:listar")
     else:
-        form = VentaForm(instance=venta, usuario=usuario)
+        form = VentaForm(instance=venta, usuario=usuario,owner=owner)
 
     return render(request, "ventas/venta_editar.html", {
         "form": form,

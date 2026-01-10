@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from usuario.models import Usuario
 
 class ActivoManager(models.Manager):
     """Devuelve solo los registros activos (no eliminados)"""
@@ -31,9 +32,7 @@ class EstatusCobros(models.Model):
         return self.nombre_estatus_cobro
     
 class Venta(models.Model):
-
     idventa = models.AutoField(primary_key=True)
-    claveventa = models.CharField(max_length=10, unique=True)
     nombreventa = models.CharField(max_length=45)
     preciototal = models.DecimalField(max_digits=10, decimal_places=2)
     cfdi = models.CharField(max_length=100, unique=True, null=True,blank=True)
@@ -44,18 +43,23 @@ class Venta(models.Model):
     fecha_eliminacion = models.DateTimeField(null=True,blank=True)
     estatus_cobro = models.ForeignKey(EstatusCobros, on_delete=models.PROTECT, db_column='estatus_cobro')
    #su relacion 1:1 con Oportunidad
-    oportunidad_venta = models.ForeignKey('oportunidades.Oportunidad',on_delete=models.PROTECT,db_column='oportunidad_venta')
-    
-    activos = ActivoManager()
-    #todos = models.Manager()
-    objects = models.Manager() 
+    oportunidad_venta = models.ForeignKey(
+        'oportunidades.Oportunidad',
+        on_delete=models.PROTECT,
+        db_column='oportunidad_venta',
+        null=True,
+        blank=True
+    )
+    usuario_registro = models.ForeignKey(Usuario, on_delete=models.PROTECT, db_column='usuario_registro')
+    owner = models.ForeignKey(#esto es para distinguir las ventas  de cada negocio(como owner_id pero aplicado a ventas)
+        Usuario,
+        on_delete=models.PROTECT,
+        db_column='owner_id',
+        related_name='ventas_del_negocio'
+    )
 
-    def save(self, *args, **kwargs):
-        if not self.claveventa:
-            ultimo = Venta.objects.order_by('-idventa').first()
-            next_id = ultimo.idventa + 1 if ultimo else 1
-            self.claveventa = f"VTA{next_id:07d}"
-        super().save(*args, **kwargs)
+    activos = ActivoManager()
+    objects = models.Manager() 
 
     class Meta:
         managed = False
@@ -68,4 +72,4 @@ class Venta(models.Model):
             self.save()
 
     def __str__(self):
-        return f"{self.nombreventa} ({self.claveventa}) {self.preciototal} {self.comentarios} {self.oportunidad_venta}"
+        return f"({self.nombreventa}) - ${self.preciototal} "

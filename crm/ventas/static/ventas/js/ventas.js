@@ -15,8 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const obligatorios = [
       { id: "id_nombreventa", label: "Nombre de la venta" },
       { id: "id_preciototal", label: "Precio total" },
-      { id: "id_estatus_cobro", label: "Estatus de cobro" },
-      { id: "id_oportunidad_venta", label: "Oportunidad" },
+      { id: "id_estatus_cobro", label: "Estatus de cobro" }
     ];
 
     const faltantes = obligatorios.filter(campo => {

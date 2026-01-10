@@ -126,14 +126,14 @@ def queryset_ventas_por_rol(usuario):
     )
 
     qs = Venta.objects.filter(
-        activo=True,
-        oportunidad_venta__negocio_oportunidad=owner
+        activo = True,
+        owner = owner
     )
 
     # Si es empleado, opcionalmente limitar
     if usuario.rol.nombre_rol != "Dueño":
         qs = qs.filter(
-            oportunidad_venta__usuario_responsable=usuario
+            usuario_registro = usuario
         )
 
     return qs

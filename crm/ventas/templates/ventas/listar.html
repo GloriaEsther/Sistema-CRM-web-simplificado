@@ -18,17 +18,15 @@
      <table class="table table-bordered table-sm crm-table-responsive">
           <thead>
             <tr>
-              <th>Clave</th>
               <th>Nombre</th>
               <th>Total</th>
               <th >Estatus</th>
-              <th >Fecha</th>
+              <th >Fecha de registro</th>
             </tr>
           </thead>
           <tbody>
           {% for v in ventas %}
             <tr>
-              <td data-label="Clave">{{ v.claveventa }}</td>
               <td data-label="Nombre">{{ v.nombreventa }}</td>
               <td data-label="Total">${{ v.preciototal }}</td>
               <td data-label="Estatus">{{ v.estatus_cobro }}</td>

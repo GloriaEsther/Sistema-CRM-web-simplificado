@@ -5,22 +5,19 @@ from oportunidades.models import Oportunidad
 class VentaForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
-        usuario = kwargs.pop("usuario", None)
+        self.usuario = kwargs.pop("usuario", None)
+        self.owner = kwargs.pop("owner", None)
+
         super().__init__(*args, **kwargs)
-
-        if usuario:
-            qs = Oportunidad.activos.filter(
-                etapa_ventas__nombre_etapa__iexact="Cierre-Ganado"
+        self.fields["oportunidad_venta"].required = False
+        
+        if self.owner:
+            self.fields["oportunidad_venta"].queryset = (
+                Oportunidad.activos.filter(negocio_oportunidad=self.owner)
             )
-
-            if usuario.rol.nombre_rol == "Dueño":
-                qs = qs.filter(negocio_oportunidad=usuario)
-
-            else:
-                qs = qs.filter(negocio_oportunidad=usuario.owner_id)
-
-            self.fields["oportunidad_venta"].queryset = qs
-
+        else:
+            self.fields["oportunidad_venta"].queryset = Oportunidad.objects.none()
+            
     class Meta:
         model = Venta
         fields = [
@@ -41,9 +38,6 @@ class VentaForm(forms.ModelForm):
     
     def clean_preciototal(self):
         precio = self.cleaned_data.get("preciototal")
-
-        if precio is None:
-            raise forms.ValidationError("El precio total es obligatorio.")
 
         if precio <= 0:
             raise forms.ValidationError(

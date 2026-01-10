@@ -56,4 +56,4 @@ class Oportunidad(models.Model):
      return Usuario.activos.filter(owner_id=self.owner_id)
 
     def __str__(self): 
-        return f"{self.nombreoportunidad} {self.valor_estimado} {self.fecha_cierre_estimada} {self.etapa_ventas} {self.comentarios} {self.cliente_oportunidad} (Responsable: {self.usuario_responsable.nombre})"#{self.usuario_responsable.nombre}
+        return f"{self.nombreoportunidad} ${self.valor_estimado}"
