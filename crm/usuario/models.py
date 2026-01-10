@@ -72,7 +72,7 @@ class Usuario(models.Model):
         # Hashea la contrasena si no lo esta
         if not self.contrasena.startswith('pbkdf2_sha256$'):
             self.contrasena = make_password(self.contrasena)
-        super().save(*args, **kwargs)
+        return  super().save(*args, **kwargs)
 
     def eliminar_logico(self):
         if self.activo:  # evita volver a marcarlo si ya está eliminado

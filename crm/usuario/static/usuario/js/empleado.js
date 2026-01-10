@@ -71,7 +71,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         
         modalConfirmar.show();
-        form.submit();
     });
 
     btnAceptar.addEventListener("click", function () {
@@ -91,6 +90,5 @@ document.addEventListener("DOMContentLoaded", function () {
         if (numerotelInput) numerotelInput.value= "";
         if (correoInput) correoInput.value= "";
         if (contrasenaInput) contrasenaInput.value= "";
-        form.submit();
     });
 });

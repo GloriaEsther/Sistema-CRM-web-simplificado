@@ -31,28 +31,33 @@ class UsuarioForm(forms.ModelForm):
         data = super().clean()
         correo = data.get('correo')
         rfc = data.get('rfc')
-       
-        # Validar duplicados
+        if correo:
+            qs = Usuario.todos.filter(correo=correo)
+            if self.instance.pk:
+                qs = qs.exclude(pk=self.instance.pk)
+            if qs.exists():
+                self.add_error('correo', "Ya existe un usuario con ese correo.")
+
+        if rfc:
+            qs = Usuario.todos.filter(rfc=rfc)
+            if self.instance.pk:
+                qs = qs.exclude(pk=self.instance.pk)
+            if qs.exists():
+                self.add_error('rfc', "Ya existe un usuario con ese RFC.")
+
+        return data
+    ''' # Validar duplicados
         if correo and Usuario.todos.filter(correo=correo).exists():#activos
             self.add_error('correo', "Ya existe un usuario con ese correo.")
         if rfc and Usuario.todos.filter(rfc=rfc).exists():
             self.add_error('rfc', "Ya existe un usuario con ese RFC.")
         return data
-    
+    '''
     def clean_local_fijo(self):
         local_fijo = self.cleaned_data.get('local_Fijo')
         if not local_fijo:
             raise forms.ValidationError("Por favor, mencione si cuenta con un local fijo o no.")#Error
         return local_fijo
-    
-    def save(self, commit=True):
-        usr = super().save(commit=False)
-        # hash de contraseña
-        if usr.contrasena and not usr.contrasena.startswith('pbkdf2_'):
-            usr.contrasena = make_password(usr.contrasena)
-        if commit:
-            usr.save()
-        return usr
     
 class EmpleadoForm(forms.ModelForm):
     
@@ -101,15 +106,6 @@ class EmpleadoForm(forms.ModelForm):
         if not rol:
             raise forms.ValidationError("Debes seleccionar un rol.")
         return rol
-    
-    def save(self, commit=True):
-        usr = super().save(commit=False)
-        # hash
-        if usr.contrasena and not usr.contrasena.startswith('pbkdf2_'):
-            usr.contrasena = make_password(usr.contrasena)
-        if commit:
-            usr.save()
-        return usr
 
 class LoginForm(forms.Form):
     correo = forms.EmailField(label="Correo electrónico", widget=forms.EmailInput(attrs={'class': 'form-control'}))
