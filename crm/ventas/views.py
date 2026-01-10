@@ -60,39 +60,6 @@ def crear_venta_manual(request):
     return render(request, "ventas/crear.html", {
         "form": form
     })
-
-'''
-def generar_venta_desde_oportunidad(request, oportunidad_id):#en esta version mvp del crm no se va a incluir.....
-    # acción: crear venta solo si oportunidad está en Cierre-Ganado y no tiene venta
-    
-    op = get_object_or_404(Oportunidad, pk=oportunidad_id)
-    if op.venta_oportunidad:
-        messages.warning(request, "La oportunidad ya tiene venta asociada.")
-        return redirect('oportunidades:kanban')
-
-    # verificar etapa (asume 'Cierre-Ganado' en tabla de etapas)
-    if op.etapa_ventas.nombre_etapa != 'Cierre-Ganado':
-        messages.error(request, "Solo se puede generar venta desde oportunidades en Cierre-Ganado.")
-        return redirect('oportunidades:kanban')
-
-    # generar clave simple
-   # prefijo = "VTA"#No funciono en el backend, a lo mejor ya con el frontend si lo haga (auida)
-    #contador = Venta.objects.filter(claveventa__startswith=prefijo).count() + 1
-   # clave = f"{prefijo}{contador:05d}"
-    venta = Venta.objects.create(
-        claveventa=Venta.claveventa,#mejor la llama desde el modelo
-        nombreventa=op.nombreoportunidad,
-        estatus_cobro=1,  # ajustar id por defecto; o buscar EstatusCobros.objects.get(nombre='Pendiente')
-        preciototal=op.valor_estimado,
-        fecha_venta=timezone.now(),
-        oportunidad_venta=op
-    )
-    op.venta_oportunidad = venta
-    op.save()
-    messages.success(request, "Venta generada desde oportunidad.")
-    return redirect('ventas:listar')
-'''
-
 def corte_caja(request):
     usuario = Usuario.activos.filter(
         idusuario=request.session.get("idusuario")
