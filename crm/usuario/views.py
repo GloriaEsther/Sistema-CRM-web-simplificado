@@ -111,8 +111,8 @@ def editar_perfil(request):
     })
 
 @require_roles(['Dueño'])#@require_roles(['Dueño', 'Administrador'])
-def editar_empleado(request, idusuario):
-    empleado = Usuario.activos.filter(idusuario=idusuario).first()
+def editar_empleado(request, pk):
+    empleado = Usuario.activos.filter(idusuario=pk).first()
 
     if not empleado:
         messages.error(request, "Empleado no encontrado.")
@@ -133,8 +133,8 @@ def editar_empleado(request, idusuario):
     })
 
 @require_roles(['Dueño'])#@require_roles(['Dueño', 'Administrador'])
-def consultar_empleado(request, idusuario):
-    empleado = Usuario.activos.filter(idusuario=idusuario).first()
+def consultar_empleado(request, pk):#def consultar_empleado(request, idusuario):
+    empleado = Usuario.activos.filter(idusuario=pk).first()
 
     if not empleado:
         messages.error(request, "Empleado no encontrado.")
