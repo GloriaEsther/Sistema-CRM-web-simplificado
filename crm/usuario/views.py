@@ -111,7 +111,7 @@ def editar_perfil(request):
     })
 
 @require_roles(['Dueño'])#@require_roles(['Dueño', 'Administrador'])
-def editar_empleado(request, pk):
+def editar_empleado(request,pk):
     empleado = Usuario.activos.filter(idusuario=pk).first()
 
     if not empleado:
@@ -127,13 +127,14 @@ def editar_empleado(request, pk):
     else:
         form = EmpleadoForm(instance=empleado)
 
-    return render(request, "usuario/editar_empleado.html", {
+    return render(request, "usuario/empleado.html", {
         "form": form,
+        "modo":"editar",
         "empleado": empleado
     })
 
-@require_roles(['Dueño'])#@require_roles(['Dueño', 'Administrador'])
-def consultar_empleado(request, pk):#def consultar_empleado(request, idusuario):
+@require_roles(['Dueño'])
+def consultar_empleado(request, pk):
     empleado = Usuario.activos.filter(idusuario=pk).first()
 
     if not empleado:
@@ -223,11 +224,11 @@ def agregar_empleado(request):#solo el dueno puede registrar empleados
 
             empleado.save()
             messages.success(request, "Empleado agregado correctamente.")
-            return redirect('oportunidades:kanban')
+            return redirect('usuario:empleados_lista')
     else:
         form = EmpleadoForm()
 
-    return render(request, "usuario/agregar_empleado.html", {"form": form})
+    return render(request, "usuario/empleado.html", {"form": form,"modo":"crear"})
 
 def empleados_lista(request):
     usuario = Usuario.activos.filter(

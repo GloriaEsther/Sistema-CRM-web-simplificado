@@ -6,7 +6,13 @@
 {% block content %}
   <div class="crm-form-wrapper">
     <div class="crm-form-card">
-      <h2 class="text-center mb-4">Registrar Empleado</h2>
+      <h2 class="text-center mb-4">
+        {% if modo == "editar" %}
+          Editar empleado
+        {% else %}
+          Registrar empleado
+        {% endif %}
+      </h2>
             <form method="POST" id="EmpleadoForm" class="needs-validation" novalidate>
               {% csrf_token %}
 
@@ -70,13 +76,21 @@
                 </div>
               
                 <div class="mb-3">
-                  <label for="id_contrasena" class="form-label">Contraseña</label>
+                  <label for="id_contrasena" class="form-label">Contraseña
+                    {% if modo != "editar" %}*{% endif %}
+                  </label>
                   {% render_field form.contrasena class="form-control" add_error_class="is-invalid" %}
                   {% for error in form.contrasena.errors %}
                       <div class="invalid-feedback d-block">
                           {{ error }}
                       </div>
                   {% endfor %} 
+
+                  {% if modo == "editar" %}
+                    <small class="text-muted">
+                      Déjala vacía si no deseas cambiarla.
+                    </small>
+                  {% endif %}
                   <small class="form-text text-muted">
                     Mínimo 10 caracteres, una mayúscula y un número.
                   </small>
@@ -93,10 +107,17 @@
                </div>
 
               <div class="d-flex justify-content-between mt-4">
-                <button type="button" class="btn btn-orange w-50 me-2" id="btnGuardar">
-                  Guardar
-                </button>
-                <a href="{% url 'oportunidades:kanban' %}" class="btn btn-secondary w-50">
+                
+                {% if modo == "editar" %}
+                  <button type="submit" class="btn btn-orange w-50 me-2">
+                    Guardar cambios
+                  </button>
+                {% else %}
+                  <button type="button" class="btn btn-orange w-50 me-2" id="btnGuardar">
+                    Guardar
+                  </button>
+                {% endif %}
+                <a href="{% url 'usuario:empleados_lista' %}" class="btn btn-secondary w-50">
                   Cancelar
                 </a>                
               </div>
@@ -197,5 +218,7 @@
       </div>
     </div>
   </div>
+  {% if modo == "crear" %}
   <script src="{% static 'usuario/js/empleado.js' %}?v={{ timestamp }}"></script>
+  {% endif %}
 {% endblock %}

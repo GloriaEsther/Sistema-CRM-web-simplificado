@@ -61,6 +61,12 @@ class UsuarioForm(forms.ModelForm):
     
 class EmpleadoForm(forms.ModelForm):
     
+    def __init__(self, *args, **kwargs):
+      super().__init__(*args, **kwargs)
+
+      if self.instance.pk:
+            self.fields['contrasena'].required = False
+
     rol = forms.ModelChoiceField(
         queryset=RolUsuario.objects.filter(nombre_rol__in=['Vendedor', 'Administrador']),
         label="Rol del empleado",
@@ -84,20 +90,33 @@ class EmpleadoForm(forms.ModelForm):
     # Validación de la contraseña
     def clean_contrasena(self):
         contrasena = self.cleaned_data.get('contrasena')
+         # Si es edición y no cambió contraseña → no validar
+        if self.instance.pk and not contrasena:
+            return self.instance.contrasena
+
+        if not contrasena:
+            raise ValidationError("La contraseña es obligatoria.")
+
         if len(contrasena) < 10:
             raise ValidationError("La contraseña debe tener al menos 10 caracteres.")
         if not re.search(r'[A-Z]', contrasena):
             raise ValidationError("Debe contener al menos una letra mayúscula.")
         if not re.search(r'\d', contrasena):
             raise ValidationError("Debe contener al menos un número.")
+
         return contrasena
 
     def clean(self):
         data = super().clean()
         correo = data.get('correo')
 
-        # Validar duplicados
-        if correo and Usuario.todos.filter(correo=correo).exists():
+        if correo:
+         qs = Usuario.todos.filter(correo=correo)
+
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+
+        if qs.exists():
             self.add_error("correo", "Ya existe un usuario con ese correo.")
         return data
     
