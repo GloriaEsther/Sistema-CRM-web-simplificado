@@ -10,7 +10,8 @@ urlpatterns = [
     path('logout/', views.cerrar_sesion, name='cerrar_sesion'),
     path('inicio/', views.inicio, name='inicio'),
     path('subir-logo/', views.subir_logo, name='subir_logo'),
-    path('editar/<int:pk>/', views.editar_perfil, name='editar_usuario'),
+    path('perfil/',views.perfil_usuario,name='perfil'),
+    path('editar/', views.editar_perfil, name='editar_perfil'),
     
     #Relacionado a Empleado
     path('agregar/', views.agregar_empleado, name='agregar_empleado'),

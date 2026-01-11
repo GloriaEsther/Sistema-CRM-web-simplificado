@@ -6,12 +6,14 @@
   <div class="crm-form-card">
     <h4 class="crm-title">Mi información</h4>
 
-    <p><strong>Nombre:</strong> {{ usuario.nombre }} {{ usuario.apellidopaterno }}</p>
+    <p><strong>Nombre:</strong> {{ usuario.nombre }} {{ usuario.apellidopaterno |default:""}} {{ usuario.apellidomaterno |default:""}}</p>
     <p><strong>Correo:</strong> {{ usuario.correo }}</p>
     <p><strong>Rol:</strong> {{ usuario.rol.nombre_rol }}</p>
-    <p><strong>Negocio:</strong> {{ usuario.nombre_negocio }}</p>
-
-    <a href="{% url 'usuario:editar_perfil' usuario.idusuario %}" class="btn btn-primary">
+    <p><strong>Nombre del negocio:</strong> {{ usuario.nombre_negocio |default:"" }}</p>
+    <p><strong>No. telefono:</strong> {{ usuario.numerotel |default:"" }}</p>
+    <p><strong>¿Cuenta con un local fijo?</strong>{{ usuario.local_Fijo  |default:"" }}</p>
+    <p><strong>RFC</strong>{{ usuario.rfc  |default:"" }}</p>
+    <a href="{% url 'usuario:editar_perfil' %}" class="btn btn-primary">
       Editar información
     </a>
   </div>

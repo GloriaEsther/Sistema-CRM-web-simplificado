@@ -5,7 +5,11 @@ import re
 from django.contrib.auth.hashers import make_password
 
 class UsuarioForm(forms.ModelForm):
-    
+    def __init__(self, *args, **kwargs):
+      super().__init__(*args, **kwargs)
+
+      if self.instance.pk:
+            self.fields['contrasena'].required = False
     class Meta:
         model = Usuario
         fields = [
@@ -19,12 +23,17 @@ class UsuarioForm(forms.ModelForm):
     #Validacion de contrasena
     def clean_contrasena(self):
         contrasena = self.cleaned_data.get('contrasena')
+        # Si está editando y no escribió contraseña, no validar
+        if self.instance.pk and not contrasena:
+            return self.instance.contrasena
+
         if len(contrasena) < 10:
-          raise ValidationError("La contraseña debe tener al menos 10 caracteres.")
+            raise ValidationError("La contraseña debe tener al menos 10 caracteres.")
         if not re.search(r'[A-Z]', contrasena):
-            raise ValidationError("La contraseña debe contener al menos una letra mayúscula.")
+            raise ValidationError("Debe contener al menos una letra mayúscula.")
         if not re.search(r'\d', contrasena):
-            raise ValidationError("La contraseña debe contener al menos un número.")
+            raise ValidationError("Debe contener al menos un número.")
+
         return contrasena
     
     def clean(self):
@@ -46,13 +55,7 @@ class UsuarioForm(forms.ModelForm):
                 self.add_error('rfc', "Ya existe un usuario con ese RFC.")
 
         return data
-    ''' # Validar duplicados
-        if correo and Usuario.todos.filter(correo=correo).exists():#activos
-            self.add_error('correo', "Ya existe un usuario con ese correo.")
-        if rfc and Usuario.todos.filter(rfc=rfc).exists():
-            self.add_error('rfc', "Ya existe un usuario con ese RFC.")
-        return data
-    '''
+    
     def clean_local_fijo(self):
         local_fijo = self.cleaned_data.get('local_Fijo')
         if not local_fijo:

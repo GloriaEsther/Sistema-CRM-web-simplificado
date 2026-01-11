@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block title %}Editar perfil{% endblock %}
+
+{% block content %}
+<div class="crm-form-wrapper">
+  <div class="crm-form-card">
+    <h4 class="crm-title text-center mb-4">Editar perfil</h4>
+
+    <form method="POST" novalidate>
+      {% csrf_token %}
+
+      {% for field in form %}
+        <div class="mb-3">
+          <label class="form-label">{{ field.label }}</label>
+
+          {{ field|add_class:"form-control" }}
+
+          {% if field.help_text %}
+            <small class="text-muted">{{ field.help_text }}</small>
+          {% endif %}
+
+          {% for error in field.errors %}
+            <div class="text-danger small">{{ error }}</div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+
+      <small class="text-muted">
+        * Deja la contraseña en blanco si no deseas cambiarla.
+      </small>
+
+      <div class="d-flex justify-content-between mt-4">
+        <button type="submit" class="btn btn-orange w-50 me-2">
+          Guardar cambios
+        </button>
+
+        <a href="{% url 'usuario:perfil' %}" class="btn btn-secondary w-50">
+          Cancelar
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
