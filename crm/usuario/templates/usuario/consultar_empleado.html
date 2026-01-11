@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Consultar Empleado{% endblock %}
+
+{% block content %}
+<div class="crm-form-wrapper">
+  <div class="crm-form-card">
+
+    <h4 class="crm-title mb-3">Información del empleado</h4>
+
+    <div class="mb-2">
+      <strong>Nombre:</strong>
+      {{ empleado.nombre }} {{ empleado.apellidopaterno }} {{ empleado.apellidomaterno|default:"" }}
+    </div>
+
+    <div class="mb-2">
+      <strong>Correo:</strong>
+      {{ empleado.correo }}
+    </div>
+
+    <div class="mb-2">
+      <strong>Rol:</strong>
+      {{ empleado.rol.nombre_rol }}
+    </div>
+
+    <div class="mb-2">
+      <strong>Teléfono:</strong>
+      {{ empleado.numerotel|default:"No registrado" }}
+    </div>
+
+    <div class="mb-2">
+      <strong>Registrado por:</strong>
+      {{ empleado.owner_id.nombre }} {{ empleado.owner_id.apellidopaterno }}
+    </div>
+
+    <div class="mb-2">
+      <strong>Fecha de registro:</strong>
+      {{ empleado.fecha_registro|date:"d/m/Y H:i" }}
+    </div>
+
+    <div class="d-flex gap-2 mt-4">
+      <a href="{% url 'usuario:editar_empleado' empleado.idusuario %}" class="btn btn-success">
+        Editar
+      </a>
+
+      <a href="{% url 'usuario:empleados_lista' %}" class="btn btn-secondary">
+        Volver
+      </a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

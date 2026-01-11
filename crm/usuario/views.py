@@ -4,7 +4,7 @@ from .models import Usuario, PreferenciaUsuario,RolUsuario
 from django.contrib import messages
 from django.db import IntegrityError
 from django.contrib.auth.hashers import check_password 
-from crm.utils import require_roles
+from crm.utils import require_roles,queryset_empleados_por_rol
 from django.contrib import messages
 from django.utils import timezone
 
@@ -81,38 +81,75 @@ def iniciar_sesion(request):
         'timestamp': timezone.now().timestamp()
     })
 
-@require_roles(['Dueño', 'Administrador'])
-def listar_usuarios(request):#consultar usuarios (en lo basico si funciona)
-    usuarios = Usuario.activos.all().order_by('idusuario')
-    return render(request, 'usuario/listar_usuarios.html', {'usuarios': usuarios})
+@require_roles(['Dueño'])
+def perfil_usuario(request):
+    usuario = Usuario.activos.filter(
+        idusuario=request.session.get("idusuario")
+    ).first()
 
-@require_roles(['Dueño', 'Administrador'])
-def editar_usuario(request, pk):
-    usuario = get_object_or_404(Usuario, pk=pk)
+    return render(request, "usuario/perfil.html", {
+        "usuario": usuario
+    })
 
-    if request.method == 'POST':
+@require_roles(['Dueño'])
+def editar_perfil(request):
+    usuario = Usuario.activos.filter(
+        idusuario=request.session.get("idusuario")
+    ).first()
+
+    if request.method == "POST":
         form = UsuarioForm(request.POST, instance=usuario)
         if form.is_valid():
             form.save()
-            messages.success(request, "Usuario modificado correctamente.")
-            return redirect('usuario:listar_usuarios')
-        else:
-            messages.error(request, "Revisa los errores del formulario.")
+            messages.success(request, "Perfil actualizado correctamente.")
+            return redirect("usuario:perfil")
     else:
         form = UsuarioForm(instance=usuario)
 
-    return render(request, 'usuario/editar_usuario.html', {
-        'form': form,
-        'usuario': usuario
+    return render(request, "usuario/editar_perfil.html", {
+        "form": form
     })
 
+@require_roles(['Dueño'])#@require_roles(['Dueño', 'Administrador'])
+def editar_empleado(request, idusuario):
+    empleado = Usuario.activos.filter(idusuario=idusuario).first()
+
+    if not empleado:
+        messages.error(request, "Empleado no encontrado.")
+        return redirect("usuario:empleados_lista")
+
+    if request.method == "POST":
+        form = EmpleadoForm(request.POST, instance=empleado)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Empleado actualizado correctamente.")
+            return redirect("usuario:empleados_lista")
+    else:
+        form = EmpleadoForm(instance=empleado)
+
+    return render(request, "usuario/editar_empleado.html", {
+        "form": form,
+        "empleado": empleado
+    })
+
+@require_roles(['Dueño'])#@require_roles(['Dueño', 'Administrador'])
+def consultar_empleado(request, idusuario):
+    empleado = Usuario.activos.filter(idusuario=idusuario).first()
+
+    if not empleado:
+        messages.error(request, "Empleado no encontrado.")
+        return redirect("usuario:empleados_lista")
+
+    return render(request, "usuario/consultar_empleado.html", {
+        "empleado": empleado
+    })
 
 @require_roles(['Dueño'])
 def eliminar_usuario(request, pk):
     usuario = get_object_or_404(Usuario, pk=pk)
     usuario.eliminar_logico()
     messages.success(request, "Usuario eliminado ")
-    return redirect('usuario:listar_usuarios')
+    return redirect('usuario:empleados_lista')
 
 def cerrar_sesion(request):
     request.session.flush()  # borra la sesión
@@ -191,3 +228,14 @@ def agregar_empleado(request):#solo el dueno puede registrar empleados
         form = EmpleadoForm()
 
     return render(request, "usuario/agregar_empleado.html", {"form": form})
+
+def empleados_lista(request):
+    usuario = Usuario.activos.filter(
+        idusuario=request.session.get("idusuario")
+    ).first()
+
+    empleados = queryset_empleados_por_rol(usuario)
+
+    return render(request, "usuario/empleados_lista.html", {
+        "empleados": empleados
+    })

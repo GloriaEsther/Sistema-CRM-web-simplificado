@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Mi perfil{% endblock %}
+
+{% block content %}
+<div class="crm-form-wrapper">
+  <div class="crm-form-card">
+    <h4 class="crm-title">Mi información</h4>
+
+    <p><strong>Nombre:</strong> {{ usuario.nombre }} {{ usuario.apellidopaterno }}</p>
+    <p><strong>Correo:</strong> {{ usuario.correo }}</p>
+    <p><strong>Rol:</strong> {{ usuario.rol.nombre_rol }}</p>
+    <p><strong>Negocio:</strong> {{ usuario.nombre_negocio }}</p>
+
+    <a href="{% url 'usuario:editar_perfil' usuario.idusuario %}" class="btn btn-primary">
+      Editar información
+    </a>
+  </div>
+</div>
+{% endblock %}

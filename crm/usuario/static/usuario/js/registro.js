@@ -113,6 +113,5 @@ document.addEventListener("DOMContentLoaded", function () {
         if(numerotelInput) numerotelInput.value= "";
         if (rfcInput) rfcInput.value = "";
         if(nombre_negocioInput)nombre_negocioInput.value="";
-        form.submit();
     });
 });

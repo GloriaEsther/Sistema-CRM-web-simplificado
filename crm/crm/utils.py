@@ -149,3 +149,16 @@ def queryset_cotizaciones_por_rol(usuario):
         return Cotizacion.todos.filter(owner=usuario.owner_id,activo =True)
 
     return Cotizacion.todos.none()
+
+def queryset_empleados_por_rol(usuario):
+    rol = usuario.rol.nombre_rol
+    negocio = usuario if rol == "Dueño" else usuario.owner_id
+
+    if rol in ["Dueño", "Administrador"]:
+        return Usuario.activos.filter(
+            owner_id=negocio.idusuario
+        ).exclude(
+            rol__nombre_rol="Dueño"
+        )
+
+    return Usuario.activos.none()

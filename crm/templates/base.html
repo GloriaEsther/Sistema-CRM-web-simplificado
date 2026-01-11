@@ -64,8 +64,8 @@
         <a href="{% url 'ventas:listar' %}" class="menu-item">Ventas</a>
 
         {% if usuario.rol.nombre_rol == "Dueño" %}
-          <a href="{% url 'usuario:agregar_empleado' %}" class="menu-item">
-            Agregar empleado
+          <a href="{% url 'usuario:empleados_lista' %}" class="menu-item">
+           Empleados
           </a>
         {% endif %}
 
