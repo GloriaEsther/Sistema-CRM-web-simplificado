@@ -1,9 +1,7 @@
 from usuario.models import Usuario
 from usuario.models import PreferenciaUsuario
 
-def usuario_actual(request):#te quedaste en resolver lo del logo, lo demas funciona, lo unico que debes haceres
-    #encargarte de terminar la documentacion y la liberacion de residencia a tiempo
-    #ademas tienes junta a las 10 
+def usuario_actual(request):
     usuario = None
     preferencias = None
 
