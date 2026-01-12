@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import ClienteForm
 from .models import Cliente
 from django.contrib import messages
-from crm.utils import queryset_clientes_por_rol,limpiar_valor
+from crm.utils import queryset_clientes_por_rol,limpiar_valor,require_roles
 from usuario.models import Usuario
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
@@ -18,7 +18,7 @@ from django.shortcuts import redirect, render
 from .forms import ImportarClientesForm
 from django.db import transaction
 
-def clientes_list(request):
+def clientes_list(request):#empleados pueden ver clientes...
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
     clientes = queryset_clientes_por_rol(usuario)
 
@@ -71,16 +71,29 @@ def cliente_editar(request, pk):
         "timestamp": int(time())
     })
 
-
 def cliente_eliminar(request, pk):
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
-    qs = queryset_clientes_por_rol(usuario)
+    cliente = get_object_or_404(Cliente.activos, idcliente=pk)
+    rol=usuario.rol.nombre_rol
+     # Dueño y Administrador: pueden eliminar cualquiera
+    if rol in ["Dueño", "Administrador"]:
+        cliente.eliminar_logico()
+        messages.success(request, "Cliente eliminado correctamente.")
+        return redirect("cliente:listar")
 
-    cliente = get_object_or_404(qs, idcliente=pk)
+    # Vendedor: solo si él lo registró
+    if rol == "Vendedor":
+        if cliente.usuario_registro != usuario.idusuario:
+            messages.error(
+                request,
+                "No tienes permiso para eliminar este cliente."
+            )
+            return redirect("cliente:listar")
 
-    cliente.eliminar_logico()
-    messages.success(request, "Cliente eliminado correctamente.")
-    return redirect("cliente:listar")
+        cliente.eliminar_logico()
+        messages.success(request, "Cliente eliminado correctamente.")
+        return redirect("cliente:listar")
+    
 
 def cliente_detalle(request, pk):
     cliente = Cliente.activos.filter(idcliente=pk).first()
@@ -91,12 +104,6 @@ def cliente_detalle(request, pk):
     return render(request, "clientes/cliente_detalle.html", {
         "cliente": cliente
     })
-#prueba..
-#def limpiar_valor(valor):
- #                   if pd.isna(valor):
-  #                      return None
-  #                  return str(valor).strip()
-#
 
 def importar_clientes(request):
     usuario = Usuario.activos.filter(

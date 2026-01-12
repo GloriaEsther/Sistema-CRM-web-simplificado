@@ -56,12 +56,19 @@
       <div class="overlay" id="menu-overlay"></div>
 
       <nav class="mobile-menu" id="mobile-menu">
-        <a href="{% url 'oportunidades:kanban' %}" class="menu-item">Oportunidades</a>
-        <a href="{% url 'cliente:listar' %}" class="menu-item">Clientes</a>
-        <a href="{% url 'servicio:listar' %}" class="menu-item">Servicios</a>
-        <a href="{% url 'inventario:listar' %}" class="menu-item">Inventario</a>
-        <a href="{% url 'proveedor:listar' %}" class="menu-item">Proveedor</a>
-        <a href="{% url 'ventas:listar' %}" class="menu-item">Ventas</a>
+        {% if usuario.rol.nombre_rol in "Dueño Administrador Vendedor" %}
+          <a href="{% url 'oportunidades:kanban' %}" class="menu-item">Oportunidades</a>
+          <a href="{% url 'cliente:listar' %}" class="menu-item">Clientes</a>
+          <a href="{% url 'ventas:listar' %}" class="menu-item">Ventas</a>
+        {%endif%}
+
+        {% if usuario.rol.nombre_rol in "Dueño Administrador" %}  
+          <a href="{% url 'servicio:listar' %}" class="menu-item">Servicios</a>
+          <a href="{% url 'inventario:listar' %}" class="menu-item">Inventario</a>
+          <a href="{% url 'proveedor:listar' %}" class="menu-item">Proveedor</a>
+        {%endif%}
+
+
 
         {% if usuario.rol.nombre_rol == "Dueño" %}
           <a href="{% url 'usuario:empleados_lista' %}" class="menu-item">

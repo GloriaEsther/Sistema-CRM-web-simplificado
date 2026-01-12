@@ -7,8 +7,9 @@ from time import time
 from .models import Servicio
 from .forms import ServicioForm
 from usuario.models import Usuario
-from crm.utils import queryset_servicios_por_rol
+from crm.utils import queryset_servicios_por_rol,require_roles
 
+@require_roles(['Dueño', 'Administrador'])
 def servicios_list(request):
     usuario = Usuario.activos.filter(
         idusuario=request.session.get("idusuario")
