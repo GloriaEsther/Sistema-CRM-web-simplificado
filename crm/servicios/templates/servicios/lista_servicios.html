@@ -6,12 +6,15 @@
 <div class="crm-section">
     <div class="crm-section-header">
         <h4 class="crm-title">Servicios</h4>
-
+            
         <a href="{% url 'servicio:crear' %}" class="btn btn-primary crm-btn">
         + Crear Servicio
         </a>
         <a href="{% url 'cotizacion:crear' %}" class="btn btn-primary crm-btn">
         + Crear Cotización
+        </a>
+        <a href="{% url 'cotizacion:listar' %}" class="btn btn-primary crm-btn">
+         Ver Cotizaciones
         </a>
     </div>
 
