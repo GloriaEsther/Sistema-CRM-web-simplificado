@@ -9,7 +9,7 @@
 
   <div class="crm-form-card">
 
-    <h4 class="crm-title text-center mb-4">Crear Servicio</h4>
+    <h4 class="crm-title text-center mb-4">Editar Servicio</h4>
 
     <form method="POST" id="edicionServicioForm" novalidate>
       {% csrf_token %}
@@ -19,7 +19,7 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Precio</label>
+          <label class="form-label">Precio*</label>
           {% render_field form.precio class="form-control" %}
         </div>
       <div class="mb-3">

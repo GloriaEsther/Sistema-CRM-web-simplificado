@@ -20,7 +20,7 @@
               {% endif %}
 
                 <div class="mb-3">
-                  <label for="id_nombre" class="form-label">Nombre</label>
+                  <label for="id_nombre" class="form-label">Nombre*</label>
                   {% render_field form.nombre class="form-control" add_error_class="is-invalid"%}
                   {% for error in form.nombre.errors %}
                       <div class="invalid-feedback d-block">
@@ -30,7 +30,7 @@
                 </div>
 
                 <div class="mb-3">
-                  <label for="id_apellidopaterno" class="form-label">Apellido Paterno</label>
+                  <label for="id_apellidopaterno" class="form-label">Apellido Paterno*</label>
                   {% render_field form.apellidopaterno class="form-control" add_error_class="is-invalid" %}
                   {% for error in form.apellidopaterno.errors %}
                       <div class="invalid-feedback d-block">
@@ -60,7 +60,7 @@
                 </div>
                 
                 <div class="mb-3">
-                  <label for="id_correo" class="form-label">Correo Electrónico</label>
+                  <label for="id_correo" class="form-label">Correo Electrónico*</label>
                   {% render_field form.correo class="form-control" add_error_class="is-invalid" %}
                   {% for error in form.correo.errors %}
                       <div class="invalid-feedback d-block">
@@ -69,7 +69,7 @@
                   {% endfor %}
                 </div>
                 <div class="mb-3">
-                  <label for="id_contrasena" class="form-label">Contraseña</label>
+                  <label for="id_contrasena" class="form-label">Contraseña*</label>
                   {% render_field form.contrasena class="form-control" add_error_class="is-invalid" %}
                   {% for error in form.contrasena.errors %}
                       <div class="invalid-feedback d-block">
@@ -83,7 +83,7 @@
 
               <div class="row">
                 <div class="col-md-6 mb-3" id="localFijoContainer">
-                  <label for="id_local_Fijo" class="form-label">¿Cuenta con un local fijo?</label>
+                  <label for="id_local_Fijo" class="form-label">¿Cuenta con un local fijo?*</label>
                   {% render_field form.local_Fijo class="form-control" add_error_class="is-invalid"%}
                   {% for error in form.local_Fijo.errors %}
                       <div class="invalid-feedback d-block">
