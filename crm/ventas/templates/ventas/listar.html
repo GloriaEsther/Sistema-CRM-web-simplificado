@@ -4,12 +4,13 @@
 
 <div class="crm-section"> 
   <h4 class="crm-title">Ventas</h4>
+    {% if usuario and usuario.rol.nombre_rol == "Dueño" %}
       <div class="crm-section-header">
         <a href="{% url 'ventas:corte_caja' %}" class="btn btn-primary crm-btn">
           Corte de caja
-          </a>
-          
+        </a>  
       </div>
+    {% endif %}
       <div class="crm-section-header">
         <a href="{% url 'ventas:ventas_hoy' %}" class="btn btn-primary crm-btn">
           Ventas del dia
