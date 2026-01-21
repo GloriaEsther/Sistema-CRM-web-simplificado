@@ -39,7 +39,7 @@ class Cliente(models.Model):
     #Opcionales
     correo = models.CharField(max_length=100, blank=True,null=True)
     direccion = models.CharField(max_length=255, blank=True,null=True)
-    rfc = models.CharField(max_length=13, unique=True,blank=True, null=True)
+    rfc = models.CharField(max_length=13,blank=True, null=True)
     fecha_nacimiento = models.DateTimeField(blank=True, null=True)
     fecha_ultimocontacto = models.DateTimeField(blank=True,null=True)
     comentarios = models.TextField(blank=True,null=True)

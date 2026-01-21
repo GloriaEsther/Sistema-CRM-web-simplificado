@@ -149,15 +149,10 @@ def importar_clientes(request):
          
                 with transaction.atomic():
                     for index, fila in df.iterrows():
-
-                        # Limpieza de fecha
-                        #fecha_nacimiento = fila.get("fecha_nacimiento")
-                        #if pd.isna(fecha_nacimiento):
-#                            fecha_nacimiento = None
                         
                         nombre = limpiar_valor(fila.get("nombre"))
                         telefono = limpiar_valor(fila.get("numerotelcli"))
-                        rfc = limpiar_valor(fila.get("rfc"))
+                        #rfc = limpiar_valor(fila.get("rfc"))
 
                         # Validaciones obligatorias
                         if not nombre:
@@ -183,7 +178,7 @@ def importar_clientes(request):
                         else:
                             rfc = str(rfc).strip().upper()
 
-                        if rfc and Cliente.todos.filter(rfc=rfc).exists():
+                        if rfc and Cliente.todos.filter(rfc=rfc, owner=owner).exists():
                             registros_omitidos += 1
                             continue  
                         
@@ -216,12 +211,13 @@ def importar_clientes(request):
                 return redirect("cliente:listar")
 
             except Exception as e:
+                
                 messages.error(
                     request,
-                    #f"Error al procesar el archivo: {str(e)}"
                     "No se pudo importar el archivo. "
                     "Verifica que el Excel cumpla con el formato indicado."
                 )
+                
                 return redirect("cliente:importar")
 
     else:
