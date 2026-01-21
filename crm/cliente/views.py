@@ -144,16 +144,16 @@ def importar_clientes(request):
                     else usuario.owner_id
                 )
 
-                registros_omitidos = 0
+                registros_omitidos_rfc = 0
                 registros_creados = 0
+                posibles_duplicados = 0
          
                 with transaction.atomic():
                     for index, fila in df.iterrows():
                         
                         nombre = limpiar_valor(fila.get("nombre"))
                         telefono = limpiar_valor(fila.get("numerotelcli"))
-                        #rfc = limpiar_valor(fila.get("rfc"))
-
+            
                         # Validaciones obligatorias
                         if not nombre:
                             messages.error(
@@ -169,19 +169,23 @@ def importar_clientes(request):
                             )
                             return redirect("cliente:importar")
                         
-                        # Validar RFC duplicado
                         rfc = fila.get("rfc")
 
-                        # Normalizar RFC
                         if pd.isna(rfc) or str(rfc).strip() == "":
                             rfc = None
                         else:
                             rfc = str(rfc).strip().upper()
 
                         if rfc and Cliente.todos.filter(rfc=rfc, owner=owner).exists():
-                            registros_omitidos += 1
+                            registros_omitidos_rfc += 1
                             continue  
                         
+                        if Cliente.todos.filter(nombre=nombre, owner=owner).exists():
+                            posibles_duplicados += 1
+
+                        if Cliente.todos.filter(numerotelcli=telefono, owner=owner).exists():
+                            posibles_duplicados += 1
+
                         Cliente.todos.create(                           
                             nombre=nombre,
                             apellidopaterno=limpiar_valor(fila.get("apellidopaterno")),
@@ -204,8 +208,10 @@ def importar_clientes(request):
 
                 messages.success(
                     request,
-                    f"Clientes importados: {registros_creados}. "
-                    f"Omitidos por RFC duplicado: {registros_omitidos}."
+                    f"Importación finalizada correctamente.\n"
+                    f"Clientes registrados: {registros_creados}.\n"
+                    f"Omitidos por RFC duplicado: {registros_omitidos_rfc}.\n"
+                    f"Registros con posibles coincidencias (nombre o teléfono): {posibles_duplicados}."
                 )
 
                 return redirect("cliente:listar")
