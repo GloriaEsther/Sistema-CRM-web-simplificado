@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import ClienteForm
 from .models import Cliente
@@ -13,8 +12,6 @@ from django.utils import timezone
 from time import time
 #Importar datos desde Excel
 import pandas as pd
-from django.contrib import messages
-from django.shortcuts import redirect, render
 from .forms import ImportarClientesForm
 from django.db import transaction
 
@@ -119,7 +116,6 @@ def importar_clientes(request):
             try:
                 df = pd.read_excel(archivo)
 
-                # Campos obligatorios
                 campos_requeridos = [
                     "nombre",
                     "apellidopaterno",
@@ -144,47 +140,56 @@ def importar_clientes(request):
                     else usuario.owner_id
                 )
 
-                registros_omitidos_rfc = 0
+                rfc_duplicado = 0
                 registros_creados = 0
-                posibles_duplicados = 0
-         
+                num_duplicados = 0
+                correo_duplicados = 0
+                tel_error = 0
+                nombre_error = 0
+                total_omitidos = 0
+                
                 with transaction.atomic():
                     for index, fila in df.iterrows():
                         
                         nombre = limpiar_valor(fila.get("nombre"))
                         telefono = limpiar_valor(fila.get("numerotelcli"))
-            
-                        # Validaciones obligatorias
+                        correo_ =limpiar_valor(fila.get("correo"))
+                        
                         if not nombre:
-                            messages.error(
-                                request,
-                                f"Fila {index + 2}: El campo 'nombre' es obligatorio."
-                            )
-                            return redirect("cliente:importar")
+                            nombre_error +=1
+                            total_omitidos +=1
+                            continue
 
                         if not telefono:
-                            messages.error(
-                                request,
-                                f"Fila {index + 2}: El teléfono es obligatorio."
-                            )
-                            return redirect("cliente:importar")
+                            tel_error +=1
+                            total_omitidos +=1
+                            continue
                         
                         rfc = fila.get("rfc")
-
+                        RFC_dup = Cliente.todos.filter(rfc=rfc, owner=owner).exists()
+                        Tel_cli_dup = Cliente.todos.filter(numerotelcli=telefono, owner=owner).exists()
+                        Correo_dup = Cliente.todos.filter(correo = correo_, owner=owner).exists()
+                       
                         if pd.isna(rfc) or str(rfc).strip() == "":
                             rfc = None
                         else:
                             rfc = str(rfc).strip().upper()
 
-                        if rfc and Cliente.todos.filter(rfc=rfc, owner=owner).exists():
-                            registros_omitidos_rfc += 1
-                            continue  
-                        
-                        if Cliente.todos.filter(nombre=nombre, owner=owner).exists():
-                            posibles_duplicados += 1
-
-                        if Cliente.todos.filter(numerotelcli=telefono, owner=owner).exists():
-                            posibles_duplicados += 1
+                        #logica de duplicado:
+                        if rfc and RFC_dup:
+                            rfc_duplicado += 1
+                            total_omitidos +=1
+                            continue #los omite 
+                       
+                        if telefono and Tel_cli_dup:
+                            num_duplicados += 1
+                            total_omitidos +=1
+                            continue #los omite
+                        #con correo(en caso de haber un cliente con correo repetido)
+                        if correo_ and Correo_dup:
+                            correo_duplicados += 1
+                            total_omitidos +=1
+                            continue
 
                         Cliente.todos.create(                           
                             nombre=nombre,
@@ -205,19 +210,17 @@ def importar_clientes(request):
                             activo=True
                         )
                         registros_creados += 1
-
+                
                 messages.success(
                     request,
-                    f"Importación finalizada correctamente.\n"
-                    f"Clientes registrados: {registros_creados}.\n"
-                    f"Omitidos por RFC duplicado: {registros_omitidos_rfc}.\n"
-                    f"Registros con posibles coincidencias (nombre o teléfono): {posibles_duplicados}."
+                    f"Importación finalizada.  "
+                    f"Clientes importados: {registros_creados}.  "
+                    f"Clientes omitidos: {total_omitidos}.  "
                 )
-
                 return redirect("cliente:listar")
 
             except Exception as e:
-                
+                print(f"Error:{e}")
                 messages.error(
                     request,
                     "No se pudo importar el archivo. "

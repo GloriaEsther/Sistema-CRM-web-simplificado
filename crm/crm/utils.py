@@ -112,12 +112,13 @@ def queryset_proveedores_por_rol(usuario):
         return Proveedor.todos.none()
 
     return Proveedor.todos.none()
+#para importar cliente...
 
-#esto es prueba y es para importar cliente
 def limpiar_valor(valor):
-    if pd.isna(valor):
+    if pd.isna(valor) or str(valor).strip() == "":
         return None
     return str(valor).strip()
+
 #ventas
 def queryset_ventas_por_rol(usuario):
     owner = (
