@@ -5,11 +5,12 @@
 
 <div class="crm-section">
     <div class="crm-section-header">
-        <h4 class="crm-title">Empleados</h4>
-
-        <a href="{% url 'usuario:agregar_empleado' %}" class="btn btn-primary crm-btn">
-        + Agregar Empleado
-        </a>
+        <h4 class="crm-title">Empleados</h4> 
+        <div class="gap-2 mt-3 d-md-flex justify-content-md-end mb-3">
+                <a href="{% url 'usuario:agregar_empleado' %}" class="btn btn-primary crm-btn">
+                + Agregar Empleado
+                </a>
+        </div>
     </div>
     
     {% for empleado in empleados %}

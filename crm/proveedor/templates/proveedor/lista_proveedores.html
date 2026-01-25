@@ -6,11 +6,13 @@
 <div class="crm-section">
     <div class="crm-section-header">
         <h4 class="crm-title">Proveedor</h4>
-
-        <a href="{% url 'proveedor:crear' %}" class="btn btn-primary crm-btn">
-        + Agregar Proveedor
-        </a>
+        <div class="gap-2 mt-3 d-md-flex justify-content-md-end mb-3">
+            <a href="{% url 'proveedor:crear' %}" class="btn btn-primary crm-btn">
+            + Agregar Proveedor
+            </a>
+        </div>
     </div>
+    
 
     {% for p in proveedores %}
     <div class="crm-card">

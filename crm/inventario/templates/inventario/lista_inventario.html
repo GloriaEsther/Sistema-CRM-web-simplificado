@@ -6,12 +6,13 @@
 <div class="crm-section">
     <div class="crm-section-header">
         <h4 class="crm-title">Inventario</h4>
-
-        <a href="{% url 'inventario:crear' %}" class="btn btn-primary crm-btn">
-        + Agregar Inventario
-        </a>
+        <div class="gap-2 mt-3 d-md-flex justify-content-md-end mb-3">
+            <a href="{% url 'inventario:crear' %}" class="btn btn-primary crm-btn">
+            + Agregar Inventario
+            </a>
+        </div>
     </div>
-
+    
     {% for i in inventario %}
     <div class="crm-card">
 

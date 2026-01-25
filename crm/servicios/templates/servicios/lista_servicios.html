@@ -4,19 +4,21 @@
 {% block content %}
 
 <div class="crm-section">
-    <div class="crm-section-header">
-        <h4 class="crm-title">Servicios</h4>
-            
-        <a href="{% url 'servicio:crear' %}" class="btn btn-primary crm-btn">
-        + Crear Servicio
-        </a>
-        <a href="{% url 'cotizacion:crear' %}" class="btn btn-primary crm-btn">
-        + Crear Cotización
-        </a>
-        <a href="{% url 'cotizacion:listar' %}" class="btn btn-primary crm-btn">
-         Ver Cotizaciones
-        </a>
+    <div class="crm-section-header">    
+      <h4 class="crm-title">Servicios</h4>
+        <div class="gap-2 mt-3 d-md-flex justify-content-md-end mb-3">   
+            <a href="{% url 'servicio:crear' %}" class="btn btn-primary crm-btn">
+            + Crear Servicio
+            </a>
+            <a href="{% url 'cotizacion:crear' %}" class="btn btn-primary crm-btn">
+            + Crear Cotización
+            </a>
+            <a href="{% url 'cotizacion:listar' %}" class="btn btn-primary crm-btn">
+            Ver Cotizaciones
+            </a>
+        </div>
     </div>
+    
 
     {% for s in servicios %}
     <div class="crm-card">
