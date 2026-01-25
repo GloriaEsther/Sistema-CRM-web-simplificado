@@ -14,6 +14,7 @@ from time import time
 import pandas as pd
 from .forms import ImportarClientesForm
 from django.db import transaction
+import traceback
 
 def clientes_list(request):#empleados pueden ver clientes...
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
@@ -114,7 +115,7 @@ def importar_clientes(request):
             archivo = request.FILES["archivo"]
 
             try:
-                df = pd.read_excel(archivo)
+                df = pd.read_excel(archivo, dtype=str)#prueba esto hace que el excel se lea como texto...
 
                 campos_requeridos = [
                     "nombre",
@@ -136,17 +137,26 @@ def importar_clientes(request):
                         )
                         return redirect("cliente:importar")
                 owner = (
-                    usuario if usuario.rol.nombre_rol == "Dueño"
-                    else usuario.owner_id
+                  usuario if usuario.rol.nombre_rol == "Dueño"
+                  else usuario.owner_id
                 )
+               
+                #owner = usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner#prueba
+
 
                 rfc_duplicado = 0
                 registros_creados = 0
                 num_duplicados = 0
-                correo_duplicados = 0
-                tel_error = 0
-                nombre_error = 0
                 total_omitidos = 0
+                correo_duplicados = 0
+
+                clientes = Cliente.todos.filter(owner=owner).values_list('rfc', 'numerotelcli', 'correo')#prueba... 
+
+                #buscar con sets(prueba)
+                            
+                rfc_existente = {str(r[0]).strip().upper() for r in clientes if r[0]}
+                numtel_existente = {str(r[1]).strip() for r in clientes if r[1]}
+                correo_existentes = {str(r[2]).strip().lower() for r in clientes if r[2]}
                 
                 with transaction.atomic():
                     for index, fila in df.iterrows():
@@ -154,41 +164,34 @@ def importar_clientes(request):
                         nombre = limpiar_valor(fila.get("nombre"))
                         telefono = limpiar_valor(fila.get("numerotelcli"))
                         correo_ =limpiar_valor(fila.get("correo"))
-                        
-                        if not nombre:
-                            nombre_error +=1
-                            total_omitidos +=1
-                            continue
+                        correo_para_comparar = correo_.lower().strip() if correo_ else None
+                        rfc = limpiar_valor(fila.get("rfc"))
+                        if rfc: rfc = rfc.upper() 
 
-                        if not telefono:
-                            tel_error +=1
+                        if not nombre or not telefono:# si hay celdas sin nombre o telefono ...
                             total_omitidos +=1
-                            continue
-                        
-                        rfc = fila.get("rfc")
-                        RFC_dup = Cliente.todos.filter(rfc=rfc, owner=owner).exists()
-                        Tel_cli_dup = Cliente.todos.filter(numerotelcli=telefono, owner=owner).exists()
-                        Correo_dup = Cliente.todos.filter(correo = correo_, owner=owner).exists()
-                       
-                        if pd.isna(rfc) or str(rfc).strip() == "":
-                            rfc = None
-                        else:
-                            rfc = str(rfc).strip().upper()
+                            continue#los omite
+                        #Logica de duplicado...
+                        es_duplicado = False
 
-                        #logica de duplicado:
-                        if rfc and RFC_dup:
-                            rfc_duplicado += 1
-                            total_omitidos +=1
-                            continue #los omite 
-                       
-                        if telefono and Tel_cli_dup:
-                            num_duplicados += 1
-                            total_omitidos +=1
-                            continue #los omite
-                        #con correo(en caso de haber un cliente con correo repetido)
-                        if correo_ and Correo_dup:
-                            correo_duplicados += 1
-                            total_omitidos +=1
+                        if rfc and rfc in rfc_existente:
+                                rfc_duplicado += 1
+                                es_duplicado = True
+                            
+                        elif telefono and telefono in numtel_existente:
+                                num_duplicados += 1
+                                es_duplicado = True
+                            
+                        elif correo_ and correo_para_comparar in correo_existentes:
+                                correo_duplicados += 1
+                                es_duplicado = True
+
+                        if es_duplicado:
+                                total_omitidos += 1
+                                continue
+
+                        if telefono and len(telefono) > 10:
+                            total_omitidos += 1
                             continue
 
                         Cliente.todos.create(                           
@@ -210,7 +213,11 @@ def importar_clientes(request):
                             activo=True
                         )
                         registros_creados += 1
-                
+                        # Agregamos a los sets para que la siguiente fila detecte si este ya se agregó
+                        if rfc: rfc_existente.add(rfc)
+                        if telefono: numtel_existente.add(telefono)
+                        if correo_: correo_existentes.add(correo_.lower())
+
                 messages.success(
                     request,
                     f"Importación finalizada.  "
@@ -220,11 +227,13 @@ def importar_clientes(request):
                 return redirect("cliente:listar")
 
             except Exception as e:
-                print(f"Error:{e}")
+                
+                print(f"Error detallado en fila {index + 2}: {traceback.format_exc()}")
                 messages.error(
                     request,
                     "No se pudo importar el archivo. "
                     "Verifica que el Excel cumpla con el formato indicado."
+                    
                 )
                 
                 return redirect("cliente:importar")

@@ -36,5 +36,5 @@ class ClienteForm(forms.ModelForm):
 class ImportarClientesForm(forms.Form):
     archivo = forms.FileField(
         label="Archivo Excel",
-        help_text="Formato permitido: .xlsx"#help_text="El archivo debe contener las columnas del formulario de clientes"
+        help_text="Formato permitido: .xlsx"
     )

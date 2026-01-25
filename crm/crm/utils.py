@@ -8,12 +8,10 @@ from cliente.models import Cliente
 from django.db.models import Q
 from servicios.models import Servicio
 from inventario.models import Inventario
-from django.shortcuts import redirect
 from proveedor.models import Proveedor
 from ventas.models import Venta
 from cotizacion.models import Cotizacion
 import pandas as pd
-
 def require_roles(allowed_roles):#restringe roles (quien accede a que)
     def decorator(view_func):
         @wraps(view_func)
