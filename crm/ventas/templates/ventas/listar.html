@@ -38,16 +38,16 @@
               <td data-label="Fecha">{{ v.fecha_registro|date:"d/m/Y H:i" }}</td>
               <td data-label="Acciones">
                 <a href="{% url 'ventas:venta_editar' v.idventa %}"
-                  class="btn btn-sm btn-warning">
-                  Editar
+                      class="btn btn-sm btn-warning">
+                      Editar
                 </a>
 
                 <button
-                    type="button"
-                    class="btn btn-sm btn-danger btn-eliminar"
-                    data-url="{% url 'ventas:venta_eliminar' v.idventa %}"
-                    data-nombre="{{ v.nombreventa }}">
-                    Eliminar
+                        type="button"
+                        class="btn btn-sm btn-danger btn-eliminar"
+                        data-url="{% url 'ventas:venta_eliminar' v.idventa %}"
+                        data-nombre="{{ v.nombreventa }}">
+                        Eliminar
                 </button>
               </td>
             </tr>

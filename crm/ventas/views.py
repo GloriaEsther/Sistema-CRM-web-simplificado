@@ -60,6 +60,7 @@ def crear_venta_manual(request):
     return render(request, "ventas/crear.html", {
         "form": form
     })
+
 def corte_caja(request):
     usuario = Usuario.activos.filter(
         idusuario=request.session.get("idusuario")
@@ -74,7 +75,7 @@ def corte_caja(request):
     fecha_inicio = request.GET.get("desde")
     fecha_fin = request.GET.get("hasta")
 
-    qs = Venta.objects.filter(activo=True,owner=owner)
+    qs = Venta.objects.filter(activo=True,owner=owner,estatus_cobro__nombre_estatus_cobro="COBRADO")#cobrado...
 
     if fecha_inicio and fecha_fin:
         qs = qs.filter(
@@ -128,11 +129,13 @@ def ventas_hoy(request):
     ventas = Venta.objects.filter(
         activo=True,
         owner=owner,
-        fecha_registro__date=hoy
+        fecha_registro__date=hoy,
+        estatus_cobro__nombre_estatus_cobro="COBRADO"#prueba..
     ).order_by("-fecha_registro")
 
-    total_hoy = ventas.aggregate(
-        total=Sum("preciototal")
+
+    total_hoy = ventas.aggregate(#te quedaste aqui
+       total=Sum("preciototal")
     )["total"] or 0
 
     return render(request, "ventas/ventas_hoy.html", {
@@ -151,6 +154,10 @@ def venta_editar(request, pk):
     qs = queryset_ventas_por_rol(usuario)
     venta = get_object_or_404(qs, idventa=pk)
     owner = usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
+
+    if venta.estatus_cobro.idestatus_cobros == 3:#"COBRADO":
+       messages.error(request, "No se puede editar una venta cobrada.")
+       return redirect("ventas:listar")
 
     if request.method == "POST":
         form = VentaForm(request.POST, instance=venta, usuario=usuario,owner=owner)
@@ -175,6 +182,9 @@ def venta_eliminar(request, pk):
     qs = queryset_ventas_por_rol(usuario)
     venta = get_object_or_404(qs, idventa=pk)
 
+    if venta.estatus_cobro.idestatus_cobros == 3:#"COBRADO"
+          messages.error(request, "No se puede eliminar una venta cobrada.")
+          return redirect("ventas:listar")
     venta.eliminar_logico()
     messages.success(request, "Venta eliminada correctamente.")
     return redirect("ventas:listar")
