@@ -43,17 +43,30 @@ def queryset_usuarios_segun_rol(usuario):#es un filtro en las busquedas de usuar
 
     return Usuario.activos.none()
 
-def queryset_clientes_por_rol(usuario):#prueba
+def queryset_clientes_por_rol(usuario,owner):#prueba
     rol = usuario.rol.nombre_rol
-    negocio = usuario if rol == "Dueño" else usuario.owner_id
+    #negocio = usuario if rol == "Dueño" else usuario.owner_id
+    #qs= Cliente.activos.filter(owner=owner)
 
+    if rol == "Superusuario":
+        return Cliente.todos.filter(owner = owner)
+    
     if rol in ["Dueño", "Administrador"]:
-        return Cliente.activos.filter(owner=negocio)
+        return Cliente.activos.filter(owner = owner)
+   #     return qs
 
     if rol == "Vendedor":
-        return Cliente.activos.filter(owner=negocio)
+        return Cliente.activos.filter(owner = owner)
+    #    return qs
 
     return Cliente.activos.none()
+   # if rol in ["Dueño", "Administrador"]:
+    #    return Cliente.activos.filter(owner=negocio)
+
+    #if rol == "Vendedor":
+     #   return Cliente.activos.filter(owner=negocio)
+
+    #return Cliente.activos.none()
 
 
 
@@ -80,16 +93,32 @@ def queryset_inventario_por_rol(usuario):
 #Superusuario...
 def solo_superusuario(view_func):
     def wrapper(request, *args, **kwargs):
-        # Primero revisamos la sesión para rapidez
         rol = request.session.get("rol")
         usuario_id = request.session.get("idusuario")
-        
         if not usuario_id or rol != "Superusuario":
             return redirect("usuario:iniciar_sesion")
-        # if request.session.get("rol") != "Superusuario":
-        #   return redirect("usuario:login")
         return view_func(request, *args, **kwargs)
     return wrapper
+'''
+def obtener_owner(request, usuario):#medio funciona pero no como queria we
+    if request.session.get("modo_superusuario"):
+        return request.session.get("dueno_supervisado")
+    return usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
+
+'''
+def obtener_owner(request, usuario):
+    rol = usuario.rol.nombre_rol
+
+    if rol == "Superusuario":
+        owner_id = request.session.get("dueno_supervisado")#owner_id = request.session.get("owner_contexto_id")
+        if owner_id:
+            return Usuario.activos.filter(idusuario=owner_id).first()
+        return None
+
+    if rol == "Dueño":
+        return usuario
+
+    return usuario.owner_id
 
 ''' 
 Nota:

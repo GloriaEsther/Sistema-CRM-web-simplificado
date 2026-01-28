@@ -2,12 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import ClienteForm
 from .models import Cliente
 from django.contrib import messages
-from crm.utils import queryset_clientes_por_rol,limpiar_valor,require_roles
+from crm.utils import queryset_clientes_por_rol,limpiar_valor,require_roles,obtener_owner
 from usuario.models import Usuario
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
 from django.utils import timezone
 from time import time
 #Importar datos desde Excel
@@ -16,11 +14,16 @@ from .forms import ImportarClientesForm
 from django.db import transaction
 import traceback
 
-def clientes_list(request):#empleados pueden ver clientes...
+def clientes_list(request):#empleados pueden ver clientes..
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
-    clientes = queryset_clientes_por_rol(usuario)
+    owner = obtener_owner(request, usuario)
 
-    return render(request, "clientes/clientes_list.html", {
+    if not owner:
+        clientes = Cliente.activos.none()
+    else:
+        clientes = queryset_clientes_por_rol(usuario, owner)
+        
+    return render(request, "clientes/lista_clientes.html", {
         "clientes": clientes
     })
 

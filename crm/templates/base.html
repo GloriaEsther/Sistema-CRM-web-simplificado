@@ -68,8 +68,6 @@
           <a href="{% url 'proveedor:listar' %}" class="menu-item">Proveedor</a>
         {%endif%}
 
-
-
         {% if usuario.rol.nombre_rol == "Dueño" %}
           <a href="{% url 'usuario:empleados_lista' %}" class="menu-item">
            Empleados
@@ -78,6 +76,15 @@
            información del perfil
           </a>
         {% endif %}
+
+        {% if usuario.rol.nombre_rol == "Superusuario" %}
+          <a href="{% url 'superusuario:listar_negocios' %}" class="menu-item">
+           Buscar negocios
+          </a>
+          <a href="{% url 'superusuario:dashboard' %}" class="menu-item">
+           Dashboard CRM
+          </a>
+        {%endif%}
 
         <a href="{% url 'usuario:cerrar_sesion' %}" class="menu-item text-danger">
           Cerrar sesión
