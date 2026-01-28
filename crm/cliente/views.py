@@ -5,8 +5,6 @@ from django.contrib import messages
 from crm.utils import queryset_clientes_por_rol,limpiar_valor,require_roles,obtener_owner
 from usuario.models import Usuario
 from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
-from django.utils import timezone
 from time import time
 #Importar datos desde Excel
 import pandas as pd
@@ -14,7 +12,7 @@ from .forms import ImportarClientesForm
 from django.db import transaction
 import traceback
 
-def clientes_list(request):#empleados pueden ver clientes..
+def clientes_list(request):
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
     owner = obtener_owner(request, usuario)
 
@@ -31,12 +29,19 @@ def clientes_list(request):#empleados pueden ver clientes..
 def cliente_crear(request):
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
 
+    owner = obtener_owner(request, usuario)
+
+    if not owner:
+        messages.error(request, "No hay negocio seleccionado.")
+        return redirect("superusuario:listar_negocios")
+
+
     if request.method == "POST":
         form = ClienteForm(request.POST)
         if form.is_valid():
             cliente = form.save(commit=False)
             cliente.usuario_registro = usuario
-            cliente.owner = usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
+            cliente.owner = owner# usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
             cliente.save()
 
             messages.success(request, "Cliente registrado correctamente.")
@@ -45,7 +50,7 @@ def cliente_crear(request):
     else:
         form = ClienteForm()
 
-    return render(request, "clientes/cliente_form.html", {
+    return render(request, "clientes/crear_cliente.html", {
         "form": form,
         "timestamp": int(time())
     })
@@ -53,7 +58,8 @@ def cliente_crear(request):
 
 def cliente_editar(request, pk):
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
-    qs = queryset_clientes_por_rol(usuario)
+    owner = obtener_owner(request, usuario)
+    qs = queryset_clientes_por_rol(usuario,owner)
 
     cliente = get_object_or_404(qs, idcliente=pk)
 
@@ -67,7 +73,7 @@ def cliente_editar(request, pk):
     else:
         form = ClienteForm(instance=cliente)
 
-    return render(request, "clientes/cliente_editar.html", {
+    return render(request, "clientes/editar_cliente.html", {
         "form": form,
         "timestamp": int(time())
     })
@@ -76,8 +82,8 @@ def cliente_eliminar(request, pk):
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
     cliente = get_object_or_404(Cliente.activos, idcliente=pk)
     rol=usuario.rol.nombre_rol
-     # Dueño y Administrador: pueden eliminar cualquiera
-    if rol in ["Dueño", "Administrador"]:
+     # Dueño y Administrador: pueden eliminar cualquiera en su negocio, superusuario en todos 
+    if rol in ["Dueño", "Administrador", "Superusuario"]:
         cliente.eliminar_logico()
         messages.success(request, "Cliente eliminado correctamente.")
         return redirect("cliente:listar")
@@ -102,7 +108,7 @@ def cliente_detalle(request, pk):
     if not cliente:
         return HttpResponse("Cliente no encontrado", status=404)
     
-    return render(request, "clientes/cliente_detalle.html", {
+    return render(request, "clientes/consultar_cliente.html", {
         "cliente": cliente
     })
 
@@ -118,7 +124,7 @@ def importar_clientes(request):
             archivo = request.FILES["archivo"]
 
             try:
-                df = pd.read_excel(archivo, dtype=str)#prueba esto hace que el excel se lea como texto...
+                df = pd.read_excel(archivo, dtype=str)#hace que el excel se lea como texto...
 
                 campos_requeridos = [
                     "nombre",
@@ -139,13 +145,16 @@ def importar_clientes(request):
                             f"Falta la columna '{campo}' en el archivo Excel"
                         )
                         return redirect("cliente:importar")
-                owner = (
-                  usuario if usuario.rol.nombre_rol == "Dueño"
-                  else usuario.owner_id
-                )
+                #owner = (
+                 # usuario if usuario.rol.nombre_rol == "Dueño"
+                  #else usuario.owner_id
+                #)
                
-                #owner = usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner#prueba
+                owner = obtener_owner(request, usuario)
 
+                if not owner:
+                    messages.error(request, "No hay negocio seleccionado.")
+                    return redirect("superusuario:listar_negocios")
 
                 rfc_duplicado = 0
                 registros_creados = 0

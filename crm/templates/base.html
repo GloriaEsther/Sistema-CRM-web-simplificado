@@ -56,13 +56,13 @@
       <div class="overlay" id="menu-overlay"></div>
 
       <nav class="mobile-menu" id="mobile-menu">
-        {% if usuario.rol.nombre_rol in "Dueño Administrador Vendedor" %}
+        {% if usuario.rol.nombre_rol in "Dueño Administrador Vendedor Superusuario" %}
           <a href="{% url 'oportunidades:kanban' %}" class="menu-item">Oportunidades</a>
           <a href="{% url 'cliente:listar' %}" class="menu-item">Clientes</a>
           <a href="{% url 'ventas:listar' %}" class="menu-item">Ventas</a>
         {%endif%}
 
-        {% if usuario.rol.nombre_rol in "Dueño Administrador" %}  
+        {% if usuario.rol.nombre_rol in "Dueño Administrador Superusuario" %}  
           <a href="{% url 'servicio:listar' %}" class="menu-item">Servicios</a>
           <a href="{% url 'inventario:listar' %}" class="menu-item">Inventario</a>
           <a href="{% url 'proveedor:listar' %}" class="menu-item">Proveedor</a>
