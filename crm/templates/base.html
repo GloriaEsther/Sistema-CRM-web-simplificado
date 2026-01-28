@@ -67,19 +67,19 @@
       <div class="overlay" id="menu-overlay"></div>
 
       <nav class="mobile-menu" id="mobile-menu">
-        {% if usuario.rol.nombre_rol in "Dueño Administrador Vendedor Superusuario" %}
+        {% if usuario.rol.nombre_rol in "Dueño Administrador Vendedor" %}
           <a href="{% url 'oportunidades:kanban' %}" class="menu-item">Oportunidades</a>
           <a href="{% url 'cliente:listar' %}" class="menu-item">Clientes</a>
           <a href="{% url 'ventas:listar' %}" class="menu-item">Ventas</a>
         {%endif%}
 
-        {% if usuario.rol.nombre_rol in "Dueño Administrador Superusuario" %}  
+        {% if usuario.rol.nombre_rol in "Dueño Administrador" %}  
           <a href="{% url 'servicio:listar' %}" class="menu-item">Servicios</a>
           <a href="{% url 'inventario:listar' %}" class="menu-item">Inventario</a>
           <a href="{% url 'proveedor:listar' %}" class="menu-item">Proveedor</a>
         {%endif%}
 
-        {% if usuario.rol.nombre_rol in "Dueño Superusuario" %}
+        {% if usuario.rol.nombre_rol in "Dueño" %}
           <a href="{% url 'usuario:empleados_lista' %}" class="menu-item">
            Empleados
           </a>
@@ -94,6 +94,22 @@
           </a>
           <a href="{% url 'superusuario:dashboard' %}" class="menu-item">
            Dashboard CRM
+          </a>
+        {%endif%}
+
+        {% if request.session.modo_superusuario %}          
+          <a href="{% url 'oportunidades:kanban' %}" class="menu-item">Oportunidades</a>
+          <a href="{% url 'cliente:listar' %}" class="menu-item">Clientes</a>
+          <a href="{% url 'ventas:listar' %}" class="menu-item">Ventas</a>
+          
+          <a href="{% url 'servicio:listar' %}" class="menu-item">Servicios</a>
+          <a href="{% url 'inventario:listar' %}" class="menu-item">Inventario</a>
+          <a href="{% url 'proveedor:listar' %}" class="menu-item">Proveedor</a>
+          <a href="{% url 'usuario:empleados_lista' %}" class="menu-item">
+           Empleados
+          </a>
+          <a href="{% url 'usuario:perfil' %}" class="menu-item">
+           Información del perfil del Dueño
           </a>
         {%endif%}
 
