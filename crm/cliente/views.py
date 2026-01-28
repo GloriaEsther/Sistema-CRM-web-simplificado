@@ -41,7 +41,7 @@ def cliente_crear(request):
         if form.is_valid():
             cliente = form.save(commit=False)
             cliente.usuario_registro = usuario
-            cliente.owner = owner# usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
+            cliente.owner = owner
             cliente.save()
 
             messages.success(request, "Cliente registrado correctamente.")

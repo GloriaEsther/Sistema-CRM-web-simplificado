@@ -84,45 +84,7 @@ def buscar_negocios(request):
     return render(request, "superusuario/lista_de_negocios.html", {
         "duenos": duenos
     })
-#si esas funciones si funcionan se les pasa arriba...
 
-#
-
-@solo_superusuario
-def lista_negocios(request):#no lo he probado....
-    busqueda = request.GET.get("q", "")
-
-    duenos = Usuario.activos.filter(
-        rol__nombre_rol="Dueño"
-    )
-
-    if busqueda:
-        duenos = duenos.filter(
-            Q(nombre__icontains=busqueda) |
-            Q(nombre_negocio__icontains=busqueda)
-        )
-
-    negocios = []
-
-    for dueno in duenos:
-        clientes = Cliente.todos.filter(owner=dueno).count()
-        oportunidades = Oportunidad.activos.filter(
-            negocio_oportunidad=dueno
-        ).count()
-
-        negocios.append({
-            "dueno": dueno,
-            "clientes": clientes,
-            "oportunidades": oportunidades
-        })
-
-    return render(request, "superusuario/negocios.html", {
-        "negocios": negocios,
-        "busqueda": busqueda
-    })
-
-
-#
 @solo_superusuario# prueba....
 def detalles_del_negocio(request, dueno_id):
     dueno = get_object_or_404(
@@ -165,7 +127,41 @@ def salir_negocio(request):
     request.session.pop("modo_superusuario", None)
     request.session.pop("dueno_supervisado", None)
     messages.info(request, "Saliste del negocio supervisado")
-    return redirect("superusuario:negocios")
+    return redirect("superusuario:listar_negocios")
+#si esas funciones si funcionan se les pasa arriba...
+
+@solo_superusuario
+def lista_negocios(request):#no lo he probado....
+    busqueda = request.GET.get("q", "")
+
+    duenos = Usuario.activos.filter(
+        rol__nombre_rol="Dueño"
+    )
+
+    if busqueda:
+        duenos = duenos.filter(
+            Q(nombre__icontains=busqueda) |
+            Q(nombre_negocio__icontains=busqueda)
+        )
+
+    negocios = []
+
+    for dueno in duenos:
+        clientes = Cliente.todos.filter(owner=dueno).count()
+        oportunidades = Oportunidad.activos.filter(
+            negocio_oportunidad=dueno
+        ).count()
+
+        negocios.append({
+            "dueno": dueno,
+            "clientes": clientes,
+            "oportunidades": oportunidades
+        })
+
+    return render(request, "superusuario/negocios.html", {
+        "negocios": negocios,
+        "busqueda": busqueda
+    })
 
 @solo_superusuario
 def usuarios_global(request):

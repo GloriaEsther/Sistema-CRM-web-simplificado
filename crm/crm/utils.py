@@ -110,7 +110,7 @@ def obtener_owner(request, usuario):
     rol = usuario.rol.nombre_rol
 
     if rol == "Superusuario":
-        owner_id = request.session.get("dueno_supervisado")#owner_id = request.session.get("owner_contexto_id")
+        owner_id = request.session.get("dueno_supervisado")
         if owner_id:
             return Usuario.activos.filter(idusuario=owner_id).first()
         return None

@@ -21,6 +21,17 @@
           <button class="hamburger navbar-toggler" id="hamburger-menu" type="button">
             <i class="bi bi-list"></i>
           </button>
+          {% if request.session.modo_superusuario %}
+            <div class="alert alert-warning d-flex justify-content-between align-items-center">
+              <span>
+                Estás viendo un negocio como <strong>Superusuario</strong>
+              </span>
+              <a href="{% url 'superusuario:salir_negocio' %}"
+                class="btn btn-primary crm-btn">
+                Salir del negocio
+              </a>
+            </div>
+          {% endif %}
 
           {% if request.session.rol != "Superusuario" %}
             <div class="d-flex align-items-center gap-2">
@@ -68,7 +79,7 @@
           <a href="{% url 'proveedor:listar' %}" class="menu-item">Proveedor</a>
         {%endif%}
 
-        {% if usuario.rol.nombre_rol == "Dueño" %}
+        {% if usuario.rol.nombre_rol in "Dueño Superusuario" %}
           <a href="{% url 'usuario:empleados_lista' %}" class="menu-item">
            Empleados
           </a>
