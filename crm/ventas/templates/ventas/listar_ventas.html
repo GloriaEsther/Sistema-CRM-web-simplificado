@@ -31,26 +31,28 @@
           </thead>
           <tbody>
           {% for v in ventas %}
-            <tr>
-              <td data-label="Nombre">{{ v.nombreventa }}</td>
-              <td data-label="Total">${{ v.preciototal }}</td>
-              <td data-label="Estatus">{{ v.estatus_cobro }}</td>
-              <td data-label="Fecha">{{ v.fecha_registro|date:"d/m/Y H:i" }}</td>
-              <td data-label="Acciones">
-                <a href="{% url 'ventas:venta_editar' v.idventa %}"
-                      class="btn btn-sm btn-warning">
-                      Editar
-                </a>
+            {%if v.activo == 1 %}
+              <tr>
+                <td data-label="Nombre">{{ v.nombreventa }}</td>
+                <td data-label="Total">${{ v.preciototal }}</td>
+                <td data-label="Estatus">{{ v.estatus_cobro }}</td>
+                <td data-label="Fecha">{{ v.fecha_registro|date:"d/m/Y H:i" }}</td>
+                <td data-label="Acciones">
+                  <a href="{% url 'ventas:venta_editar' v.idventa %}"
+                        class="btn btn-sm btn-warning">
+                        Editar
+                  </a>
 
-                <button
-                        type="button"
-                        class="btn btn-sm btn-danger btn-eliminar"
-                        data-url="{% url 'ventas:venta_eliminar' v.idventa %}"
-                        data-nombre="{{ v.nombreventa }}">
-                        Eliminar
-                </button>
-              </td>
-            </tr>
+                  <button
+                          type="button"
+                          class="btn btn-sm btn-danger btn-eliminar"
+                          data-url="{% url 'ventas:venta_eliminar' v.idventa %}"
+                          data-nombre="{{ v.nombreventa }}">
+                          Eliminar
+                  </button>
+                </td>
+              </tr>
+            {%endif%}
           {% empty %}
             <tr>
               <td colspan="6" class="text-center text-muted">

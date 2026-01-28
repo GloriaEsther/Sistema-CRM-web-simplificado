@@ -45,29 +45,16 @@ def queryset_usuarios_segun_rol(usuario):#es un filtro en las busquedas de usuar
 
 def queryset_clientes_por_rol(usuario,owner):#prueba
     rol = usuario.rol.nombre_rol
-    #negocio = usuario if rol == "Dueño" else usuario.owner_id
-    #qs= Cliente.activos.filter(owner=owner)
-
     if rol == "Superusuario":
         return Cliente.todos.filter(owner = owner)
     
     if rol in ["Dueño", "Administrador"]:
         return Cliente.activos.filter(owner = owner)
-   #     return qs
 
     if rol == "Vendedor":
         return Cliente.activos.filter(owner = owner)
-    #    return qs
 
     return Cliente.activos.none()
-   # if rol in ["Dueño", "Administrador"]:
-    #    return Cliente.activos.filter(owner=negocio)
-
-    #if rol == "Vendedor":
-     #   return Cliente.activos.filter(owner=negocio)
-
-    #return Cliente.activos.none()
-
 
 
 def queryset_servicios_por_rol(usuario):
@@ -147,24 +134,18 @@ def limpiar_valor(valor):
     return str(valor).strip()
 
 #ventas
-def queryset_ventas_por_rol(usuario):
-    owner = (
-        usuario if usuario.rol.nombre_rol == "Dueño"
-        else usuario.owner_id
-    )
+def queryset_ventas_por_rol(usuario,owner):
+    rol = usuario.rol.nombre_rol
+    if rol == "Superusuario":
+        return Venta.objects.filter(owner = owner)
+    
+    if rol in ["Dueño", "Administrador"]:
+        return Venta.activos.filter(owner = owner)
 
-    qs = Venta.objects.filter(
-        activo = True,
-        owner = owner
-    )
+    if rol == "Vendedor":
+        return Venta.activos.filter(owner = owner)
 
-    # Si es empleado, opcionalmente limitar
-    if usuario.rol.nombre_rol != "Dueño":
-        qs = qs.filter(
-            usuario_registro = usuario
-        )
-
-    return qs
+    return Venta.activos.none()
 
 def queryset_cotizaciones_por_rol(usuario):
     rol = usuario.rol.nombre_rol

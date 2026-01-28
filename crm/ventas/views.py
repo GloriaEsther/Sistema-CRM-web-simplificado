@@ -5,8 +5,7 @@ from usuario.models import Usuario
 from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Sum, Count
-from crm.utils import queryset_ventas_por_rol
-from oportunidades.models import Oportunidad
+from crm.utils import queryset_ventas_por_rol,obtener_owner
 from time import time
 from django.contrib import messages
 
@@ -18,12 +17,18 @@ def listar_ventas(request):
     usuario = Usuario.activos.filter(
         idusuario=request.session.get("idusuario")
     ).first()
+    owner = obtener_owner(request, usuario)
 
-    qs = queryset_ventas_por_rol(usuario)
+    if not owner:
+        qs = Venta.activos.none()
+    else:
+        qs = queryset_ventas_por_rol(usuario, owner)
+   
+    #qs = queryset_ventas_por_rol(usuario)
 
     if fecha_inicio and fecha_fin:
         qs = qs.filter(fecha_registro__date__range=[fecha_inicio, fecha_fin])
-    return render(request, 'ventas/listar.html', {'ventas': qs})
+    return render(request, 'ventas/listar_ventas.html', {'ventas': qs})
 
 def crear_venta_manual(request):
     usuario = Usuario.activos.filter(
@@ -33,8 +38,13 @@ def crear_venta_manual(request):
     if not usuario:
         return redirect("usuario:login")
 
-    owner = usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
-  
+    #owner = usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
+    owner = obtener_owner(request, usuario)
+
+    if not owner:
+        messages.error(request, "No hay negocio seleccionado.")
+        return redirect("superusuario:listar_negocios")
+
     if request.method == "POST":
         form = VentaForm(
             request.POST,
@@ -57,7 +67,7 @@ def crear_venta_manual(request):
     else:
         form = VentaForm(usuario=usuario,owner=owner)
 
-    return render(request, "ventas/crear.html", {
+    return render(request, "ventas/crear_ventas.html", {
         "form": form
     })
 
@@ -67,15 +77,18 @@ def corte_caja(request):
     ).first()
     if not usuario:
         return redirect("usuario:login")
+    owner = obtener_owner(request, usuario)
 
-    owner = usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
-
+    if not owner:
+        messages.error(request, "No hay negocio seleccionado.")
+        return redirect("superusuario:listar_negocios")
+    
     hoy = timezone.now().date()
 
     fecha_inicio = request.GET.get("desde")
     fecha_fin = request.GET.get("hasta")
 
-    qs = Venta.objects.filter(activo=True,owner=owner,estatus_cobro__nombre_estatus_cobro="COBRADO")#cobrado...
+    qs = Venta.objects.filter(activo=True,owner=owner,estatus_cobro__nombre_estatus_cobro="COBRADO")
 
     if fecha_inicio and fecha_fin:
         qs = qs.filter(
@@ -119,22 +132,28 @@ def ventas_hoy(request):
     usuario = Usuario.activos.filter(
         idusuario=request.session.get("idusuario")
     ).first()
+
     if not usuario:
         return redirect("usuario:login")
 
-    owner = usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
+    #owner = usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
+    owner = obtener_owner(request, usuario)
 
+    if not owner:
+        messages.error(request, "No hay negocio seleccionado.")
+        return redirect("superusuario:listar_negocios")
+    
     hoy = timezone.now().date()
 
     ventas = Venta.objects.filter(
         activo=True,
         owner=owner,
         fecha_registro__date=hoy,
-        estatus_cobro__nombre_estatus_cobro="COBRADO"#prueba..
+        estatus_cobro__nombre_estatus_cobro="COBRADO"
     ).order_by("-fecha_registro")
 
 
-    total_hoy = ventas.aggregate(#te quedaste aqui
+    total_hoy = ventas.aggregate(
        total=Sum("preciototal")
     )["total"] or 0
 
@@ -150,10 +169,10 @@ def venta_editar(request, pk):
     ).first()
     if not usuario:
         return redirect("usuario:login")
-    
-    qs = queryset_ventas_por_rol(usuario)
+    owner = obtener_owner(request, usuario)
+    qs = queryset_ventas_por_rol(usuario,owner)
     venta = get_object_or_404(qs, idventa=pk)
-    owner = usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
+   # owner = usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
 
     if venta.estatus_cobro.idestatus_cobros == 3:#"COBRADO":
        messages.error(request, "No se puede editar una venta cobrada.")
@@ -168,7 +187,7 @@ def venta_editar(request, pk):
     else:
         form = VentaForm(instance=venta, usuario=usuario,owner=owner)
 
-    return render(request, "ventas/venta_editar.html", {
+    return render(request, "ventas/editar_ventas.html", {
         "form": form,
         "venta": venta
     })
@@ -179,12 +198,43 @@ def venta_eliminar(request, pk):
         idusuario=request.session.get("idusuario")
     ).first()
 
-    qs = queryset_ventas_por_rol(usuario)
-    venta = get_object_or_404(qs, idventa=pk)
+    if not usuario:
+        return redirect("usuario:login")
+    
+    owner = obtener_owner(request, usuario)
 
-    if venta.estatus_cobro.idestatus_cobros == 3:#"COBRADO"
+    qs = queryset_ventas_por_rol(usuario,owner)
+    venta = get_object_or_404(qs, idventa=pk)
+    rol=usuario.rol.nombre_rol
+
+    if rol in ["Dueño", "Administrador", "Superusuario"]:
+        if venta.estatus_cobro.idestatus_cobros == 3:
+          messages.error(request, "No se puede eliminar una venta cobrada.")
+          return redirect("ventas:listar")
+        venta.eliminar_logico()
+        messages.success(request, "Venta eliminada correctamente.")
+        return redirect("ventas:listar")
+    
+    if rol == "Vendedor":
+        if venta.usuario_registro != usuario.idusuario:
+            messages.error(
+                request,
+                "No tienes permiso para eliminar este cliente."
+            )
+            return redirect("cliente:listar")
+        if venta.estatus_cobro.idestatus_cobros == 3:
+          messages.error(request, "No se puede eliminar una venta cobrada.")
+          return redirect("ventas:listar")
+        
+        venta.eliminar_logico()
+        messages.success(request, "Venta eliminada correctamente.")
+        return redirect("ventas:listar")
+
+    '''
+      if venta.estatus_cobro.idestatus_cobros == 3:#"COBRADO"
           messages.error(request, "No se puede eliminar una venta cobrada.")
           return redirect("ventas:listar")
     venta.eliminar_logico()
     messages.success(request, "Venta eliminada correctamente.")
     return redirect("ventas:listar")
+    '''
