@@ -57,9 +57,26 @@ def queryset_clientes_por_rol(usuario,owner):#prueba
     return Cliente.activos.none()
 
 
-def queryset_servicios_por_rol(usuario):
+def queryset_servicios_por_rol(usuario,owner):#te quedaste aca....
     rol = usuario.rol.nombre_rol
     # todos  deben ven los servicios del negocio, no solo los que crearon
+    if rol == "Superusuario":
+        return Servicio.todos.filter(owner = owner)
+    
+    if rol in ["Dueño", "Administrador"]:
+        return Servicio.activos.filter(owner = owner)
+
+    if rol == "Vendedor":
+        return Servicio.activos.filter(owner = owner)
+
+    return Servicio.activos.none()
+
+'''
+def queryset_servicios_por_rol(usuario):#te quedaste aca....
+    rol = usuario.rol.nombre_rol
+    # todos  deben ven los servicios del negocio, no solo los que crearon
+
+    
     if rol == "Dueño":
         return Servicio.activos.filter(owner=usuario)
 
@@ -70,6 +87,7 @@ def queryset_servicios_por_rol(usuario):
         return Servicio.activos.filter(owner=usuario.owner_id)
 
     return Servicio.activos.none()
+'''
 
 def queryset_inventario_por_rol(usuario):
     if usuario.rol.nombre_rol == "Dueño":
@@ -86,13 +104,7 @@ def solo_superusuario(view_func):
             return redirect("usuario:iniciar_sesion")
         return view_func(request, *args, **kwargs)
     return wrapper
-'''
-def obtener_owner(request, usuario):#medio funciona pero no como queria we
-    if request.session.get("modo_superusuario"):
-        return request.session.get("dueno_supervisado")
-    return usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
 
-'''
 def obtener_owner(request, usuario):
     rol = usuario.rol.nombre_rol
 
