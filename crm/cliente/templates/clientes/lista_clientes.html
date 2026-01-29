@@ -20,32 +20,32 @@
     {% for c in clientes %}
     
         {%if c.activo == 1 %}
-        <div class="crm-card">
-            <div class="fw-bold mb-1">
-            {{ c.nombre }} {{ c.apellidopaterno |default:""  }} {{ c.apellidomaterno |default:""  }}
-            </div>
+            <div class="crm-card">
+                <div class="fw-bold mb-1">
+                {{ c.nombre }} {{ c.apellidopaterno |default:""  }} {{ c.apellidomaterno |default:""  }}
+                </div>
 
-            <div class="text-muted small">📞 {{ c.numerotelcli }}</div>
-            {% if c.correo %}
-            <div class="text-muted small">✉️ {{ c.correo }}</div>
-            {% endif %}
+                <div class="text-muted small">📞 {{ c.numerotelcli }}</div>
+                {% if c.correo %}
+                <div class="text-muted small">✉️ {{ c.correo }}</div>
+                {% endif %}
 
-            <div class="d-grid gap-2 mt-3 d-md-flex">
-                <a href="{% url 'cliente:detalle' c.idcliente %}" class="btn btn-outline-secondary crm-btn">
-                Consultar
-                </a>
-                <a href="{% url 'cliente:editar' c.idcliente %}" class="btn btn-success crm-btn">
-                Editar
-                </a>       
-                <button type="button"
-                            class="btn btn-danger crm-btn btn-eliminar"
-                            data-url="{% url 'cliente:eliminar' 0 %}"
-                            data-id="{{ c.idcliente }}"
-                            data-nombre="{{ c.nombre }}">
-                    Eliminar
-                </button>
+                <div class="d-grid gap-2 mt-3 d-md-flex">
+                    <a href="{% url 'cliente:detalle' c.idcliente %}" class="btn btn-outline-secondary crm-btn">
+                    Consultar
+                    </a>
+                    <a href="{% url 'cliente:editar' c.idcliente %}" class="btn btn-success crm-btn">
+                    Editar
+                    </a>       
+                    <button type="button"
+                                class="btn btn-danger crm-btn btn-eliminar"
+                                data-url="{% url 'cliente:eliminar' 0 %}"
+                                data-id="{{ c.idcliente }}"
+                                data-nombre="{{ c.nombre }}">
+                        Eliminar
+                    </button>
+                </div>
             </div>
-        </div>
         {%endif%}
     
     {% empty %}

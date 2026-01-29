@@ -14,7 +14,9 @@
         <select name="cliente" class="form-control" required>
            <option value="" disabled selected>Selecciona un cliente</option>
         {% for c in clientes %}
+          {%if c.activo == 1 %}
             <option value="{{ c.idcliente }}">{{ c.nombre }}</option>
+          {%endif%}
         {% endfor %}
         </select>
 
@@ -22,9 +24,11 @@
         <select name="servicio" class="form-control" required>
           <option value="" disabled selected>Selecciona un servicio</option>
         {% for s in servicios %}
+          {%if s.activo == 1 %}
             <option value="{{ s.idservicio }}" data-precio="{{ s.precio |floatformat:2 }}">
             {{ s.nombre }} - ${{ s.precio }}
             </option>
+          {%endif%}
         {% endfor %}
         </select>
 

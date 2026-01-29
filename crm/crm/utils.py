@@ -43,7 +43,7 @@ def queryset_usuarios_segun_rol(usuario):#es un filtro en las busquedas de usuar
 
     return Usuario.activos.none()
 
-def queryset_clientes_por_rol(usuario,owner):#prueba
+def queryset_clientes_por_rol(usuario,owner):
     rol = usuario.rol.nombre_rol
     if rol == "Superusuario":
         return Cliente.todos.filter(owner = owner)
@@ -57,9 +57,8 @@ def queryset_clientes_por_rol(usuario,owner):#prueba
     return Cliente.activos.none()
 
 
-def queryset_servicios_por_rol(usuario,owner):#te quedaste aca....
+def queryset_servicios_por_rol(usuario,owner):
     rol = usuario.rol.nombre_rol
-    # todos  deben ven los servicios del negocio, no solo los que crearon
     if rol == "Superusuario":
         return Servicio.todos.filter(owner = owner)
     
@@ -70,24 +69,6 @@ def queryset_servicios_por_rol(usuario,owner):#te quedaste aca....
         return Servicio.activos.filter(owner = owner)
 
     return Servicio.activos.none()
-
-'''
-def queryset_servicios_por_rol(usuario):#te quedaste aca....
-    rol = usuario.rol.nombre_rol
-    # todos  deben ven los servicios del negocio, no solo los que crearon
-
-    
-    if rol == "Dueño":
-        return Servicio.activos.filter(owner=usuario)
-
-    if rol == "Administrador":
-        return Servicio.activos.filter(owner=usuario.owner_id)
-
-    if rol == "Vendedor":
-        return Servicio.activos.filter(owner=usuario.owner_id)
-
-    return Servicio.activos.none()
-'''
 
 def queryset_inventario_por_rol(usuario):
     if usuario.rol.nombre_rol == "Dueño":
@@ -159,15 +140,16 @@ def queryset_ventas_por_rol(usuario,owner):
 
     return Venta.activos.none()
 
-def queryset_cotizaciones_por_rol(usuario):
+def queryset_cotizaciones_por_rol(usuario,owner):
     rol = usuario.rol.nombre_rol
-    negocio = usuario if rol == "Dueño" else usuario.owner_id
-   
+    #negocio = usuario if rol == "Dueño" else usuario.owner_id
+    if rol == "Superusuario":
+        return Cotizacion.activos.filter(owner=owner)
     if rol in ["Dueño", "Administrador"]:
-        return Cotizacion.todos.filter(owner=negocio, activo=True)
+        return Cotizacion.activos.filter(owner=owner)
 
     if rol == "Vendedor":
-        return Cotizacion.todos.filter(owner=usuario.owner_id,activo =True)
+        return Cotizacion.activos.filter(owner=owner)
 
     return Cotizacion.todos.none()
 

@@ -6,7 +6,7 @@ from cotizacion.models import Cotizacion, CotizacionDetalle
 from django.http import HttpResponse
 from time import time
 from django.contrib import messages
-from crm.utils import queryset_cotizaciones_por_rol
+from crm.utils import queryset_cotizaciones_por_rol,obtener_owner,queryset_clientes_por_rol,queryset_servicios_por_rol
 
 def cotizacion_crear(request):
     usuario = Usuario.activos.filter(
@@ -16,10 +16,15 @@ def cotizacion_crear(request):
     if not usuario:
         return redirect("usuario:login")
     
-    owner = usuario  if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
+    owner = obtener_owner(request, usuario)
+
+    if not owner:
+        messages.error(request, "No hay negocio seleccionado.")
+        return redirect("superusuario:listar_negocios")
+    #owner = usuario  if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
     
-    clientes = Cliente.activos.filter(owner = owner)
-    servicios = Servicio.activos.filter(owner =owner)
+    clientes = queryset_clientes_por_rol(usuario,owner)#prueba...Cliente.activos.filter(owner = owner)#
+    servicios = queryset_servicios_por_rol(usuario,owner)#Servicio.activos.filter(owner =owner)
     
     if request.method == "POST":
         cliente_id = request.POST.get("cliente")
@@ -29,7 +34,7 @@ def cotizacion_crear(request):
         cliente = Cliente.activos.get(idcliente=cliente_id)
         servicio = Servicio.activos.get(idservicio=servicio_id)
 
-        cotizacion = Cotizacion.activos.create(#checar....
+        cotizacion = Cotizacion.activos.create(
             cliente=cliente,
             total=servicio.precio * cantidad,
             activo=True,
@@ -74,8 +79,12 @@ def cotizaciones_list(request):
     usuario = Usuario.activos.filter(
         idusuario=request.session.get("idusuario")
     ).first()
+    owner = obtener_owner(request, usuario)
 
-    cotizaciones = queryset_cotizaciones_por_rol(usuario)
+    if not owner:
+       cotizaciones = Cotizacion.activos.none()
+    else:
+        cotizaciones = queryset_cotizaciones_por_rol(usuario,owner)
 
     return render(request, "cotizacion/lista_cotizaciones.html", {
         "cotizaciones": cotizaciones
