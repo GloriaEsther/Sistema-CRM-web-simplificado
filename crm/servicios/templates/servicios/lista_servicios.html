@@ -19,33 +19,37 @@
         </div>
     </div>
     
-
     {% for s in servicios %}
-        {%if s.activo == 1 %}
-            <div class="crm-card">
-                <div class="fw-bold mb-1">
+        <div class="crm-card">
+            <div class="fw-bold mb-1">
                 {{ s.nombre |default:"" }}
-                </div>
+                {% if not s.activo %}
+                        <span class="badge bg-danger ms-2">Eliminado</span>
+                {% else %}
+                        <span class="badge bg-success ms-2">Activo</span>
+                {% endif %}
+            </div>
                 <div class="text-muted small"> {{ s.precio }}</div>
                 <div class="text-muted small">{{ s.descripcion }}</div>
-
+                
                 <div class="d-grid gap-2 mt-3 d-md-flex">
-                    <a href="{% url 'servicio:detalle' s.idservicio %}" class="btn btn-outline-secondary crm-btn">
-                    Consultar
-                    </a>
-                    <a href="{% url 'servicio:editar' s.idservicio %}" class="btn btn-success crm-btn">
-                    Editar
-                    </a>
-                    <button type="button"
-                                class="btn btn-danger crm-btn btn-eliminar"
-                                data-url="{% url 'servicio:eliminar' 0 %}"
-                                data-id="{{ s.idservicio }}"
-                                data-nombre="{{ s.nombre }}">
-                        Eliminar
-                    </button>
+                    {% if s.activo %}
+                        <a href="{% url 'servicio:detalle' s.idservicio %}" class="btn btn-outline-secondary crm-btn">
+                        Consultar
+                        </a>
+                        <a href="{% url 'servicio:editar' s.idservicio %}" class="btn btn-success crm-btn">
+                        Editar
+                        </a>
+                        <button type="button"
+                                    class="btn btn-danger crm-btn btn-eliminar"
+                                    data-url="{% url 'servicio:eliminar' 0 %}"
+                                    data-id="{{ s.idservicio }}"
+                                    data-nombre="{{ s.nombre }}">
+                            Eliminar
+                        </button>
+                    {%endif%}
                 </div>
-            </div>
-        {%endif%}
+        </div>    
     {% empty %}
     <p class="text-center text-muted">Agrega un servicio</p>
     {% endfor %}

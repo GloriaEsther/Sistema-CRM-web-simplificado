@@ -10,6 +10,11 @@
 
         <div class="fw-bold mb-1">
             {{ c.cliente.nombre }} {{ c.cliente.apellidopaterno|default:"" }} {{ c.cliente.apellidomaterno|default:"" }}
+            {% if not c.activo %}
+                        <span class="badge bg-danger ms-2">Eliminado</span>
+            {% else %}
+                        <span class="badge bg-success ms-2">Activo</span>
+            {% endif %}
         </div>
         <div class="text-muted small">
              Fecha: {{ c.fecha|date:"d/m/Y" }} | <strong>Total: ${{ c.total }}</strong>
