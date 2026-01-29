@@ -43,7 +43,7 @@ def servicio_crear(request):
         if form.is_valid():
             servicio = form.save(commit=False)
             servicio.usuario_registro = usuario
-            servicio.owner = owner#usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
+            servicio.owner = owner
             servicio.save()
 
             messages.success(request, "Servicio registrado correctamente.")

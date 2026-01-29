@@ -4,13 +4,13 @@ from .models import Usuario, PreferenciaUsuario,RolUsuario
 from django.contrib import messages
 from django.db import IntegrityError
 from django.contrib.auth.hashers import check_password 
-from crm.utils import require_roles,queryset_empleados_por_rol
+from crm.utils import require_roles,queryset_empleados_por_rol,obtener_owner
 from django.contrib import messages
 from django.utils import timezone
 
 def registrar_usuario(request):#usuario=dueño del micronegocio
-    usuario_id = request.session.get('idusuario')
-    usuario =Usuario.activos.filter(idusuario=usuario_id).first()
+    #usuario_id = request.session.get('idusuario') prueba....
+    #usuario =Usuario.activos.filter(idusuario=usuario_id).first()
     
     if request.method == 'POST':
         form = UsuarioForm(request.POST)
@@ -27,7 +27,6 @@ def registrar_usuario(request):#usuario=dueño del micronegocio
                 return render(request, 'usuario/registrar_usuario.html', {'form': form, 'duplicado': True})     
             except Exception as e:
                 messages.error(request, f"Ocurrió un error inesperado al registrar: {e}")
-
     else:
         form = UsuarioForm()
     return render(request, 'usuario/registrar_usuario.html', {
@@ -36,7 +35,7 @@ def registrar_usuario(request):#usuario=dueño del micronegocio
 
 
 def iniciar_sesion(request):
-    #Verificar si ya hay una sesión activa ANTES de hacer cualquier query
+    #Verificar si ya hay una sesión activa ANTES de hacer cualquier cosa
     usuario_id = request.session.get('idusuario')
     rol_sesion = request.session.get('rol')
 
@@ -81,7 +80,7 @@ def iniciar_sesion(request):
         'timestamp': timezone.now().timestamp()
     })
 
-@require_roles(['Dueño'])
+@require_roles(['Dueño','Superusuario'])
 def perfil_usuario(request):
     usuario = Usuario.activos.filter(
         idusuario=request.session.get("idusuario")
@@ -91,7 +90,7 @@ def perfil_usuario(request):
         "usuario": usuario
     })
 
-@require_roles(['Dueño'])
+@require_roles(['Dueño','Superusuario'])
 def editar_perfil(request):
     usuario = Usuario.activos.filter(
         idusuario=request.session.get("idusuario")
@@ -109,48 +108,6 @@ def editar_perfil(request):
     return render(request, "usuario/editar_perfil.html", {
         "form": form
     })
-
-@require_roles(['Dueño'])#@require_roles(['Dueño', 'Administrador'])
-def editar_empleado(request,pk):
-    empleado = Usuario.activos.filter(idusuario=pk).first()
-
-    if not empleado:
-        messages.error(request, "Empleado no encontrado.")
-        return redirect("usuario:empleados_lista")
-
-    if request.method == "POST":
-        form = EmpleadoForm(request.POST, instance=empleado)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Empleado actualizado correctamente.")
-            return redirect("usuario:empleados_lista")
-    else:
-        form = EmpleadoForm(instance=empleado)
-
-    return render(request, "usuario/empleado.html", {
-        "form": form,
-        "modo":"editar",
-        "empleado": empleado
-    })
-
-@require_roles(['Dueño'])
-def consultar_empleado(request, pk):
-    empleado = Usuario.activos.filter(idusuario=pk).first()
-
-    if not empleado:
-        messages.error(request, "Empleado no encontrado.")
-        return redirect("usuario:empleados_lista")
-
-    return render(request, "usuario/consultar_empleado.html", {
-        "empleado": empleado
-    })
-
-@require_roles(['Dueño'])
-def eliminar_usuario(request, pk):
-    usuario = get_object_or_404(Usuario, pk=pk)
-    usuario.eliminar_logico()
-    messages.success(request, "Usuario eliminado ")
-    return redirect('usuario:empleados_lista')
 
 def cerrar_sesion(request):
     request.session.flush()  # borra la sesión
@@ -205,38 +162,104 @@ def inicio(request):
         "preferencias": preferencias
     })
 
-def agregar_empleado(request):#solo el dueno puede registrar empleados
-    usuario_id = request.session.get('idusuario')
-    usuario=Usuario.activos.get(idusuario=usuario_id)
-    # Regla por rol
-    es_dueno = usuario.rol.nombre_rol == "Dueño" 
-    es_admin = usuario.rol.nombre_rol == "Administrador"
+#Empleado
+def empleados_lista(request):
+    usuario = Usuario.activos.get(idusuario=request.session["idusuario"])
+    owner = obtener_owner(request, usuario)
+    if not owner:
+        empleados = Usuario.activos.none()
+    else:
+        empleados = queryset_empleados_por_rol(usuario,owner)
+
+    return render(request, "usuario/lista_empleados.html", {
+        "empleados": empleados
+    })
+
+def agregar_empleado(request):
+    usuario = Usuario.activos.get(idusuario=request.session["idusuario"])
+    owner = obtener_owner(request, usuario)
+
+    if not owner:
+        messages.error(request, "No hay negocio seleccionado.")
+        return redirect("superusuario:listar_negocios")
+
     if request.method == "POST":
         form = EmpleadoForm(request.POST)
         if form.is_valid():
             empleado = form.save(commit=False)
-
-            if es_dueno:
-              empleado.owner_id = usuario
-
-            if es_admin:# asignar  del dueno
-              empleado.owner_id = usuario.owner_id      
-
+            empleado.owner_id = owner   
             empleado.save()
             messages.success(request, "Empleado agregado correctamente.")
             return redirect('usuario:empleados_lista')
     else:
         form = EmpleadoForm()
 
-    return render(request, "usuario/empleado.html", {"form": form,"modo":"crear"})
+    return render(request, "usuario/empleado.html", {
+        "form": form,
+        "modo": "crear"
+    })
 
-def empleados_lista(request):
-    usuario = Usuario.activos.filter(
-        idusuario=request.session.get("idusuario")
+@require_roles(['Dueño', 'Superusuario'])
+def consultar_empleado(request, pk):
+    usuario = Usuario.activos.get(idusuario=request.session["idusuario"])
+    owner = obtener_owner(request, usuario)
+
+    empleado = Usuario.activos.filter(
+        idusuario=pk,
+        owner_id=owner
     ).first()
 
-    empleados = queryset_empleados_por_rol(usuario)
+    if not empleado:
+        messages.error(request, "Empleado no encontrado.")
+        return redirect("usuario:empleados_lista")
 
-    return render(request, "usuario/empleados_lista.html", {
-        "empleados": empleados
+    return render(request, "usuario/consultar_empleado.html", {
+        "empleado": empleado
     })
+
+@require_roles(['Dueño', 'Superusuario'])
+def editar_empleado(request, pk):
+    usuario = Usuario.activos.get(idusuario=request.session["idusuario"])
+    owner = obtener_owner(request, usuario)
+
+    empleado = Usuario.activos.filter(
+        idusuario=pk,
+        owner_id=owner
+    ).first()
+
+    if not empleado:
+        messages.error(request, "Empleado no encontrado.")
+        return redirect("usuario:empleados_lista")
+
+    if request.method == "POST":
+        form = EmpleadoForm(request.POST, instance=empleado)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Empleado actualizado correctamente.")
+            return redirect("usuario:empleados_lista")
+    else:
+        form = EmpleadoForm(instance=empleado)
+
+    return render(request, "usuario/empleado.html", {
+        "form": form,
+        "modo": "editar",
+        "empleado": empleado
+    })
+
+@require_roles(['Dueño', 'Superusuario'])
+def eliminar_usuario(request, pk):
+    usuario = Usuario.activos.get(idusuario=request.session["idusuario"])
+    owner = obtener_owner(request, usuario)
+
+    empleado = Usuario.activos.filter(
+        idusuario=pk,
+        owner_id=owner
+    ).first()
+
+    if not empleado:
+        messages.error(request, "Usuario no encontrado.")
+        return redirect("usuario:empleados_lista")
+
+    empleado.eliminar_logico()
+    messages.success(request, "Usuario eliminado")
+    return redirect("usuario:empleados_lista")

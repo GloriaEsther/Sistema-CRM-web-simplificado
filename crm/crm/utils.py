@@ -126,21 +126,8 @@ def queryset_proveedores_por_rol(usuario,owner):
         return Proveedor.activos.none()
 
     return Proveedor.todos.none()
-'''
-rol = usuario.rol.nombre_rol
-    if rol == "Superusuario":
-        return Cliente.todos.filter(owner = owner)
-    
-    if rol in ["Dueño", "Administrador"]:
-        return Cliente.activos.filter(owner = owner)
 
-    if rol == "Vendedor":
-        return Cliente.activos.filter(owner = owner)
-
-    return Cliente.activos.none()
-'''
 #para importar cliente...
-
 def limpiar_valor(valor):
     if pd.isna(valor) or str(valor).strip() == "":
         return None
@@ -173,15 +160,39 @@ def queryset_cotizaciones_por_rol(usuario,owner):
 
     return Cotizacion.todos.none()
 
-def queryset_empleados_por_rol(usuario):
+def queryset_empleados_por_rol(usuario, owner):
     rol = usuario.rol.nombre_rol
-    negocio = usuario if rol == "Dueño" else usuario.owner_id
+
+    if not owner:
+        return Usuario.activos.none()
+
+    if rol == "Superusuario":
+        return Usuario.todos.filter(
+            owner_id=owner
+        ).exclude(
+            rol__nombre_rol="Dueño"
+        )
 
     if rol in ["Dueño", "Administrador"]:
         return Usuario.activos.filter(
-            owner_id=negocio.idusuario
+            owner_id=owner
         ).exclude(
             rol__nombre_rol="Dueño"
         )
 
     return Usuario.activos.none()
+
+'''
+def queryset_empleados_por_rol(usuario,owner):
+    rol = usuario.rol.nombre_rol
+    #negocio = usuario if rol == "Dueño" else usuario.owner_id
+    if rol == "Superusuario":
+        return Usuario.todos.filter(owner = owner)
+    
+    if rol in ["Dueño", "Administrador"]:
+        return Usuario.activos.filter(owner=owner
+        ).exclude(
+            rol__nombre_rol="Dueño"
+        )
+    return Usuario.activos.none()
+'''
