@@ -82,13 +82,6 @@ def queryset_inventario_por_rol(usuario,owner):
         return Inventario.activos.filter(owner = owner)
 
     return Inventario.activos.none()
-'''
-def queryset_inventario_por_rol(usuario):
-    if usuario.rol.nombre_rol == "Dueño":
-        return Inventario.activos.filter(owner=usuario)
-    else:
-        return Inventario.activos.filter(owner=usuario.owner_id)
-'''
 
 #Superusuario...
 def solo_superusuario(view_func):
@@ -122,17 +115,30 @@ Para que el decorador sea más robusto,
  el rol en la BD mientras la sesión sigue abierta.
 '''
 
-def queryset_proveedores_por_rol(usuario):
+def queryset_proveedores_por_rol(usuario,owner):
     rol = usuario.rol.nombre_rol
-    negocio = usuario if rol == "Dueño" else usuario.owner_id
-
+    #negocio = usuario if rol == "Dueño" else usuario.owner_id
+    if rol == "Superusuario":#
+        return Proveedor.todos.filter(owner=owner)
     if rol in ["Dueño", "Administrador"]:
-        return Proveedor.todos.filter(owner=negocio, activo=True)
-
+        return Proveedor.activos.filter(owner=owner)
     if rol == "Vendedor":
-        return Proveedor.todos.none()
+        return Proveedor.activos.none()
 
     return Proveedor.todos.none()
+'''
+rol = usuario.rol.nombre_rol
+    if rol == "Superusuario":
+        return Cliente.todos.filter(owner = owner)
+    
+    if rol in ["Dueño", "Administrador"]:
+        return Cliente.activos.filter(owner = owner)
+
+    if rol == "Vendedor":
+        return Cliente.activos.filter(owner = owner)
+
+    return Cliente.activos.none()
+'''
 #para importar cliente...
 
 def limpiar_valor(valor):
@@ -158,7 +164,7 @@ def queryset_cotizaciones_por_rol(usuario,owner):
     rol = usuario.rol.nombre_rol
 
     if rol == "Superusuario":
-        return Cotizacion.activos.filter(owner=owner)
+        return Cotizacion.todos.filter(owner=owner)
     if rol in ["Dueño", "Administrador"]:
         return Cotizacion.activos.filter(owner=owner)
 
