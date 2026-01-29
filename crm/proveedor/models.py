@@ -49,6 +49,12 @@ class Proveedor(models.Model):
     class Meta:
         managed = False
         db_table = 'proveedor'
+        
+    def eliminar_logico(self):
+        if self.activo:  # evita volver a marcarlo si ya está eliminado
+            self.activo = False
+            self.fecha_eliminacion = timezone.now()
+            self.save()
 
     def __str__(self):
         return f"{self.nombre} ({self.rfc_proveedor})"

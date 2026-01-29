@@ -13,37 +13,38 @@
         </div>
     </div>
     
-
     {% for p in proveedores %}
-    <div class="crm-card">
+        <div class="crm-card">
+            <div class="fw-bold mb-1">
+                {{ p.nombre}}
+                {% if not p.activo %}
+                    <span class="badge bg-danger ms-2">Eliminado</span>
+                {% else %}
+                    <span class="badge bg-success ms-2">Activo</span>
+                {% endif %}
+            </div>
 
+            <div class="text-muted small"> {{ p.razon_social }} {{rfc_proveedor}}</div>
+            <div class="text-muted small">{{ p.numero |default:"" }}</div>
 
-        <div class="fw-bold mb-1">
-        {{ p.nombre}}
+            <div class="d-grid gap-2 mt-3 d-md-flex">
+                {% if p.activo %}
+                    <a href="{% url 'proveedor:detalle' p.idproveedor %}" class="btn btn-outline-secondary crm-btn">
+                    Consultar
+                    </a>
+                    <a href="{% url 'proveedor:editar' p.idproveedor %}" class="btn btn-success crm-btn">
+                    Editar
+                    </a>
+                    <button type="button"
+                                class="btn btn-danger crm-btn btn-eliminar"
+                                data-url="{% url 'proveedor:eliminar' 0 %}"
+                                data-id="{{ p.idproveedor  }}"
+                                data-nombre="{{ p.nombre }}">
+                        Eliminar
+                    </button>
+                {%endif%}
+            </div>
         </div>
-
-
-        <div class="text-muted small"> {{ p.razon_social }} {{rfc_proveedor}}</div>
-        <div class="text-muted small">{{ p.numero |default:"" }}</div>
-
-
-        <div class="d-grid gap-2 mt-3 d-md-flex">
-            <a href="{% url 'proveedor:detalle' p.idproveedor %}" class="btn btn-outline-secondary crm-btn">
-            Consultar
-            </a>
-            <a href="{% url 'proveedor:editar' p.idproveedor %}" class="btn btn-success crm-btn">
-            Editar
-            </a>
-            <button type="button"
-                        class="btn btn-danger crm-btn btn-eliminar"
-                        data-url="{% url 'proveedor:eliminar' 0 %}"
-                        data-id="{{ p.idproveedor  }}"
-                        data-nombre="{{ p.nombre }}">
-                Eliminar
-            </button>
-      </div>
-    </div>
-    
     {% empty %}
     <p class="text-center text-muted">Agrega un proveedor</p>
     {% endfor %}
