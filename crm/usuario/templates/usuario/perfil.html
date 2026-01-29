@@ -4,6 +4,11 @@
 {% block content %}
 <div class="crm-form-wrapper">
   <div class="crm-form-card">
+    {% if request.session.modo_superusuario %}
+      <div class="alert alert-info">
+        Estás viendo el perfil del negocio supervisado
+      </div>
+    {% endif %}
     <h4 class="crm-title">Mi información</h4>
 
     <p><strong>Nombre:</strong> {{ usuario.nombre }} {{ usuario.apellidopaterno |default:""}} {{ usuario.apellidomaterno |default:""}}</p>

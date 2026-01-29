@@ -5,6 +5,11 @@
 {% block content %}
 <div class="crm-form-wrapper">
   <div class="crm-form-card">
+    {% if request.session.modo_superusuario %}
+      <div class="alert alert-info">
+        Estás viendo el perfil del negocio supervisado
+      </div>
+    {% endif %}
     <h4 class="crm-title text-center mb-4">Editar perfil</h4>
 
     <form method="POST" novalidate>

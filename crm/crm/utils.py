@@ -182,17 +182,14 @@ def queryset_empleados_por_rol(usuario, owner):
 
     return Usuario.activos.none()
 
-'''
-def queryset_empleados_por_rol(usuario,owner):
-    rol = usuario.rol.nombre_rol
-    #negocio = usuario if rol == "Dueño" else usuario.owner_id
-    if rol == "Superusuario":
-        return Usuario.todos.filter(owner = owner)
-    
-    if rol in ["Dueño", "Administrador"]:
-        return Usuario.activos.filter(owner=owner
-        ).exclude(
+def obtener_usuario_perfil(request):
+    usuario = Usuario.activos.get(
+        idusuario=request.session.get("idusuario")
+    )
+    dueno_id = request.session.get("dueno_supervisado")
+    if dueno_id:
+        return Usuario.activos.filter(
+            idusuario=dueno_id,
             rol__nombre_rol="Dueño"
-        )
-    return Usuario.activos.none()
-'''
+        ).first()
+    return usuario

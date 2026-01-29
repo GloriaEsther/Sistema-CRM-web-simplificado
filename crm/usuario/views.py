@@ -1,24 +1,21 @@
-from django.shortcuts import render,redirect, get_object_or_404
+from django.shortcuts import render,redirect
 from .forms import UsuarioForm,LoginForm,EmpleadoForm
 from .models import Usuario, PreferenciaUsuario,RolUsuario
 from django.contrib import messages
 from django.db import IntegrityError
 from django.contrib.auth.hashers import check_password 
-from crm.utils import require_roles,queryset_empleados_por_rol,obtener_owner
+from crm.utils import require_roles,queryset_empleados_por_rol,obtener_owner,obtener_usuario_perfil
 from django.contrib import messages
 from django.utils import timezone
 
-def registrar_usuario(request):#usuario=dueño del micronegocio
-    #usuario_id = request.session.get('idusuario') prueba....
-    #usuario =Usuario.activos.filter(idusuario=usuario_id).first()
-    
+def registrar_usuario(request):
     if request.method == 'POST':
         form = UsuarioForm(request.POST)
         if form.is_valid():
             try:
                 nuevo_usuario = form.save(commit=False)
                 rol_dueno = RolUsuario.objects.filter(nombre_rol__iexact="Dueño").first()
-                nuevo_usuario.owner_id = None#dueno no tiene owner_id
+                nuevo_usuario.owner_id = None
                 nuevo_usuario.rol = rol_dueno
                 nuevo_usuario.save()            
                 return redirect('oportunidades:kanban')               
@@ -32,7 +29,6 @@ def registrar_usuario(request):#usuario=dueño del micronegocio
     return render(request, 'usuario/registrar_usuario.html', {
         'form': form
     })
-
 
 def iniciar_sesion(request):
     #Verificar si ya hay una sesión activa ANTES de hacer cualquier cosa
@@ -65,7 +61,6 @@ def iniciar_sesion(request):
                 return redirect('oportunidades:kanban')
                               
             else:
-                #messages.error(request, "Credenciales incorrectas (correo o contraseña).")
                 return render(request, 'usuario/login.html', {
                     'form': form,
                     'mostrar_modal': True,
@@ -82,31 +77,27 @@ def iniciar_sesion(request):
 
 @require_roles(['Dueño','Superusuario'])
 def perfil_usuario(request):
-    usuario = Usuario.activos.filter(
-        idusuario=request.session.get("idusuario")
-    ).first()
-
+    usuario_objetivo = obtener_usuario_perfil(request)
     return render(request, "usuario/perfil.html", {
-        "usuario": usuario
+        "usuario": usuario_objetivo
     })
 
 @require_roles(['Dueño','Superusuario'])
 def editar_perfil(request):
-    usuario = Usuario.activos.filter(
-        idusuario=request.session.get("idusuario")
-    ).first()
+    usuario_objetivo = obtener_usuario_perfil(request)
 
     if request.method == "POST":
-        form = UsuarioForm(request.POST, instance=usuario)
+        form = UsuarioForm(request.POST, instance=usuario_objetivo)
         if form.is_valid():
             form.save()
             messages.success(request, "Perfil actualizado correctamente.")
             return redirect("usuario:perfil")
     else:
-        form = UsuarioForm(instance=usuario)
+        form = UsuarioForm(instance=usuario_objetivo)
 
     return render(request, "usuario/editar_perfil.html", {
-        "form": form
+        "form": form,
+        "usuario": usuario_objetivo
     })
 
 def cerrar_sesion(request):
@@ -130,7 +121,7 @@ def subir_logo(request):
 
         preferencias.logo = request.FILES["logo"]
         preferencias.save()
-    return redirect('oportunidades:kanban') #return redirect('usuario:inicio') 
+    return redirect('oportunidades:kanban') 
 
 def inicio(request):  
     usuario = None

@@ -95,6 +95,9 @@
           <a href="{% url 'superusuario:dashboard' %}" class="menu-item">
            Dashboard CRM
           </a>
+          <a href="{% url 'usuario:perfil' %}" class="menu-item">
+           Información del perfil
+          </a>
         {%endif%}
 
         {% if request.session.modo_superusuario %}          
@@ -109,7 +112,7 @@
            Empleados
           </a>
           <a href="{% url 'usuario:perfil' %}" class="menu-item">
-           Información del perfil del Dueño
+           Información del perfil
           </a>
         {%endif%}
 
