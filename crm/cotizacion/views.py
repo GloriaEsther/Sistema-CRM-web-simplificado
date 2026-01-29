@@ -21,10 +21,9 @@ def cotizacion_crear(request):
     if not owner:
         messages.error(request, "No hay negocio seleccionado.")
         return redirect("superusuario:listar_negocios")
-    #owner = usuario  if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
     
-    clientes = queryset_clientes_por_rol(usuario,owner)#prueba...Cliente.activos.filter(owner = owner)#
-    servicios = queryset_servicios_por_rol(usuario,owner)#Servicio.activos.filter(owner =owner)
+    clientes = queryset_clientes_por_rol(usuario,owner)
+    servicios = queryset_servicios_por_rol(usuario,owner)
     
     if request.method == "POST":
         cliente_id = request.POST.get("cliente")

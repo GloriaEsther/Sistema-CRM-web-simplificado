@@ -14,34 +14,32 @@
     </div>
     
     {% for i in inventario %}
-    <div class="crm-card">
+      {%if i.activo == 1 %}
+        <div class="crm-card">
+            <div class="fw-bold mb-1">
+            {{ i.nombrearticulo |default:"" }}
+            </div>
 
+            <div class="text-muted small"> {{ i.cantidad_disponible }} {{i.unidad}}</div>
+            <div class="text-muted small">{{ i.descripcion |default:"" }}</div>
 
-        <div class="fw-bold mb-1">
-        {{ i.nombrearticulo |default:"" }}
+            <div class="d-grid gap-2 mt-3 d-md-flex">
+                <a href="{% url 'inventario:detalle' i.idinventario %}" class="btn btn-outline-secondary crm-btn">
+                Consultar
+                </a>
+                <a href="{% url 'inventario:editar' i.idinventario %}" class="btn btn-success crm-btn">
+                Editar
+                </a>
+                <button type="button"
+                            class="btn btn-danger crm-btn btn-eliminar"
+                            data-url="{% url 'inventario:eliminar' 0 %}"
+                            data-id="{{ i.idinventario  }}"
+                            data-nombre="{{ i.nombrearticulo }}">
+                    Eliminar
+                </button>
+            </div>
         </div>
-
-
-        <div class="text-muted small"> {{ i.cantidad_disponible }} {{i.unidad}}</div>
-        <div class="text-muted small">{{ i.descripcion |default:"" }}</div>
-
-
-        <div class="d-grid gap-2 mt-3 d-md-flex">
-            <a href="{% url 'inventario:detalle' i.idinventario %}" class="btn btn-outline-secondary crm-btn">
-            Consultar
-            </a>
-            <a href="{% url 'inventario:editar' i.idinventario %}" class="btn btn-success crm-btn">
-            Editar
-            </a>
-            <button type="button"
-                        class="btn btn-danger crm-btn btn-eliminar"
-                        data-url="{% url 'inventario:eliminar' 0 %}"
-                        data-id="{{ i.idinventario  }}"
-                        data-nombre="{{ i.nombrearticulo }}">
-                Eliminar
-            </button>
-      </div>
-    </div>
+      {%endif%}
     
     {% empty %}
     <p class="text-center text-muted">Agrega el inventario</p>

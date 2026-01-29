@@ -49,3 +49,12 @@ class InventarioForm(forms.ModelForm):
                 'placeholder': 'Comentarios adicionales'
             }),
         }
+    def __init__(self, *args, **kwargs):
+        owner = kwargs.pop('owner', None)
+        super().__init__(*args, **kwargs)
+
+        if owner:
+            self.fields['proveedor'].queryset = Proveedor.todos.filter(
+                owner=owner,
+                activo=True
+            )

@@ -1,14 +1,19 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-#from django.contrib.auth.decorators import login_required
 from .forms import InventarioForm
 from usuario.models import Usuario
-from crm.utils import queryset_inventario_por_rol
+from inventario.models import Inventario
+from crm.utils import queryset_inventario_por_rol,obtener_owner
 from time import time
 
 def inventario_list(request):
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
-    inventario = queryset_inventario_por_rol(usuario)
+    owner = obtener_owner(request, usuario)
+
+    if not owner:
+        inventario = Inventario.activos.none()
+    else:
+        inventario = queryset_inventario_por_rol(usuario,owner)
 
     return render(request, "inventario/lista_inventario.html", {
         "inventario": inventario
@@ -16,19 +21,24 @@ def inventario_list(request):
 
 def inventario_crear(request):
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
+    owner = obtener_owner(request, usuario)
+
+    if not owner:
+        messages.error(request, "No hay negocio seleccionado.")
+        return redirect("superusuario:listar_negocios")
 
     if request.method == "POST":
-        form = InventarioForm(request.POST)
+        form = InventarioForm(data=request.POST, owner = owner)#
         if form.is_valid():
             articulo = form.save(commit=False)
             articulo.usuario_registro = usuario
-            articulo.owner = usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
+            articulo.owner = owner
             articulo.save()
 
             messages.success(request, "Artículo registrado correctamente.")
             return redirect("inventario:listar")
     else:
-        form = InventarioForm()
+        form = InventarioForm(owner =owner)
 
     return render(request, "inventario/crear_inventario.html", {
         "form": form,
@@ -37,17 +47,18 @@ def inventario_crear(request):
 
 def inventario_editar(request, pk):
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
-    qs = queryset_inventario_por_rol(usuario)
+    owner = obtener_owner(request, usuario)
+    qs = queryset_inventario_por_rol(usuario,owner)
     articulo = get_object_or_404(qs, idinventario=pk)
 
     if request.method == "POST":
-        form = InventarioForm(request.POST, instance=articulo)
+        form = InventarioForm(data = request.POST, instance=articulo,owner = owner)
         if form.is_valid():
             form.save()
             messages.success(request, "Artículo actualizado correctamente.")
             return redirect("inventario:listar")
     else:
-        form = InventarioForm(instance=articulo)
+        form = InventarioForm(instance=articulo,owner = owner)
 
     return render(request, "inventario/editar_inventario.html", {
         "form": form,
@@ -56,17 +67,31 @@ def inventario_editar(request, pk):
 
 def inventario_eliminar(request, pk):
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
-    qs = queryset_inventario_por_rol(usuario)
-
+    owner = obtener_owner(request, usuario)
+    qs = queryset_inventario_por_rol(usuario,owner)
     articulo = get_object_or_404(qs, idinventario=pk)
-    articulo.eliminar_logico()
 
-    messages.success(request, "Artículo eliminado correctamente.")
-    return redirect("inventario:listar")
+    rol=usuario.rol.nombre_rol
+     # Dueño y Administrador: pueden eliminar cualquiera en su negocio, superusuario en todos 
+    if rol in ["Dueño", "Administrador", "Superusuario"]:
+        articulo.eliminar_logico()
+        messages.success(request, "Artículo eliminado correctamente.")
+        return redirect("inventario:listar")
+    
+    if rol == "Vendedor":
+        if articulo.usuario_registro != usuario.idusuario:
+            messages.error(
+                request,
+                "No tienes permiso para eliminar este articulo."
+            )
+        articulo.eliminar_logico()
+        messages.success(request, "Artículo eliminado correctamente.")
+        return redirect("inventario:listar")
 
 def inventario_detalle(request, pk):
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
-    qs = queryset_inventario_por_rol(usuario) 
+    owner = obtener_owner(request, usuario)
+    qs = queryset_inventario_por_rol(usuario,owner) 
 
     inventario = get_object_or_404(qs, idinventario=pk)
 

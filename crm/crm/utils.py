@@ -70,11 +70,25 @@ def queryset_servicios_por_rol(usuario,owner):
 
     return Servicio.activos.none()
 
+def queryset_inventario_por_rol(usuario,owner):
+    rol = usuario.rol.nombre_rol
+    if rol == "Superusuario":
+        return Inventario.todos.filter(owner = owner)
+    
+    if rol in ["Dueño", "Administrador"]:
+        return Inventario.activos.filter(owner = owner)
+
+    if rol == "Vendedor":
+        return Inventario.activos.filter(owner = owner)
+
+    return Inventario.activos.none()
+'''
 def queryset_inventario_por_rol(usuario):
     if usuario.rol.nombre_rol == "Dueño":
         return Inventario.activos.filter(owner=usuario)
     else:
         return Inventario.activos.filter(owner=usuario.owner_id)
+'''
 
 #Superusuario...
 def solo_superusuario(view_func):
@@ -142,7 +156,7 @@ def queryset_ventas_por_rol(usuario,owner):
 
 def queryset_cotizaciones_por_rol(usuario,owner):
     rol = usuario.rol.nombre_rol
-    #negocio = usuario if rol == "Dueño" else usuario.owner_id
+
     if rol == "Superusuario":
         return Cotizacion.activos.filter(owner=owner)
     if rol in ["Dueño", "Administrador"]:
