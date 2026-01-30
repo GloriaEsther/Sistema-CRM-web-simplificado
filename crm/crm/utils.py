@@ -32,7 +32,7 @@ def queryset_usuarios_segun_rol(usuario,owner):#es un filtro en las busquedas de
     if not owner:
         return Usuario.activos.none()
     rol = usuario.rol.nombre_rol
-    if rol in ["Dueño", "Administrador","Superusuario"]:
+    if rol in ["Dueño", "Administrador","Superusuario","Consultor"]:
         return Usuario.activos.filter(
             Q(idusuario = owner.idusuario) |
             Q(owner_id = owner.idusuario)

@@ -55,7 +55,7 @@ def kanban(request):
             )
         elif rol == "Consultor":
            qs = Oportunidad.activos.filter(
-                negocio_oportunidad = owner,#prueba
+                negocio_oportunidad = owner,
                 etapa_ventas=e
             ) 
         else:
@@ -245,6 +245,11 @@ def eliminar_oportunidad(request, pk):
  
         if usuario_logueado.rol.nombre_rol == "Vendedor":
 
+            if oportunidad.creado_por != usuario_logueado:
+                messages.error(request, "No puedes eliminar oportunidades que no registraste.")
+                return redirect("oportunidades:kanban")
+            
+        if usuario_logueado.rol.nombre_rol == "Consultor":
             if oportunidad.creado_por != usuario_logueado:
                 messages.error(request, "No puedes eliminar oportunidades que no registraste.")
                 return redirect("oportunidades:kanban")
