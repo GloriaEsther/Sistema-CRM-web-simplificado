@@ -28,14 +28,14 @@ def require_roles(allowed_roles):#restringe roles (quien accede a que)
         return _wrapped
     return decorator
 
-def queryset_usuarios_segun_rol(usuario):#es un filtro en las busquedas de usuario
+def queryset_usuarios_segun_rol(usuario,owner):#es un filtro en las busquedas de usuario al crear oportunidades
+    if not owner:
+        return Usuario.activos.none()
     rol = usuario.rol.nombre_rol
-    negocio = usuario if rol == "Dueño" else usuario.owner_id
-    
-    if rol in ["Dueño", "Administrador"]:
+    if rol in ["Dueño", "Administrador","Superusuario"]: #or es_supervisado:
         return Usuario.activos.filter(
-            Q(idusuario=negocio.idusuario) |
-            Q(owner_id=negocio.idusuario)
+            Q(idusuario = owner.idusuario) |
+            Q(owner_id = owner.idusuario)
         )
 
     if rol == "Vendedor":
@@ -55,6 +55,18 @@ def queryset_clientes_por_rol(usuario,owner):
         return Cliente.activos.filter(owner = owner)
 
     return Cliente.activos.none()
+
+def clientes_para_oportunidad(usuario, owner):
+    if not owner:
+        return Cliente.activos.none()
+    rol = usuario.rol.nombre_rol
+
+    if rol in ["Dueño", "Administrador","Superusuario"]:
+        return Cliente.activos.filter(owner = owner)
+
+    if rol == "Vendedor":
+        return Cliente.activos.filter(owner = owner)
+    return Cliente.activos.filter(owner=owner)
 
 
 def queryset_servicios_por_rol(usuario,owner):
