@@ -17,7 +17,6 @@ def kanban(request):
         return redirect('usuario:iniciar_sesion') 
     
     usuario=Usuario.activos.get(idusuario=usuario_id)
-    #negocio = usuario.owner_id if usuario.owner_id else usuario
     owner=obtener_owner(request,usuario)
 
     if not owner:
@@ -98,7 +97,6 @@ def crear_oportunidad(request):
                     else rol_real
                 )
 
-                # Regla: solo vendedores tienen restricciones fuertes
                 if rol == "Vendedor":
                     if vendedor.rol.id_rol in roles_no_responsables:
                         messages.error(
@@ -231,7 +229,7 @@ def editar_oportunidad(request, pk):
         "etapas": etapas,
         "usuarios": usuarios,
     })
-#solo se cargan los cambios al reiniciar pagina....
+
 def eliminar_oportunidad(request, pk):
     usuario_id = request.session.get("idusuario")
     usuario_logueado = get_object_or_404(Usuario, idusuario=usuario_id)
