@@ -173,7 +173,13 @@ def agregar_empleado(request):
     if not owner:
         messages.error(request, "No hay negocio seleccionado.")
         return redirect("superusuario:listar_negocios")
-
+    
+    if usuario.rol.nombre_rol == "Consultor":
+        messages.error(
+            request,
+            "No tienes permisos para registrar empleados."
+        )
+        return redirect("usuario:listar")
     if request.method == "POST":
         form = EmpleadoForm(request.POST)
         if form.is_valid():
@@ -221,6 +227,13 @@ def editar_empleado(request, pk):
     if not empleado:
         messages.error(request, "Empleado no encontrado.")
         return redirect("usuario:empleados_lista")
+    
+    if usuario.rol.nombre_rol == "Consultor":
+        messages.error(
+            request,
+            "No tienes permisos para editar empleados."
+        )
+        return redirect("usuario:listar")
 
     if request.method == "POST":
         form = EmpleadoForm(request.POST, instance=empleado)
@@ -250,6 +263,12 @@ def eliminar_usuario(request, pk):
     if not empleado:
         messages.error(request, "Usuario no encontrado.")
         return redirect("usuario:empleados_lista")
+    if usuario.rol.nombre_rol == "Consultor":
+        messages.error(
+            request,
+            "No tienes permisos para eliminar empleados."
+        )
+        return redirect("usuario:listar")
 
     empleado.eliminar_logico()
     messages.success(request, "Usuario eliminado")

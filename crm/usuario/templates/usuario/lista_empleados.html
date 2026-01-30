@@ -7,9 +7,15 @@
     <div class="crm-section-header">
         <h4 class="crm-title">Empleados</h4> 
         <div class="gap-2 mt-3 d-md-flex justify-content-md-end mb-3">
+            {% if request.session.modo_consultor%}
                 <a href="{% url 'usuario:agregar_empleado' %}" class="btn btn-primary crm-btn">
                     + Agregar Empleado
                 </a>
+            {%else%}
+                <a href="{% url 'usuario:agregar_empleado' %}" class="btn btn-primary crm-btn">
+                    + Agregar Empleado
+                </a>
+            {%endif%}  
         </div>
     </div>
     
@@ -17,9 +23,9 @@
         <div class="crm-card">
             <div class="fw-bold mb-1">
                 {{ empleado.nombre  }} {{ empleado.apellidopaterno  |default:""  }} {{ empleado.apellidomaterno  |default:""  }}
-                {% if not empleado.activo %}
+                {% if if request.session.modo_superusuario and not empleado.activo %}
                     <span class="badge bg-danger ms-2">Eliminado</span>
-                {% else %}
+                {%  elif request.session.modo_superusuario and  empleado.activo %}
                     <span class="badge bg-success ms-2">Activo</span>
                 {% endif %}
             </div>
