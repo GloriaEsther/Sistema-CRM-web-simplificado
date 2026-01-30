@@ -3,9 +3,11 @@ from django.contrib import messages
 from .forms import InventarioForm
 from usuario.models import Usuario
 from inventario.models import Inventario
-from crm.utils import queryset_inventario_por_rol,obtener_owner
+from crm.utils import queryset_inventario_por_rol,obtener_owner,require_roles
 from time import time
 
+
+@require_roles(['Dueño', 'Administrador','Superusuario','Consultor'])
 def inventario_list(request):
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
     owner = obtener_owner(request, usuario)
@@ -27,6 +29,13 @@ def inventario_crear(request):
         messages.error(request, "No hay negocio seleccionado.")
         return redirect("superusuario:listar_negocios")
 
+    if usuario.rol.nombre_rol == "Consultor":
+        messages.error(
+            request,
+            "No tienes permisos para registrar articulos del inventario."
+        )
+        return redirect("inventario:listar")
+    
     if request.method == "POST":
         form = InventarioForm(data=request.POST, owner = owner)#
         if form.is_valid():
@@ -51,6 +60,13 @@ def inventario_editar(request, pk):
     qs = queryset_inventario_por_rol(usuario,owner)
     articulo = get_object_or_404(qs, idinventario=pk)
 
+    if usuario.rol.nombre_rol == "Consultor":
+        messages.error(
+            request,
+            "No tienes permisos para editar articulos del inventario."
+        )
+        return redirect("inventario:listar")
+    
     if request.method == "POST":
         form = InventarioForm(data = request.POST, instance=articulo,owner = owner)
         if form.is_valid():
@@ -76,6 +92,12 @@ def inventario_eliminar(request, pk):
     if rol in ["Dueño", "Administrador", "Superusuario"]:
         articulo.eliminar_logico()
         messages.success(request, "Artículo eliminado correctamente.")
+        return redirect("inventario:listar")
+    if usuario.rol.nombre_rol == "Consultor":
+        messages.error(
+            request,
+            "No tienes permisos para eliminar articulos del inventario."
+        )
         return redirect("inventario:listar")
     
     if rol == "Vendedor":
