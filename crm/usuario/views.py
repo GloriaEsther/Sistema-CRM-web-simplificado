@@ -75,14 +75,14 @@ def iniciar_sesion(request):
         'timestamp': timezone.now().timestamp()
     })
 
-@require_roles(['Dueño','Superusuario'])
+@require_roles(['Dueño','Superusuario','Consultor'])
 def perfil_usuario(request):
     usuario_objetivo = obtener_usuario_perfil(request)
     return render(request, "usuario/perfil.html", {
         "usuario": usuario_objetivo
     })
 
-@require_roles(['Dueño','Superusuario'])
+@require_roles(['Dueño','Superusuario','Consultor'])
 def editar_perfil(request):
     usuario_objetivo = obtener_usuario_perfil(request)
 
