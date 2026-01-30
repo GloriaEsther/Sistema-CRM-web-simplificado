@@ -17,9 +17,9 @@
         <div class="crm-card">
             <div class="fw-bold mb-1">
                 {{ p.nombre}}
-                {% if not p.activo %}
+                {% if request.session.modo_superusuario and not p.activo %}
                     <span class="badge bg-danger ms-2">Eliminado</span>
-                {% else %}
+                {% elif request.session.modo_superusuario and p.activo %}
                     <span class="badge bg-success ms-2">Activo</span>
                 {% endif %}
             </div>

@@ -31,13 +31,20 @@ def proveedor_crear(request):
     if not owner:
         messages.error(request, "No hay negocio seleccionado.")
         return redirect("superusuario:listar_negocios")
-
+    
+    if usuario.rol.nombre_rol == "Consultor":
+        messages.error(
+            request,
+            "No tienes permisos para registrar proveedores."
+        )
+        return redirect("proveedor:listar")
+    
     if request.method == "POST":
         form = ProveedorForm(request.POST)
         if form.is_valid():
             proveedor = form.save(commit=False)
             proveedor.usuario_registro = usuario
-            proveedor.owner = owner#usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
+            proveedor.owner = owner
             proveedor.save()
 
             messages.success(request, "Proveedor registrado correctamente.")
@@ -58,6 +65,13 @@ def proveedor_editar(request, pk):
     qs = queryset_proveedores_por_rol(usuario,owner)
     proveedor = get_object_or_404(qs, idproveedor=pk)
 
+    if usuario.rol.nombre_rol == "Consultor":
+        messages.error(
+            request,
+            "No tienes permisos para editar proveedores."
+        )
+        return redirect("proveedor:listar")
+    
     if request.method == "POST":
         form = ProveedorForm(request.POST, instance=proveedor)
         if form.is_valid():
@@ -83,9 +97,13 @@ def proveedor_eliminar(request, pk):
      # Dueño y Administrador: pueden eliminar cualquiera en su negocio, superusuario en todos 
     if rol in ["Dueño", "Administrador", "Superusuario"]:
         proveedor.eliminar_logico()
-        #proveedor.activo = False
-        #proveedor.save()
         messages.success(request, "Proveedor eliminado correctamente.")
+        return redirect("proveedor:listar")
+    if rol == "Consultor":
+        messages.error(
+            request,
+            "No tienes permisos para eliminar proveedores."
+        )
         return redirect("proveedor:listar")
     # Vendedor: solo si él lo registró
     if rol == "Vendedor":

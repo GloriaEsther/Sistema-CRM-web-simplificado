@@ -96,17 +96,17 @@ def cliente_eliminar(request, pk):
                 "No tienes permiso para eliminar este cliente."
             )
             return redirect("cliente:listar")
-    if rol == "Consultor":
-        if cliente.usuario_registro != usuario.idusuario:
-            messages.error(
+    if rol == "Consultor":#no puede eliminar ningun cliente
+        #if cliente.usuario_registro != usuario.idusuario:
+        messages.error(
                 request,
                 "No tienes permiso para eliminar este cliente."
             )
-            return redirect("cliente:listar")
-
-        cliente.eliminar_logico()
-        messages.success(request, "Cliente eliminado correctamente.")
         return redirect("cliente:listar")
+
+    cliente.eliminar_logico()
+    messages.success(request, "Cliente eliminado correctamente.")
+    return redirect("cliente:listar")
     
 
 def cliente_detalle(request, pk):
