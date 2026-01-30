@@ -95,16 +95,18 @@ def detalles_del_negocio(request, dueno_id):
     rol = request.session.get("rol")
     clientes_ = Cliente.activos
     oportunidades_ = Oportunidad.activos
+    ventas_ = Venta.activos
      # Superusuario ve todo
     if rol == "Superusuario":
         clientes_ = Cliente.todos
         oportunidades_ = Oportunidad.todos
-
+        ventas_ = Venta.objects
+    
     clientes = clientes_.filter(owner=dueno).count()
     oportunidades = oportunidades_.filter(
         negocio_oportunidad=dueno
     ).count()
-    ventas = Venta.objects.filter(owner=dueno).count()
+    ventas = ventas_.filter(owner=dueno).count()
     return render(request, "superusuario/consultar_negocios.html", {
         "dueno": dueno,
         "clientes": clientes,
