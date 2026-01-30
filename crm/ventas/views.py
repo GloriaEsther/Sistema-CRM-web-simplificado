@@ -9,9 +9,7 @@ from crm.utils import queryset_ventas_por_rol,obtener_owner
 from time import time
 from django.contrib import messages
 
-
 def listar_ventas(request):
-    # filtro por rango de fechas opcional
     fecha_inicio = request.GET.get('desde')
     fecha_fin = request.GET.get('hasta')
     usuario = Usuario.activos.filter(
@@ -23,8 +21,6 @@ def listar_ventas(request):
         qs = Venta.activos.none()
     else:
         qs = queryset_ventas_por_rol(usuario, owner)
-   
-    #qs = queryset_ventas_por_rol(usuario)
 
     if fecha_inicio and fecha_fin:
         qs = qs.filter(fecha_registro__date__range=[fecha_inicio, fecha_fin])
@@ -37,14 +33,20 @@ def crear_venta_manual(request):
 
     if not usuario:
         return redirect("usuario:login")
-
-    #owner = usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
+    
     owner = obtener_owner(request, usuario)
 
     if not owner:
         messages.error(request, "No hay negocio seleccionado.")
         return redirect("superusuario:listar_negocios")
 
+    if usuario.rol.nombre_rol == "Consultor":
+        messages.error(
+            request,
+            "No tienes permisos para registrar ventas."
+        )
+        return redirect("ventas:listar")
+    
     if request.method == "POST":
         form = VentaForm(
             request.POST,
@@ -83,6 +85,12 @@ def corte_caja(request):
         messages.error(request, "No hay negocio seleccionado.")
         return redirect("superusuario:listar_negocios")
     
+    if usuario.rol.nombre_rol == "Consultor":
+        messages.error(
+            request,
+            "No tienes permiso para ver corte de caja."
+        )
+        return redirect("ventas:listar")
     hoy = timezone.now().date()
 
     fecha_inicio = request.GET.get("desde")
@@ -135,8 +143,6 @@ def ventas_hoy(request):
 
     if not usuario:
         return redirect("usuario:login")
-
-    #owner = usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
     owner = obtener_owner(request, usuario)
 
     if not owner:
@@ -172,11 +178,17 @@ def venta_editar(request, pk):
     owner = obtener_owner(request, usuario)
     qs = queryset_ventas_por_rol(usuario,owner)
     venta = get_object_or_404(qs, idventa=pk)
-   # owner = usuario if usuario.rol.nombre_rol == "Dueño" else usuario.owner_id
 
-    if venta.estatus_cobro.idestatus_cobros == 3:#"COBRADO":
+    if venta.estatus_cobro.idestatus_cobros == 3:#cobrado
        messages.error(request, "No se puede editar una venta cobrada.")
        return redirect("ventas:listar")
+    
+    if usuario.rol.nombre_rol == "Consultor":
+        messages.error(
+            request,
+            "No tienes permisos para editar ventas."
+        )
+        return redirect("ventas:listar")
 
     if request.method == "POST":
         form = VentaForm(request.POST, instance=venta, usuario=usuario,owner=owner)
@@ -215,6 +227,13 @@ def venta_eliminar(request, pk):
         messages.success(request, "Venta eliminada correctamente.")
         return redirect("ventas:listar")
     
+    if usuario.rol.nombre_rol == "Consultor":
+        messages.error(
+            request,
+            "No tienes permisos para eliminar ventas."
+        )
+        return redirect("ventas:listar")
+    
     if rol == "Vendedor":
         if venta.usuario_registro != usuario.idusuario:
             messages.error(
@@ -229,12 +248,3 @@ def venta_eliminar(request, pk):
         venta.eliminar_logico()
         messages.success(request, "Venta eliminada correctamente.")
         return redirect("ventas:listar")
-
-    '''
-      if venta.estatus_cobro.idestatus_cobros == 3:#"COBRADO"
-          messages.error(request, "No se puede eliminar una venta cobrada.")
-          return redirect("ventas:listar")
-    venta.eliminar_logico()
-    messages.success(request, "Venta eliminada correctamente.")
-    return redirect("ventas:listar")
-    '''

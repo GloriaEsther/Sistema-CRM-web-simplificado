@@ -13,11 +13,21 @@
               </a>  
             </div>
           {% endif %}
+        
+          {% if request.session.modo_superusuario%}
+              <div class="crm-section-header">
+                <a href="{% url 'ventas:corte_caja' %}" class="btn btn-primary crm-btn">
+                  Corte de caja
+                </a>  
+            </div>
+         {%endif%}
+
           <div class="crm-section-header">
               <a href="{% url 'ventas:ventas_hoy' %}" class="btn btn-primary crm-btn">
                 Ventas del dia
                 </a>
           </div>
+
         </div>
     </div>
      <table class="table table-bordered table-sm crm-table-responsive">
@@ -52,9 +62,9 @@
                             Eliminar
                     </button>
                   {%endif%}
-                  {% if not v.activo %}
+                  {% if request.session.modo_superusuario and not v.activo %}
                         <span class="badge bg-danger ms-2">Eliminado</span>
-                  {% else %}
+                  {% elif request.session.modo_superusuario and v.activo %}
                         <span class="badge bg-success ms-2">Activo</span>
                   {% endif %}
                   
