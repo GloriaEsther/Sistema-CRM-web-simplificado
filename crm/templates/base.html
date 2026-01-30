@@ -21,10 +21,17 @@
           <button class="hamburger navbar-toggler" id="hamburger-menu" type="button">
             <i class="bi bi-list"></i>
           </button>
-          {% if request.session.modo_superusuario %}
+          {% if request.session.modo_superusuario or request.session.modo_consultor %}
             <div class="alert alert-warning d-flex justify-content-between align-items-center">
               <span>
-                Estás viendo un negocio como <strong>Superusuario</strong>
+                Estás viendo un negocio como <strong>
+                 {% if request.session.modo_superusuario %}
+                    Superusuario
+                 {% else %}
+                    Consultor
+                 {% endif %}
+
+                </strong>
               </span>
               <a href="{% url 'superusuario:salir_negocio' %}"
                 class="btn btn-primary crm-btn">
@@ -57,7 +64,7 @@
           {% endif %}
         </div>
       </nav>
-      {% endif %}
+    {% endif %}
     <main class="mt-4">
       {% block content %}{% endblock %}
     </main>
@@ -88,19 +95,21 @@
           </a>
         {% endif %}
 
-        {% if usuario.rol.nombre_rol == "Superusuario" %}
+        {% if usuario.rol.nombre_rol == "Superusuario" or usuario.rol.nombre_rol == "Consultor"%}
           <a href="{% url 'superusuario:listar_negocios' %}" class="menu-item">
            Buscar negocios
           </a>
           <a href="{% url 'superusuario:dashboard' %}" class="menu-item">
            Dashboard CRM
           </a>
+          {%if usuario.rol.nombre_rol == "Superusuario"%}  
           <a href="{% url 'usuario:perfil' %}" class="menu-item">
-           Información del perfil
+            Información del perfil
           </a>
+          {%endif%}
         {%endif%}
 
-        {% if request.session.modo_superusuario %}          
+        {% if request.session.modo_superusuario or request.session.modo_consultor%}          
           <a href="{% url 'oportunidades:kanban' %}" class="menu-item">Oportunidades</a>
           <a href="{% url 'cliente:listar' %}" class="menu-item">Clientes</a>
           <a href="{% url 'ventas:listar' %}" class="menu-item">Ventas</a>
@@ -108,13 +117,14 @@
           <a href="{% url 'servicio:listar' %}" class="menu-item">Servicios</a>
           <a href="{% url 'inventario:listar' %}" class="menu-item">Inventario</a>
           <a href="{% url 'proveedor:listar' %}" class="menu-item">Proveedor</a>
-          <a href="{% url 'usuario:empleados_lista' %}" class="menu-item">
-           Empleados
-          </a>
           <a href="{% url 'usuario:perfil' %}" class="menu-item">
            Información del perfil
           </a>
         {%endif%}
+
+        {% if request.session.modo_superusuario %}
+          <a href="{% url 'usuario:empleados_lista' %}" class="menu-item">Empleados</a>
+        {% endif %}
 
         <a href="{% url 'usuario:cerrar_sesion' %}" class="menu-item text-danger">
           Cerrar sesión

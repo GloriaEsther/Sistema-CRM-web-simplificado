@@ -55,6 +55,7 @@ def kanban(request):
             )
         elif rol == "Consultor":
            qs = Oportunidad.activos.filter(
+                negocio_oportunidad = owner,#prueba
                 etapa_ventas=e
             ) 
         else:

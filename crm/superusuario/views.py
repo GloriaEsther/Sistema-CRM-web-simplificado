@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from crm.utils import solo_superusuario
+from crm.utils import solo_superusuario,solo_supervisor
 from cliente.models import Cliente
 from usuario.models import Usuario
 from ventas.models import Venta
@@ -67,7 +67,7 @@ def dashboard(request):
         "negocios": negocios,
     })
 
-@solo_superusuario
+@solo_supervisor
 def buscar_negocios(request):
     q = request.GET.get("q", "").strip()
 
@@ -85,20 +85,26 @@ def buscar_negocios(request):
         "duenos": duenos
     })
 
-@solo_superusuario# prueba....
+@solo_supervisor
 def detalles_del_negocio(request, dueno_id):
     dueno = get_object_or_404(
         Usuario,
         idusuario=dueno_id,
         rol__nombre_rol="Dueño"
     )
+    rol = request.session.get("rol")
+    clientes_ = Cliente.activos
+    oportunidades_ = Oportunidad.activos
+     # Superusuario ve todo
+    if rol == "Superusuario":
+        clientes_ = Cliente.todos
+        oportunidades_ = Oportunidad.todos
 
-    clientes = Cliente.todos.filter(owner=dueno).count()
-    ventas = Venta.objects.filter(owner=dueno).count()
-    oportunidades = Oportunidad.activos.filter(
+    clientes = clientes_.filter(owner=dueno).count()
+    oportunidades = oportunidades_.filter(
         negocio_oportunidad=dueno
     ).count()
-
+    ventas = Venta.objects.filter(owner=dueno).count()
     return render(request, "superusuario/consultar_negocios.html", {
         "dueno": dueno,
         "clientes": clientes,
@@ -106,67 +112,33 @@ def detalles_del_negocio(request, dueno_id):
         "oportunidades": oportunidades,
     })
 
-@solo_superusuario
+@solo_supervisor
 def ver_negocio(request, id_dueno):
     dueno = get_object_or_404(
         Usuario.activos,
         idusuario=id_dueno,
         rol__nombre_rol="Dueño"
     )
+    request.session["dueno_supervisado"] = dueno.idusuario  
+    rol = request.session.get("rol")
+    if  rol== "Superusuario":
+        request.session["modo_superusuario"] = True
 
-    request.session["modo_superusuario"] = True
-    request.session["dueno_supervisado"] = dueno.idusuario
+    if rol == "Consultor":
+        request.session["modo_consultor"] = True
+
     messages.info(
         request,
         f"Estás viendo el negocio de {dueno.nombre}"
     )
     return redirect("cliente:listar")
 
-@solo_superusuario
+@solo_supervisor#@solo_superusuario
 def salir_negocio(request):
-    request.session.pop("modo_superusuario", None)
     request.session.pop("dueno_supervisado", None)
+    request.session.pop("modo_superusuario", None)
+    request.session.pop("modo_consultor", None)
+
     messages.info(request, "Saliste del negocio supervisado")
+
     return redirect("superusuario:listar_negocios")
-#si esas funciones si funcionan se les pasa arriba...
-
-@solo_superusuario
-def lista_negocios(request):#no lo he probado....
-    busqueda = request.GET.get("q", "")
-
-    duenos = Usuario.activos.filter(
-        rol__nombre_rol="Dueño"
-    )
-
-    if busqueda:
-        duenos = duenos.filter(
-            Q(nombre__icontains=busqueda) |
-            Q(nombre_negocio__icontains=busqueda)
-        )
-
-    negocios = []
-
-    for dueno in duenos:
-        clientes = Cliente.todos.filter(owner=dueno).count()
-        oportunidades = Oportunidad.activos.filter(
-            negocio_oportunidad=dueno
-        ).count()
-
-        negocios.append({
-            "dueno": dueno,
-            "clientes": clientes,
-            "oportunidades": oportunidades
-        })
-
-    return render(request, "superusuario/negocios.html", {
-        "negocios": negocios,
-        "busqueda": busqueda
-    })
-
-@solo_superusuario
-def usuarios_global(request):
-    usuarios = Usuario.todos.select_related("rol")
-
-    return render(request, "superusuario/usuarios.html", {
-        "usuarios": usuarios
-    })

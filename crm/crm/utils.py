@@ -32,7 +32,7 @@ def queryset_usuarios_segun_rol(usuario,owner):#es un filtro en las busquedas de
     if not owner:
         return Usuario.activos.none()
     rol = usuario.rol.nombre_rol
-    if rol in ["Dueño", "Administrador","Superusuario"]: #or es_supervisado:
+    if rol in ["Dueño", "Administrador","Superusuario"]:
         return Usuario.activos.filter(
             Q(idusuario = owner.idusuario) |
             Q(owner_id = owner.idusuario)
@@ -48,7 +48,7 @@ def queryset_clientes_por_rol(usuario,owner):
     if rol == "Superusuario":
         return Cliente.todos.filter(owner = owner)
     
-    if rol in ["Dueño", "Administrador"]:
+    if rol in ["Dueño", "Administrador","Consultor"]:
         return Cliente.activos.filter(owner = owner)
 
     if rol == "Vendedor":
@@ -61,7 +61,7 @@ def clientes_para_oportunidad(usuario, owner):
         return Cliente.activos.none()
     rol = usuario.rol.nombre_rol
 
-    if rol in ["Dueño", "Administrador","Superusuario"]:
+    if rol in ["Dueño", "Administrador","Superusuario","Consultor"]:
         return Cliente.activos.filter(owner = owner)
 
     if rol == "Vendedor":
@@ -74,7 +74,7 @@ def queryset_servicios_por_rol(usuario,owner):
     if rol == "Superusuario":
         return Servicio.todos.filter(owner = owner)
     
-    if rol in ["Dueño", "Administrador"]:
+    if rol in ["Dueño", "Administrador","Consultor"]:
         return Servicio.activos.filter(owner = owner)
 
     if rol == "Vendedor":
@@ -87,7 +87,7 @@ def queryset_inventario_por_rol(usuario,owner):
     if rol == "Superusuario":
         return Inventario.todos.filter(owner = owner)
     
-    if rol in ["Dueño", "Administrador"]:
+    if rol in ["Dueño", "Administrador","Consultor"]:
         return Inventario.activos.filter(owner = owner)
 
     if rol == "Vendedor":
@@ -105,6 +105,15 @@ def solo_superusuario(view_func):
         return view_func(request, *args, **kwargs)
     return wrapper
 
+def solo_supervisor(view_func):
+    def _wrapped_view(request, *args, **kwargs):
+        rol = request.session.get("rol")
+        if rol not in ["Superusuario", "Consultor"]:
+            messages.error(request, "No tienes permiso para acceder")
+            return redirect("inicio")
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
+
 def obtener_owner(request, usuario):
     rol = usuario.rol.nombre_rol
 
@@ -119,20 +128,12 @@ def obtener_owner(request, usuario):
 
     return usuario.owner_id
 
-''' 
-Nota:
-Para que el decorador sea más robusto,
- es mejor verificar directamente si el usuario existe 
- en la base de datos y es superusuario, por si cambias 
- el rol en la BD mientras la sesión sigue abierta.
-'''
-
 def queryset_proveedores_por_rol(usuario,owner):
     rol = usuario.rol.nombre_rol
-    #negocio = usuario if rol == "Dueño" else usuario.owner_id
-    if rol == "Superusuario":#
+   
+    if rol == "Superusuario":
         return Proveedor.todos.filter(owner=owner)
-    if rol in ["Dueño", "Administrador"]:
+    if rol in ["Dueño", "Administrador","Consultor"]:
         return Proveedor.activos.filter(owner=owner)
     if rol == "Vendedor":
         return Proveedor.activos.none()
@@ -151,7 +152,7 @@ def queryset_ventas_por_rol(usuario,owner):
     if rol == "Superusuario":
         return Venta.objects.filter(owner = owner)
     
-    if rol in ["Dueño", "Administrador"]:
+    if rol in ["Dueño", "Administrador","Consultor"]:
         return Venta.activos.filter(owner = owner)
 
     if rol == "Vendedor":
@@ -164,7 +165,7 @@ def queryset_cotizaciones_por_rol(usuario,owner):
 
     if rol == "Superusuario":
         return Cotizacion.todos.filter(owner=owner)
-    if rol in ["Dueño", "Administrador"]:
+    if rol in ["Dueño", "Administrador","Consultor"]:
         return Cotizacion.activos.filter(owner=owner)
 
     if rol == "Vendedor":
@@ -185,7 +186,7 @@ def queryset_empleados_por_rol(usuario, owner):
             rol__nombre_rol="Dueño"
         )
 
-    if rol in ["Dueño", "Administrador"]:
+    if rol in ["Dueño", "Administrador"]:#,"Consultor"
         return Usuario.activos.filter(
             owner_id=owner
         ).exclude(
