@@ -7,15 +7,22 @@
     <div class="crm-section-header">    
       <h4 class="crm-title">Servicios</h4>
         <div class="gap-2 mt-3 d-md-flex justify-content-md-end mb-3">   
-            <a href="{% url 'servicio:crear' %}" class="btn btn-primary crm-btn">
-            + Crear Servicio
-            </a>
-            <a href="{% url 'cotizacion:crear' %}" class="btn btn-primary crm-btn">
-            + Crear Cotización
-            </a>
-            <a href="{% url 'cotizacion:listar' %}" class="btn btn-primary crm-btn">
-            Ver Cotizaciones
-            </a>
+            {% if request.session.modo_consultor%}
+                <a href="{% url 'cotizacion:listar' %}" class="btn btn-primary crm-btn">
+                        Ver Cotizaciones
+                </a>
+            {%else%}
+                <a href="{% url 'servicio:crear' %}" class="btn btn-primary crm-btn">
+                     + Crear Servicio
+                </a>
+                <a href="{% url 'cotizacion:crear' %}" class="btn btn-primary crm-btn">
+                     + Crear Cotización
+                </a>
+                <a href="{% url 'cotizacion:listar' %}" class="btn btn-primary crm-btn">
+                    Ver Cotizaciones
+                </a>
+            {%endif%}  
+            
         </div>
     </div>
     
@@ -23,9 +30,9 @@
         <div class="crm-card">
             <div class="fw-bold mb-1">
                 {{ s.nombre |default:"" }}
-                {% if not s.activo %}
+                {% if request.session.modo_superusuario and  not s.activo %}
                         <span class="badge bg-danger ms-2">Eliminado</span>
-                {% else %}
+                {% elif request.session.modo_superusuario and s.activo %}
                         <span class="badge bg-success ms-2">Activo</span>
                 {% endif %}
             </div>

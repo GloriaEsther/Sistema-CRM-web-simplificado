@@ -12,6 +12,9 @@
                 + Agregar Cliente
                 </a>
             {%else%}
+                <a href="{% url 'cliente:crear' %}" class="btn btn-primary crm-btn">
+                + Agregar Cliente
+                </a>
                 <a href="{% url 'cliente:importar' %}" class="btn btn-primary crm-btn">
                     + Importar Cliente
                 </a>     
