@@ -8,7 +8,7 @@ from .forms import ServicioForm
 from usuario.models import Usuario
 from crm.utils import queryset_servicios_por_rol,require_roles,obtener_owner
 
-@require_roles(['Dueño', 'Administrador','Superusuario'])
+@require_roles(['Dueño', 'Administrador','Superusuario','Consultor'])
 def servicios_list(request):
     usuario = Usuario.activos.filter(
         idusuario=request.session.get("idusuario")
@@ -37,7 +37,14 @@ def servicio_crear(request):
     if not owner:
         messages.error(request, "No hay negocio seleccionado.")
         return redirect("superusuario:listar_negocios")
-
+    
+    if usuario.rol.nombre_rol == "Consultor":
+        messages.error(
+            request,
+            "No tienes permisos para registrar servicios."
+        )
+        return redirect("servicios:listar")
+    
     if request.method == "POST":
         form = ServicioForm(request.POST)
         if form.is_valid():
@@ -64,6 +71,13 @@ def servicio_editar(request, pk):
     qs = queryset_servicios_por_rol(usuario,owner)
     servicio = get_object_or_404(qs, idservicio=pk)
 
+    if usuario.rol.nombre_rol == "Consultor":
+        messages.error(
+            request,
+            "No tienes permisos para editar servicios."
+        )
+        return redirect("servicios:listar")
+    
     if request.method == "POST":
         form = ServicioForm(request.POST, instance=servicio)
         if form.is_valid():
@@ -93,6 +107,12 @@ def servicio_eliminar(request, pk):
         servicio.eliminar_logico()
         messages.success(request, "Servicio eliminado correctamente.")
         return redirect("servicio:listar")
+    if usuario.rol.nombre_rol == "Consultor":
+        messages.error(
+            request,
+            "No tienes permisos para eliminar servicios."
+        )
+        return redirect("servicios:listar")
     # Vendedor: solo si él lo registró(por si en algun momento se permitiria a vendedor entrar a servicios)
     if rol == "Vendedor":
         if servicio.usuario_registro != usuario.idusuario:

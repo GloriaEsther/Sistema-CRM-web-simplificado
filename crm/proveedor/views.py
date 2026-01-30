@@ -2,11 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import ProveedorForm
 from .models import Proveedor
 from django.contrib import messages
-from crm.utils import queryset_proveedores_por_rol,obtener_owner
+from crm.utils import queryset_proveedores_por_rol,obtener_owner,require_roles
 from usuario.models import Usuario
 from time import time
 from django.http import HttpResponse
 
+@require_roles(['Dueño', 'Administrador','Superusuario','Consultor'])
 def proveedor_list(request):
     usuario = Usuario.activos.filter(
         idusuario=request.session.get("idusuario")

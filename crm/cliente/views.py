@@ -12,6 +12,7 @@ from .forms import ImportarClientesForm
 from django.db import transaction
 import traceback
 
+@require_roles(['Dueño', 'Administrador','Superusuario','Consultor'])
 def clientes_list(request):
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
     owner = obtener_owner(request, usuario)
