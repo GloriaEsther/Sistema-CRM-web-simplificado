@@ -6,7 +6,7 @@ from cotizacion.models import Cotizacion, CotizacionDetalle
 from django.http import HttpResponse
 from time import time
 from django.contrib import messages
-from crm.utils import queryset_cotizaciones_por_rol,obtener_owner,queryset_clientes_por_rol,queryset_servicios_por_rol
+from crm.utils import queryset_cotizaciones_por_rol,obtener_owner,queryset_clientes_por_rol,queryset_servicios_por_rol,require_roles
 
 def cotizacion_crear(request):
     usuario = Usuario.activos.filter(
@@ -24,6 +24,13 @@ def cotizacion_crear(request):
     
     clientes = queryset_clientes_por_rol(usuario,owner)
     servicios = queryset_servicios_por_rol(usuario,owner)
+
+    if usuario.rol.nombre_rol == "Consultor":
+        messages.error(
+            request,
+            "No tienes permisos para registrar cotizaciones."
+        )
+        return redirect("cotizacion:listar")
     
     if request.method == "POST":
         cliente_id = request.POST.get("cliente")
@@ -74,6 +81,7 @@ def cotizacion_detalle(request, pk):
     })
 
 
+@require_roles(['Dueño', 'Administrador','Superusuario','Consultor'])
 def cotizaciones_list(request):
     usuario = Usuario.activos.filter(
         idusuario=request.session.get("idusuario")

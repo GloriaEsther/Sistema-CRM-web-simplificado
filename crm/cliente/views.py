@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import ClienteForm
 from .models import Cliente
 from django.contrib import messages
-from crm.utils import queryset_clientes_por_rol,limpiar_valor,require_roles,obtener_owner
+from crm.utils import queryset_clientes_por_rol,limpiar_valor,obtener_owner
 from usuario.models import Usuario
 from django.http import HttpResponse,HttpResponseForbidden
 from time import time
@@ -12,7 +12,6 @@ from .forms import ImportarClientesForm
 from django.db import transaction
 import traceback
 
-@require_roles(['Dueño', 'Administrador','Superusuario','Consultor'])
 def clientes_list(request):
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
     owner = obtener_owner(request, usuario)

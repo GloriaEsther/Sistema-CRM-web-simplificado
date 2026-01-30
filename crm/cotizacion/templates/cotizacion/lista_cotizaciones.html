@@ -10,9 +10,9 @@
 
         <div class="fw-bold mb-1">
             {{ c.cliente.nombre }} {{ c.cliente.apellidopaterno|default:"" }} {{ c.cliente.apellidomaterno|default:"" }}
-            {% if not c.activo %}
+            {% if request.session.modo_superusuario and not c.activo %}
                         <span class="badge bg-danger ms-2">Eliminado</span>
-            {% else %}
+            {% elif request.session.modo_superusuario and c.activo%}
                         <span class="badge bg-success ms-2">Activo</span>
             {% endif %}
         </div>
