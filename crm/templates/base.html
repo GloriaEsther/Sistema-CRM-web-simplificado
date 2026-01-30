@@ -97,7 +97,7 @@
 
         {% if usuario.rol.nombre_rol == "Superusuario" or usuario.rol.nombre_rol == "Consultor"%}
           <a href="{% url 'superusuario:listar_negocios' %}" class="menu-item">
-           Buscar negocios
+           Buscar micronegocios
           </a>
           <a href="{% url 'usuario:perfil' %}" class="menu-item">
             Información del perfil
