@@ -4,7 +4,7 @@ from .models import Cliente
 from django.contrib import messages
 from crm.utils import queryset_clientes_por_rol,limpiar_valor,require_roles,obtener_owner
 from usuario.models import Usuario
-from django.http import HttpResponse
+from django.http import HttpResponse,HttpResponseForbidden
 from time import time
 #Importar datos desde Excel
 import pandas as pd
@@ -88,8 +88,15 @@ def cliente_eliminar(request, pk):
         messages.success(request, "Cliente eliminado correctamente.")
         return redirect("cliente:listar")
 
-    # Vendedor: solo si él lo registró
+    # Vendedor y Consultor: solo si él lo registró
     if rol == "Vendedor":
+        if cliente.usuario_registro != usuario.idusuario:
+            messages.error(
+                request,
+                "No tienes permiso para eliminar este cliente."
+            )
+            return redirect("cliente:listar")
+    if rol == "Consultor":
         if cliente.usuario_registro != usuario.idusuario:
             messages.error(
                 request,
@@ -116,6 +123,9 @@ def importar_clientes(request):
     usuario = Usuario.activos.filter(
         idusuario=request.session.get("idusuario")
     ).first()
+    rol= request.session.get("rol")
+    #if rol == "Consultor":
+     # return HttpResponseForbidden()
 
     if request.method == "POST":
         form = ImportarClientesForm(request.POST, request.FILES)
@@ -145,11 +155,7 @@ def importar_clientes(request):
                             f"Falta la columna '{campo}' en el archivo Excel"
                         )
                         return redirect("cliente:importar")
-                #owner = (
-                 # usuario if usuario.rol.nombre_rol == "Dueño"
-                  #else usuario.owner_id
-                #)
-               
+
                 owner = obtener_owner(request, usuario)
 
                 if not owner:
@@ -164,8 +170,7 @@ def importar_clientes(request):
 
                 clientes = Cliente.todos.filter(owner=owner).values_list('rfc', 'numerotelcli', 'correo')#prueba... 
 
-                #buscar con sets(prueba)
-                            
+                #buscar con sets
                 rfc_existente = {str(r[0]).strip().upper() for r in clientes if r[0]}
                 numtel_existente = {str(r[1]).strip() for r in clientes if r[1]}
                 correo_existentes = {str(r[2]).strip().lower() for r in clientes if r[2]}

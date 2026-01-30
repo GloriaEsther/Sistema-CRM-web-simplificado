@@ -7,25 +7,28 @@
     <div class="crm-section-header">
         <h4 class="crm-title">Clientes</h4>
         <div class="gap-2 mt-3 d-md-flex justify-content-md-end mb-3">
-            <a href="{% url 'cliente:crear' %}" class="btn btn-primary crm-btn">
-             + Agregar Cliente
-            </a>
-           
-            <a href="{% url 'cliente:importar' %}" class="btn btn-primary crm-btn">
-             + Importar Cliente
-            </a>             
+            {% if request.session.modo_consultor%}
+                <a href="{% url 'cliente:crear' %}" class="btn btn-primary crm-btn">
+                + Agregar Cliente
+                </a>
+            {%else%}
+                <a href="{% url 'cliente:importar' %}" class="btn btn-primary crm-btn">
+                    + Importar Cliente
+                </a>     
+            {%endif%}  
+
         </div>
     </div>
 
     {% for c in clientes %}
         <div class="crm-card">
                 <div class="fw-bold mb-1">
-                    {{ c.nombre }} {{ c.apellidopaterno |default:""  }} {{ c.apellidomaterno |default:""  }}
-                    {% if not c.activo %}
-                        <span class="badge bg-danger ms-2">Eliminado</span>
-                    {% else %}
-                        <span class="badge bg-success ms-2">Activo</span>
-                    {% endif %}
+                    {{ c.nombre }} {{ c.apellidopaterno |default:""  }} {{ c.apellidomaterno |default:""  }}             
+                        {% if request.session.modo_superusuario and not c.activo %}
+                            <span class="badge bg-danger ms-2">Eliminado</span>
+                        {% elif request.session.modo_superusuario and c.activo %}
+                            <span class="badge bg-success ms-2">Activo</span>
+                        {% endif %}                    
                 </div>
 
                 <div class="text-muted small">📞 {{ c.numerotelcli }}</div>

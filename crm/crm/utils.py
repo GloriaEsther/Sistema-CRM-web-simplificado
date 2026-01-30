@@ -117,7 +117,7 @@ def solo_supervisor(view_func):
 def obtener_owner(request, usuario):
     rol = usuario.rol.nombre_rol
 
-    if rol == "Superusuario":
+    if rol == "Superusuario" or rol == "Consultor":#
         owner_id = request.session.get("dueno_supervisado")
         if owner_id:
             return Usuario.activos.filter(idusuario=owner_id).first()
