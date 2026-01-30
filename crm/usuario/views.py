@@ -58,6 +58,8 @@ def iniciar_sesion(request):
                 # Redirección según rol
                 if usuario.rol.nombre_rol == "Superusuario":
                     return redirect('superusuario:dashboard')
+                if usuario.rol.nombre_rol == "Consultor":
+                    return redirect('superusuario:listar_negocios')
                 return redirect('oportunidades:kanban')
                               
             else:
