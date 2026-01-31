@@ -14,8 +14,9 @@ class VentaForm(forms.ModelForm):
         if self.owner:
             self.fields["oportunidad_venta"].queryset = (
                 Oportunidad.activos
-                .filter(negocio_oportunidad=self.owner)
-                .exclude(etapa_ventas = 6)#etapa_ventas="Cierre-Perdido"
+                .filter(negocio_oportunidad=self.owner,
+                etapa_ventas__nombre_etapa="Cierre-Ganado")
+                .exclude(etapa_ventas__nombre_etapa = "Cierre-Perdido")#etapa_ventas=6
             )
         else:
             self.fields["oportunidad_venta"].queryset = Oportunidad.objects.none()
