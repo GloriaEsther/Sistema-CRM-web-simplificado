@@ -57,7 +57,8 @@
                     <button
                             type="button"
                             class="btn btn-sm btn-danger btn-eliminar"
-                            data-url="{% url 'ventas:venta_eliminar' v.idventa %}"
+                            data-url="{% url 'ventas:venta_eliminar' 0 %}"
+                            data-id="{{ v.idventa }}"
                             data-nombre="{{ v.nombreventa }}">
                             Eliminar
                     </button>

@@ -189,7 +189,15 @@ def venta_editar(request, pk):
             "No tienes permisos para editar ventas."
         )
         return redirect("ventas:listar")
-
+    
+    if usuario.rol.nombre_rol == "Vendedor":
+        if venta.usuario_registro != usuario:
+            messages.error(
+                request,
+                "No tienes permiso para editar esta venta."
+            )
+            return redirect("ventas:listar")
+        
     if request.method == "POST":
         form = VentaForm(request.POST, instance=venta, usuario=usuario,owner=owner)
         if form.is_valid():
@@ -240,7 +248,7 @@ def venta_eliminar(request, pk):
                 request,
                 "No tienes permiso para eliminar este cliente."
             )
-            return redirect("cliente:listar")
+            return redirect("ventas:listar")
         if venta.estatus_cobro.idestatus_cobros == 3:
           messages.error(request, "No se puede eliminar una venta cobrada.")
           return redirect("ventas:listar")
