@@ -38,30 +38,33 @@ El proyecto cuenta con una base de análisis y diseño, clos cuales se encuentra
 - Github
 
 ## Instalación y Configuración Local
-Sigue estos pasos para ejecutar el proyecto en tu entorno local.
-⋅⋅⋅Nota: Este proyecto utiliza un enfoque Database-First. Asegúrate de tener instalado MySQL y de contar con el esquema de la base de datos antes de iniciar el servidor.
+Sigue estos pasos para ejecutar el proyecto en tu entorno local.  
 
-1. Clonar el repositorio
-⋅⋅⋅git clone https://github.com/GloriaEsther/Sistema-CRM-web-simplificado.git
-⋅⋅⋅cd Sistema-CRM-web-simplificado
+Nota: Este proyecto utiliza un enfoque Database-First. Asegúrate de tener instalado MySQL y de contar con el esquema de la base de datos antes de iniciar el servidor.
 
-2. Configurar el Entorno Virtual
-⋅⋅⋅Se recomienda el uso de un entorno virtual para aislar las dependencias del proyecto:
+1. Clonar el repositorio  
+git clone https://github.com/GloriaEsther/Sistema-CRM-web-simplificado.git  
+cd Sistema-CRM-web-simplificado
+
+2. Configurar el Entorno Virtual  
+Se recomienda el uso de un entorno virtual para aislar las dependencias del proyecto:
 - Crear el entorno: python -m venv venv
 - Activar el entorno:
   - En Windows: venv\Scripts\activate
   - Linux/macOS:source venv/bin/activate
     
-3. Instalar Dependencias
-⋅⋅⋅Con el entorno activo, instala las librerías necesarias listadas en el archivo requirements.txt: ⋅⋅⋅pip install -r requirements.txt
+3. Instalar Dependencias  
+Con el entorno activo, instala las librerías necesarias listadas en el archivo requirements.txt:  
+pip install -r requirements.txt
 
-4. Configuración de la Base de Datos
-⋅⋅⋅Crea un esquema en tu gestor de MySQL.
-⋅⋅⋅Importa el archivo Base de datos_CRM.sql (el cual esta en /docs/sql ) o asegúrate de que las ⋅⋅⋅tablas coincidan con el diseño E-R proporcionado en la carpeta /docs/diagramas.
-⋅⋅⋅Actualiza tus credenciales locales (Usuario, Contraseña, Host) en el archivo crm/settings.py.
-⋅⋅⋅Ejecuta el siguiente comando para sincronizar el estado del framework con la base de datos ⋅⋅⋅importada: python manage.py migrate
+4. Configuración de la Base de Datos  
+Crea un esquema en tu gestor de MySQL.  
+Importa el archivo Base de datos_CRM.sql (el cual esta en /docs/sql ) o asegúrate de que las tablas coincidan con el diseño E-R proporcionado en la carpeta /docs/diagramas.  
+Actualiza tus credenciales locales (Usuario, Contraseña, Host) en el archivo crm/settings.py.  
+Ejecuta el siguiente comando para sincronizar el estado del framework con la base de datos  
+importada: python manage.py migrate
 ##### Nota: Esto registrará las tablas existentes en el historial de Django y asegurará el correcto funcionamiento del sistema de autenticación.
 
-5. Inicialización del Sistema
-⋅⋅⋅Por ultimo, queda inicializar el servidor de desarrollo: python manage.py runserver
-⋅⋅⋅Accede a: http://127.0.0.1:8000
+5. Inicialización del Sistema  
+Por ultimo, queda inicializar el servidor de desarrollo: python manage.py runserver  
+Accede a: http://127.0.0.1:8000
