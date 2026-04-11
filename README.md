@@ -94,12 +94,17 @@ pip install -r requirements.txt
 - Abrir en navegador: http://127.0.0.1:8000
 
 ## Capturas del sistema
-
-![Login](static/img/Login.png)
-![Pipeline de Oportunidades](static/img/Pipeline de Oportunidades.png)
-![Opciones](static/img/Opciones.png)
-![Gestión de Clientes](static/img/Clientes.png)
-![Importar clientes desde Excel](static/img/Importar clientes desde Excel.png)
+>Los datos que se ven en las imagenes son un ejemplo
+### Login
+![image alt](https://github.com/GloriaEsther/Sistema-CRM-web-simplificado/blob/c78726a17c7fe1967f3a4060679720b271c11a72/crm/static/img/Login.png)
+### Pipeline de Oportunidades
+![image alt](https://github.com/GloriaEsther/Sistema-CRM-web-simplificado/blob/c78726a17c7fe1967f3a4060679720b271c11a72/crm/static/img/Pipeline%20de%20Oportunidades.png)
+### Opciones
+![image alt](https://github.com/GloriaEsther/Sistema-CRM-web-simplificado/blob/c78726a17c7fe1967f3a4060679720b271c11a72/crm/static/img/Opciones.png)
+### Gestión de Clientes
+![image alt](https://github.com/GloriaEsther/Sistema-CRM-web-simplificado/blob/c78726a17c7fe1967f3a4060679720b271c11a72/crm/static/img/Clientes.png)
+### Importar clientes desde Excel
+![image alt](https://github.com/GloriaEsther/Sistema-CRM-web-simplificado/blob/c78726a17c7fe1967f3a4060679720b271c11a72/crm/static/img/Importar%20clientes%20desde%20Excel.png)
 
 ## ⚠️Uso del código
 Este repositorio es público únicamente con fines de portafolio.
