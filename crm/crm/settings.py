@@ -86,7 +86,7 @@ WSGI_APPLICATION = 'crm.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME':'crm_proempleo',#es la nueva bd
+        'NAME':'crm_proempleo',
         'USER': 'root',           
         'PASSWORD': '1234',       
         'HOST': '127.0.0.1',
@@ -120,22 +120,20 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'es-mx'
 
 TIME_ZONE = 'America/Mexico_City'
-#si se pudo tu :D
+
 
 USE_I18N = True
-USE_TZ = False# Se le cambio porque esto tambien comvierte horas normales a UTC...
+USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-#para que no de problemas static
 STATIC_URL = 'static/'
-
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
-#para subir logo
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
