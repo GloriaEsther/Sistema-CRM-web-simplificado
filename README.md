@@ -98,7 +98,7 @@ pip install -r requirements.txt
 ### Login
 ![image alt](https://github.com/GloriaEsther/Sistema-CRM-web-simplificado/blob/c78726a17c7fe1967f3a4060679720b271c11a72/crm/static/img/Login.png)
 ### Pipeline de Oportunidades
-![image alt](https://github.com/GloriaEsther/Sistema-CRM-web-simplificado/blob/c78726a17c7fe1967f3a4060679720b271c11a72/crm/static/img/Pipeline%20de%20Oportunidades.png)
+![image alt](https://github.com/GloriaEsther/Sistema-CRM-web-simplificado/blob/9982c74e32abdb368272cc767216f8562de67546/crm/static/img/Pipeline%20de%20Oportunidades.png)
 ### Opciones
 ![image alt](https://github.com/GloriaEsther/Sistema-CRM-web-simplificado/blob/c78726a17c7fe1967f3a4060679720b271c11a72/crm/static/img/Opciones.png)
 ### Gestión de Clientes
@@ -112,7 +112,7 @@ No está permitido el uso, copia o distribución del código sin autorización d
 
 ## Estado del proyecto
 MVP funcional desarrollado como parte de Residencia Profesional.
-Actualmente en evaluación para evolución a producto comercial.//
+Actualmente en evaluación para evolución a producto comercial.
 
 ## Autor
 Gloria Esther Martínez Martínez
