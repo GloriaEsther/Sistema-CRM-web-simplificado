@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
@@ -79,21 +78,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'crm.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME':'crm_proempleo',
-        'USER': 'root',           
-        'PASSWORD': '1234',       
+        'NAME':'crm_db',
+        'USER': 'user',           
+        'PASSWORD': 'yourpassword',       
         'HOST': '127.0.0.1',
-        'PORT': '3305',
+        'PORT': 'XXXX',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -113,14 +110,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
 LANGUAGE_CODE = 'es-mx'
 
 TIME_ZONE = 'America/Mexico_City'
-
 
 USE_I18N = True
 USE_TZ = False

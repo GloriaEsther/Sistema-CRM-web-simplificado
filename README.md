@@ -71,6 +71,7 @@ El proyecto cuenta con documentación en la carpeta '/docs':
 - Análisis de Requerimientos: Metodología MoSCoW y especificación de requerimientos.
 - Diagramas de casos de uso
 - Modelo Entidad-Relación (E-R)
+> Nota: El esquema completo de base de datos forma parte de la lógica interna del sistema y se incluye parcialmente con fines demostrativos.
 
 ## Instalación y Configuración Local
 1. Clonar el repositorio  
