@@ -7,6 +7,10 @@ Este proyecto es un Producto Mínimo Viable (MVP) enfocado en resolver un proble
 
 El sistema permite organizar la información comercial y mejorar el control operativo sin necesidad de software complejo o costoso.
 
+## Contexto del Proyecto
+Este sistema fue desarrollado inicialmente como propuesta para una organización enfocada en el apoyo a microempresas, como parte de una Residencia Profesional en Ingeniería en Sistemas Computacionales.
+El proyecto evolucionó a un Producto Mínimo Viable (MVP) con enfoque en resolver necesidades reales de gestión comercial en micronegocios, y actualmente se encuentra en proceso de validación para su posible comercialización.
+
 ## Enfoque del proyecto
 - Simplicidad de uso
 - Centralización de información

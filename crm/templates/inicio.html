@@ -76,13 +76,11 @@
             </div>
 
             <div class="col-lg-6 d-flex justify-content-center">
-                <div class="logo-box d-flex flex-column justify-content-center align-items-center p-3" 
-                     style="background-color: {{ preferencias.color_primario|default:'#dce8ff' }};">
-                    
+                <div class="d-flex flex-column justify-content-center align-items-center p-3">
                     {% if preferencias and preferencias.logo %}
                         <img src="{{ preferencias.logo.url }}" alt="Logo del Negocio" class="img-fluid logo-display">
                     {% else %}
-                        <img src="{% static 'img/Logo blanco.png' %}"
+                        <img src="{% static 'img/crm.jpg' %}"
                             alt="Logo CRM"
                             class="img-fluid logo-display">
                     {% endif %}
