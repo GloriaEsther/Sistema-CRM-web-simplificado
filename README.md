@@ -90,7 +90,7 @@ pip install -r requirements.txt
 
 4. Configurar de la Base de Datos  
 - Crear esquema en MySQL
-- Importar archivo SQL ubicado en /docs/sql
+>Se incluye un esquema de base de datos simplificado (`schema_demo.sql`) con fines demostrativos. Para acceso a la versión completa, contactar al autor.
 - Configurar credenciales en crm/settings.py
 - python manage.py migrate
 
