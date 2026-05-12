@@ -9,18 +9,13 @@ __pycache__/
 *.tmp
 *.bak
 *~
-
 # ========== Entornos virtuales ==========
-env/
-venv/
-.venv/
-ENV/
-.ENV/
 venvcrm/
 # ========== Variables de entorno ==========
 *.env
 .env/
 .env.*.local
+.env
 
 # ========== Archivos de base de datos ==========
 *.sqlite3
