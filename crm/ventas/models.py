@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils import timezone
 from usuario.models import Usuario
+from servicios.models import Servicio
+from inventario.models import Inventario
 
 class ActivoManager(models.Manager):
     """Devuelve solo los registros activos (no eliminados)"""
@@ -31,6 +33,17 @@ class EstatusCobros(models.Model):
     def __str__(self):
         return self.nombre_estatus_cobro
     
+class FormaCobro(models.Model):
+    idforma_cobro = models.AutoField(primary_key=True)
+    nombre_forma_cobro = models.CharField(max_length=45)
+    
+    class Meta:
+        managed = False 
+        db_table = 'forma_cobro_cat'
+
+    def __str__(self):
+        return self.nombre_forma_cobro
+    
 class Venta(models.Model):
     idventa = models.AutoField(primary_key=True)
     nombreventa = models.CharField(max_length=45)
@@ -42,7 +55,6 @@ class Venta(models.Model):
     activo = models.BooleanField(default=True)
     fecha_eliminacion = models.DateTimeField(null=True,blank=True)
     estatus_cobro = models.ForeignKey(EstatusCobros, on_delete=models.PROTECT, db_column='estatus_cobro')
-   #su relacion 1:1 con Oportunidad
     oportunidad_venta = models.ForeignKey(
         'oportunidades.Oportunidad',
         on_delete=models.PROTECT,
@@ -51,7 +63,7 @@ class Venta(models.Model):
         blank=True
     )
     usuario_registro = models.ForeignKey(Usuario, on_delete=models.PROTECT, db_column='usuario_registro')
-    owner = models.ForeignKey(#esto es para distinguir las ventas  de cada negocio(como owner_id pero aplicado a ventas)
+    owner = models.ForeignKey(
         Usuario,
         on_delete=models.PROTECT,
         db_column='owner_id',
@@ -66,10 +78,78 @@ class Venta(models.Model):
         db_table = 'ventas'
     
     def eliminar_logico(self):
-        if self.activo:  # evita volver a marcarlo si ya está eliminado
+        if self.activo:  
             self.activo = False
             self.fecha_eliminacion = timezone.now()
             self.save()
 
     def __str__(self):
         return f"({self.nombreventa}) - ${self.preciototal} "
+    
+class VentaDetalle(models.Model):
+    iddetalle_venta = models.AutoField(primary_key=True)
+    cantidad = models.PositiveIntegerField(default=1)
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2)
+    venta_id = models.ForeignKey(
+        Venta,
+        on_delete=models.CASCADE,
+        null=True
+    )
+    servicio = models.ForeignKey(
+        Servicio,
+        on_delete=models.PROTECT,
+        null=True, blank= True
+    )
+    inventario = models.ForeignKey(
+        Inventario,
+        on_delete=models.PROTECT,
+        null=True,blank= True
+    )
+    activo=models.BooleanField(default=True)
+
+    activos = ActivoManager()
+    todos = models.Manager()
+
+    class Meta:
+        managed = False
+        db_table = 'detalle_venta'
+    
+    def __str__(self):
+        item = self.servicio.nombre if self.servicio.nombre else self.inventario.nombrearticulo
+        return f"{self.cantidad}x {item} en Venta #{self.venta_id_id}"
+
+
+class Cobros(models.Model):
+    idcobros = models.AutoField(primary_key=True)
+    monto_recibido = models.DecimalField(max_digits=10, decimal_places=2)
+    fecha_cobro = models.DateTimeField(auto_now_add=True)
+    monto_restante = models.DecimalField(max_digits=10, decimal_places=2)
+    fecha_registro = models.DateTimeField(auto_now_add=True)
+    fecha_modificacion = models.DateTimeField(auto_now=True)
+    activo = models.BooleanField(default=True) 
+    fecha_eliminacion = models.DateTimeField(null=True,blank=True)
+    forma_cobro =  models.ForeignKey(FormaCobro, on_delete=models.PROTECT, db_column='forma_cobro')
+    ventas_registro = models.ForeignKey(Venta, on_delete=models.PROTECT, db_column='ventas_registro')
+    usuario_registro = models.ForeignKey(Usuario, on_delete=models.PROTECT, db_column='usuario_registro')
+    owner = models.ForeignKey(
+        Usuario,
+        on_delete=models.PROTECT,
+        db_column='owner_id',
+        related_name='cobros_negocio'
+    )
+    activos = ActivoManager()
+    objects = models.Manager() 
+
+    class Meta:
+        managed = False
+        db_table = 'cobros'
+    
+    def eliminar_logico(self):
+        if self.activo:  
+            self.activo = False
+            self.fecha_eliminacion = timezone.now()
+            self.save()
+
+    def __str__(self):
+        return f"(${self.monto_recibido}) - ${self.monto_restante} - ${self.fecha_cobro}"
