@@ -2,7 +2,6 @@ from django.db import models
 from usuario.models import Usuario
 from django.utils import timezone
 
-#para eliminacion logica....
 class ActivoManager(models.Manager):
     """Devuelve solo los registros activos de usuarios (no eliminados)"""
     def get_queryset(self):
@@ -17,14 +16,13 @@ class Servicio(models.Model):
     fecha_registro = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
     fecha_eliminacion = models.DateTimeField(null=True, blank=True)
-
-    usuario_registro = models.ForeignKey(Usuario, on_delete=models.PROTECT, db_column='usuario_registro')#Todo registro fue hecho por un usuario(registroa quien registro que)
-    owner = models.ForeignKey(#esto es para distinguir los servicios de cada negocio(como owner_id pero aplicado a Servicios)
+    usuario_registro = models.ForeignKey(Usuario, on_delete=models.PROTECT, db_column='usuario_registro')#(quien registro que)
+    owner = models.ForeignKey(
         Usuario,
         on_delete=models.PROTECT,
         db_column='owner_id',
-        related_name='servicios_del_negocio',#Todo servicio debe pertenecer a un negocio
-        null=False,# null=True,
+        related_name='servicios_del_negocio',
+        null=False,
         blank=True
     )
     activos = ActivoManager()
@@ -35,10 +33,10 @@ class Servicio(models.Model):
         db_table = 'servicio'
     
     def eliminar_logico(self):
-        if self.activo:  # evita volver a marcarlo si ya está eliminado
+        if self.activo: 
             self.activo = False
             self.fecha_eliminacion = timezone.now()
             self.save()
 
     def __str__(self):
-        return f"{self.nombre} - ${self.precio} {self.descripcion}"#self.nombre
+        return f"{self.nombre} - ${self.precio} "

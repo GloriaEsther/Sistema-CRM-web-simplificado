@@ -2,7 +2,6 @@ from django.db import models
 from usuario.models import Usuario
 from django.utils import timezone
 from proveedor.models import Proveedor
-#para eliminacion logica....
 class ActivoManager(models.Manager):
     """Devuelve solo los registros activos (no eliminados)"""
     def get_queryset(self):
@@ -42,7 +41,7 @@ class Inventario(models.Model):
     fecha_modificacion = models.DateTimeField(auto_now=True)
     fecha_eliminacion = models.DateTimeField(null=True, blank=True)
     usuario_registro = models.ForeignKey(Usuario, on_delete=models.PROTECT, db_column='usuario_registro')
-    owner = models.ForeignKey(#esto es para distinguir los clientes de cada negocio(como owner_id pero aplicado a clientes)
+    owner = models.ForeignKey(
         Usuario,
         on_delete=models.PROTECT,
         db_column='owner_id',
@@ -62,10 +61,10 @@ class Inventario(models.Model):
         db_table = 'inventario'
 
     def eliminar_logico(self):
-        if self.activo:  # evita volver a marcarlo si ya está eliminado
+        if self.activo: 
             self.activo = False
             self.fecha_eliminacion = timezone.now()
             self.save()
 
     def __str__(self):
-        return f"{self.nombrearticulo} - ${self.precio} {self.descripcion} {self.cantidad_disponible}"
+        return f"{self.nombrearticulo} - ${self.precio}"

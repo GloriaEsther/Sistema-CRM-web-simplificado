@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import VentaForm
-from .models import Venta
+from ventas.forms import VentaForm,VentaDetalleFormSet
+from django.db import transaction
+from ventas.models import Venta
 from usuario.models import Usuario
 from django.contrib import messages
 from django.utils import timezone
@@ -53,24 +54,31 @@ def crear_venta_manual(request):
             usuario=usuario, 
             owner=owner
         )
-        if form.is_valid():
-            venta = form.save(commit=False)
-
-            venta.owner = owner
-            venta.usuario_registro = usuario 
-
-            venta.save()
-
-            messages.success(
-                request,
-                "Venta creada correctamente."
-            )
-            return redirect("ventas:listar")
+        formset = VentaDetalleFormSet (request.POST)
+        if form.is_valid() and formset.is_valid():
+            try:
+                # Usamos una transacción para que si algo falla en los detalles, se cancele la venta completa
+                with transaction.atomic():
+                    venta = form.save(commit=False)
+                    venta.owner = owner
+                    venta.usuario_registro = usuario 
+                    venta.save() 
+    
+                    # Vinculamos de manera automática los detalles a la instancia de la venta recién creada
+                    formset.instance = venta
+                    formset.save()
+                    
+                messages.success(request, "Venta y sus detalles creados correctamente.")
+                return redirect("ventas:listar")     
+            except Exception as e:
+                messages.error(request, f"Ocurrió un error al guardar los detalles: {e}")
     else:
-        form = VentaForm(usuario=usuario,owner=owner)
+        form = VentaForm(usuario=usuario, owner=owner)
+        formset = VentaDetalleFormSet()
 
     return render(request, "ventas/crear_ventas.html", {
-        "form": form
+        "form": form,
+        "formset": formset # Enviamos el formset al template
     })
 
 def corte_caja(request):
@@ -199,19 +207,33 @@ def venta_editar(request, pk):
             return redirect("ventas:listar")
         
     if request.method == "POST":
+        # Pasamos instance=venta para que sepa qué registro actualizar
         form = VentaForm(request.POST, instance=venta, usuario=usuario,owner=owner)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Venta actualizada correctamente.")
-            return redirect("ventas:listar")
+        # El formset también recibe el POST y la instancia de la venta madre
+        formset = VentaDetalleFormSet(request.POST, instance=venta)
+        if form.is_valid() and formset.is_valid():
+            try:
+                with transaction.atomic():
+                    # Guarda los cambios del formulario principal (ej. nombre o precio total)
+                    venta = form.save()
+                    
+                    # Guarda los cambios de los detalles (crea, edita o elimina automáticamente)
+                    formset.save()
+                    
+                messages.success(request, "Venta actualizada correctamente.")
+                return redirect("ventas:listar")
+            except Exception as e:
+                messages.error(request, f"Ocurrió un error al actualizar los detalles: {e}")
     else:
-        form = VentaForm(instance=venta, usuario=usuario,owner=owner)
+        # En la petición GET, cargamos los datos actuales de la BD pasando instance=venta
+        form = VentaForm(instance=venta, usuario=usuario, owner=owner)
+        formset = VentaDetalleFormSet(instance=venta)
 
     return render(request, "ventas/editar_ventas.html", {
         "form": form,
+        "formset": formset,
         "venta": venta
     })
-
 
 def venta_eliminar(request, pk):
     usuario = Usuario.activos.filter(

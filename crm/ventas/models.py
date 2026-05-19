@@ -94,17 +94,22 @@ class VentaDetalle(models.Model):
     venta_id = models.ForeignKey(
         Venta,
         on_delete=models.CASCADE,
-        null=True
+        null=True,
+        db_column='venta_id'
     )
     servicio = models.ForeignKey(
         Servicio,
         on_delete=models.PROTECT,
-        null=True, blank= True
+        null=True, 
+        blank= True,
+        db_column='servicio_id'
     )
     inventario = models.ForeignKey(
         Inventario,
         on_delete=models.PROTECT,
-        null=True,blank= True
+        null=True,
+        blank= True,
+        db_column='inventario_id'
     )
     activo=models.BooleanField(default=True)
 
@@ -117,7 +122,7 @@ class VentaDetalle(models.Model):
     
     def __str__(self):
         item = self.servicio.nombre if self.servicio.nombre else self.inventario.nombrearticulo
-        return f"{self.cantidad}x {item} en Venta #{self.venta_id_id}"
+        return f"{self.cantidad}x {item} en Venta #{self.venta_id}"
 
 
 class Cobros(models.Model):
