@@ -3,12 +3,15 @@ from ventas.forms import VentaForm,VentaDetalleFormSet
 from django.db import transaction
 from ventas.models import Venta
 from usuario.models import Usuario
+from servicios.models import Servicio
+from inventario.models import Inventario
 from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Sum, Count
 from crm.utils import queryset_ventas_por_rol,obtener_owner
 from time import time
 from django.contrib import messages
+import json
 
 def listar_ventas(request):
     fecha_inicio = request.GET.get('desde')
@@ -54,7 +57,7 @@ def crear_venta_manual(request):
             usuario=usuario, 
             owner=owner
         )
-        formset = VentaDetalleFormSet (request.POST)
+        formset = VentaDetalleFormSet (request.POST, owner=owner)
         if form.is_valid() and formset.is_valid():
             try:
                 # Usamos una transacción para que si algo falla en los detalles, se cancele la venta completa
@@ -74,11 +77,21 @@ def crear_venta_manual(request):
                 messages.error(request, f"Ocurrió un error al guardar los detalles: {e}")
     else:
         form = VentaForm(usuario=usuario, owner=owner)
-        formset = VentaDetalleFormSet()
+        formset = VentaDetalleFormSet(owner=owner)
+    
+    # Creamos un diccionario de precios para el Frontend 
+    servicios_qs = Servicio.todos.filter(activo=True, owner=owner)
+    inventario_qs = Inventario.todos.filter(activo=True, owner=owner)
+
+    diccionario_precios = {
+        'servicios': {str(s.idservicio): float(s.precio) for s in servicios_qs},
+        'inventario': {str(i.idinventario): float(i.precio) for i in inventario_qs}
+    }
 
     return render(request, "ventas/crear_ventas.html", {
         "form": form,
-        "formset": formset # Enviamos el formset al template
+        "formset": formset, 
+        "diccionario_precios": diccionario_precios
     })
 
 def corte_caja(request):

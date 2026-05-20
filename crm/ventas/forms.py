@@ -3,7 +3,8 @@ from .models import Venta,VentaDetalle
 from oportunidades.models import Oportunidad
 from servicios.models import Servicio
 from inventario.models import Inventario
-from django.forms import inlineformset_factory
+from django.forms import inlineformset_factory, BaseInlineFormSet#BaseInlineFormSet es la clase base que permite gestionar colecciones de formularios vinculados a modelos con una relación de uno a muchos (1:N) en una misma página.
+
 class VentaForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.usuario = kwargs.pop("usuario", None)
@@ -50,43 +51,47 @@ class VentaForm(forms.ModelForm):
 
         return precio
 
-class VentaDetalleForm(forms.ModelForm):
-    '''
-    
-    def __init__(self, *args, **kwargs):
-       # self.usuario = kwargs.pop("usuario", None)
-        self.owner = kwargs.pop("owner", None)
-        super().__init__(*args, **kwargs)
-        self.fields["servicio"].required = False
-        self.fields["inventario"].required = False
 
-        if self.owner:
-            self.fields["servicio"].queryset = (
-                Servicio.activos.filter(owner=self.owner)
-            )
-            self.fields["inventario"].queryset = (
-                Inventario.activos.filter(owner=self.owner)
-            )
-        else:
-            self.fields["servicio"].queryset = Servicio.todos.none()
-            self.fields["inventario"].queryset = Inventario.todos.none()
-    '''
-    
+class VentaDetalleForm(forms.ModelForm):
     class Meta:
         model = VentaDetalle
         fields = ['servicio', 'inventario', 'cantidad', 'precio_unitario', 'subtotal']
         widgets = {
-            'servicio': forms.Select(attrs={'class': 'form-select'}),
-            'inventario': forms.Select(attrs={'class': 'form-select'}),
-            'cantidad': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
-            'precio_unitario': forms.NumberInput(attrs={'class': 'form-control', 'min': 0}),
-            'subtotal': forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly'}), 
+            'servicio': forms.Select(attrs={'class': 'form-select form-select-sm select-servicio'}),
+            'inventario': forms.Select(attrs={'class': 'form-select form-select-sm select-inventario'}),
+            'cantidad': forms.NumberInput(attrs={'class': 'form-control form-control-sm cantidad-input', 'min': 1}),
+            'precio_unitario': forms.NumberInput(attrs={'class': 'form-control form-control-sm precio-input', 'min': 0}),
+            'subtotal': forms.NumberInput(attrs={'class': 'form-control form-control-sm subtotal-input', 'readonly': 'readonly'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        # Recibimos el owner que nos manda la clase BaseVentaDetalleFormSet
+        self.owner = kwargs.pop('owner', None)
+        super().__init__(*args, **kwargs)
+
+        if self.owner:
+            self.fields['servicio'].queryset = Servicio.todos.filter(activo=True, owner=self.owner)
+            self.fields['inventario'].queryset = Inventario.todos.filter(activo=True, owner=self.owner)
+        else:
+            self.fields['servicio'].queryset = Servicio.todos.none()
+            self.fields['inventario'].queryset = Inventario.todos.none()
+
+    # Esta clase inyecta el 'owner' a cada renglón nuevo que Django o el usuario cree
+class BaseVentaDetalleFormSet(BaseInlineFormSet):
+    def __init__(self, *args, **kwargs):
+        self.owner = kwargs.pop('owner', None)
+        super().__init__(*args, **kwargs)
+
+    def _construct_form(self, i, **kwargs):
+        kwargs['owner'] = self.owner
+        return super()._construct_form(i, **kwargs)
+
 
 VentaDetalleFormSet = inlineformset_factory(
     Venta,             
     VentaDetalle,      
     form=VentaDetalleForm,
+    formset=BaseVentaDetalleFormSet, # Usamos nuestra base personalizada
     extra=1,           # Cuántos formularios vacíos mostrar por defecto
     can_delete=True    # Permite al usuario eliminar líneas de artículos
 )

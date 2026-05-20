@@ -52,10 +52,49 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  // --- Misión: Cargar precios desde el catálogo usando JSON ---
+  // 1. Leemos el diccionario oculto que Django nos mandó
+  const preciosDataElement = document.getElementById("precios-data");
+  const catalogosPrecios = preciosDataElement ? JSON.parse(preciosDataElement.textContent) : {servicios: {}, inventario: {}};
   // Escucha cambios en tiempo real en la sección de detalles
   if (contenedor) {
     contenedor.addEventListener("input", function (e) {
       if (e.target.classList.contains("cantidad-input") || e.target.classList.contains("precio-input")) {
+        calcularTotales();
+      }  
+    });
+
+    contenedor.addEventListener("change", function (e) {
+      if (e.target.classList.contains("select-servicio") || e.target.classList.contains("select-inventario")) {
+        const fila = e.target.closest(".detalle-row");
+        const precioInput = fila.querySelector(".precio-input");
+        
+        // El ID del servicio o inventario que el usuario seleccionó
+        const idSeleccionado = e.target.value;
+        let precioCatalogo = 0;
+        console.log(idSeleccionado)
+        // Si seleccionó algo válido (no está vacío)
+        if (idSeleccionado) {
+          // 2. Buscamos el precio en nuestro diccionario en memoria
+          if (e.target.classList.contains("select-servicio")) {
+            precioCatalogo = catalogosPrecios.servicios[idSeleccionado] || 0;
+            console.log("Servicios:")
+            console.log(precioCatalogo)
+            const inventarioSelect = fila.querySelector(".select-inventario");
+            if (inventarioSelect) inventarioSelect.value = "";
+          } else {
+            precioCatalogo = catalogosPrecios.inventario[idSeleccionado] || 0;
+            console.log("Inventario:")
+            console.log(precioCatalogo)
+            const servicioSelect = fila.querySelector(".select-servicio");
+            if (servicioSelect) servicioSelect.value = "";
+          }
+        }
+
+        // Asignamos el precio al input
+        precioInput.value = parseFloat(precioCatalogo).toFixed(2);
+        
+        // Recalculamos totales
         calcularTotales();
       }
     });
