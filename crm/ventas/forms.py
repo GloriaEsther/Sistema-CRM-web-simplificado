@@ -3,7 +3,7 @@ from .models import Venta,VentaDetalle
 from oportunidades.models import Oportunidad
 from servicios.models import Servicio
 from inventario.models import Inventario
-from django.forms import inlineformset_factory, BaseInlineFormSet#BaseInlineFormSet es la clase base que permite gestionar colecciones de formularios vinculados a modelos con una relación de uno a muchos (1:N) en una misma página.
+from django.forms import inlineformset_factory, BaseInlineFormSet
 
 class VentaForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):

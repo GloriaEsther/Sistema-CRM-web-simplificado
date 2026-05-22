@@ -95,21 +95,24 @@ class VentaDetalle(models.Model):
         Venta,
         on_delete=models.CASCADE,
         null=True,
-        db_column='venta_id'
+        db_column='venta_id',
+        related_name='detalles'
     )
     servicio = models.ForeignKey(
         Servicio,
         on_delete=models.PROTECT,
         null=True, 
         blank= True,
-        db_column='servicio_id'
+        db_column='servicio_id',
+        related_name='detalles_servicio'
     )
     inventario = models.ForeignKey(
         Inventario,
         on_delete=models.PROTECT,
         null=True,
         blank= True,
-        db_column='inventario_id'
+        db_column='inventario_id',
+        related_name='detalles_inventario'
     )
     activo=models.BooleanField(default=True)
 
@@ -121,7 +124,12 @@ class VentaDetalle(models.Model):
         db_table = 'detalle_venta'
     
     def __str__(self):
-        item = self.servicio.nombre if self.servicio.nombre else self.inventario.nombrearticulo
+        if self.servicio:
+            item = self.servicio.nombre
+        elif self.inventario:
+            item = self.inventario.nombrearticulo
+        else:
+            item = "Concepto no especificado"
         return f"{self.cantidad}x {item} en Venta #{self.venta_id}"
 
 

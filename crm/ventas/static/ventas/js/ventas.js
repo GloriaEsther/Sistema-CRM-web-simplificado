@@ -52,8 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // --- Misión: Cargar precios desde el catálogo usando JSON ---
-  // 1. Leemos el diccionario oculto que Django nos mandó
+  // Leemos el diccionario oculto que Django nos mandó
   const preciosDataElement = document.getElementById("precios-data");
   const catalogosPrecios = preciosDataElement ? JSON.parse(preciosDataElement.textContent) : {servicios: {}, inventario: {}};
   // Escucha cambios en tiempo real en la sección de detalles
@@ -75,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log(idSeleccionado)
         // Si seleccionó algo válido (no está vacío)
         if (idSeleccionado) {
-          // 2. Buscamos el precio en nuestro diccionario en memoria
+          // Buscamos el precio en nuestro diccionario en memoria
           if (e.target.classList.contains("select-servicio")) {
             precioCatalogo = catalogosPrecios.servicios[idSeleccionado] || 0;
             console.log("Servicios:")

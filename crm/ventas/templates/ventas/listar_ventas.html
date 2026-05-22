@@ -49,6 +49,10 @@
                 <td data-label="Fecha">{{ v.fecha_registro|date:"d/m/Y H:i" }}</td>
                 <td data-label="Acciones">
                   {% if v.activo %}
+                    <a href="{% url 'ventas:consultar_venta' v.idventa %}"
+                          class="btn btn-sm">
+                          Consultar
+                    </a>
                     <a href="{% url 'ventas:venta_editar' v.idventa %}"
                           class="btn btn-sm btn-warning">
                           Editar

@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Detalle de Venta{% endblock %}
+
+{% block content %}
+<div class="crm-form-wrapper">
+  <div class="crm-form-card">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="crm-title mb-0">Resumen de Venta</h4>
+      <span class="badge {% if venta.estatus_cobro == 'Pagado' %}bg-success{% else %}bg-warning text-dark{% endif %} p-2 fs-6">
+        {{ venta.get_estatus_cobro_display|default:venta.estatus_cobro }}
+      </span>
+    </div>
+    
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <h5 class="text-secondary fw-bold mb-2">{{ venta.nombreventa }}</h5>
+        <p class="mb-1 text-muted small"><strong>Fecha:</strong> {{ venta.fecha_registro|date:"d/m/Y H:i" }}</p>
+        {% if venta.oportunidad_venta %}
+          <p class="mb-1 text-muted small"><strong>Oportunidad:</strong> {{ venta.oportunidad_venta.nombreventa |default:"" }}</p>
+        {% endif %}
+      </div>
+      <div class="col-md-6 text-md-end mt-2 mt-md-0">
+        <p class="mb-1 text-muted small"><strong>CFDI:</strong> {{ venta.cfdi|default:"No requerido" }}</p>
+        <h5 class="text-orange fw-bold mt-1">Total: ${{ venta.preciototal }}</h5>
+      </div>
+    </div>
+
+    <hr class="my-3">
+
+    <h5 class="mb-3 text-secondary">Artículos y Servicios Incluidos</h5>
+    
+    <div class="table-responsive">
+      <table class="table table-hover table-bordered table-sm align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Concepto / Descripción</th>
+            <th class="text-center" style="width: 120px;">Tipo</th>
+            <th class="text-center" style="width: 100px;">Cantidad</th>
+            <th class="text-end" style="width: 150px;">P. Unitario</th>
+            <th class="text-end" style="width: 150px;">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in venta.detalles.all %}
+          <tr>
+            <td>
+              {% if d.servicio %}
+                {{ d.servicio.nombre }}
+              {% elif d.inventario %}
+                {{ d.inventario.nombrearticulo }}
+              {% else %}
+                <span class="text-muted italic">No especificado</span>
+              {% endif %}
+            </td>
+            <td class="text-center">
+              {% if d.servicio %}
+                <span class="badge bg-info text-dark bg-opacity-25 text-info">Servicio</span>
+              {% else %}
+                <span class="badge bg-secondary bg-opacity-10 text-secondary">Producto</span>
+              {% endif %}
+            </td>
+            <td class="text-center">{{ d.cantidad }}</td>
+            <td class="text-end">${{ d.precio_unitario }}</td>
+            <td class="text-end fw-bold">${{ d.subtotal }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="text-center text-muted py-3">Esta venta no cuenta con conceptos registrados.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      
+    </div>
+    
+    {% if venta.comentarios %}
+      <div class="card bg-light mt-3 border-0 shadow-sm">
+        <div class="card-body py-2 px-3">
+          <h6 class="card-title mb-1 small fw-bold text-muted">Comentarios adicionales:</h6>
+          <p class="card-text small mb-0 text-secondary italic">{{ venta.comentarios }}</p>
+        </div>
+      </div>
+    {% endif %}
+    
+    <div class="mt-4">
+      <a href="{% url 'ventas:listar' %}" class="btn btn-secondary crm-btn">Regresar</a>
+    </div>
+
+  </div> 
+</div>
+{% endblock %}

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from ventas.forms import VentaForm,VentaDetalleFormSet
+from ventas.forms import VentaForm,VentaDetalleFormSet,VentaDetalleForm
 from django.db import transaction
 from ventas.models import Venta
 from usuario.models import Usuario
@@ -12,6 +12,7 @@ from crm.utils import queryset_ventas_por_rol,obtener_owner
 from time import time
 from django.contrib import messages
 import json
+from django.http import HttpResponse
 
 def listar_ventas(request):
     fecha_inicio = request.GET.get('desde')
@@ -78,8 +79,7 @@ def crear_venta_manual(request):
     else:
         form = VentaForm(usuario=usuario, owner=owner)
         formset = VentaDetalleFormSet(owner=owner)
-    
-    # Creamos un diccionario de precios para el Frontend 
+
     servicios_qs = Servicio.todos.filter(activo=True, owner=owner)
     inventario_qs = Inventario.todos.filter(activo=True, owner=owner)
 
@@ -92,6 +92,18 @@ def crear_venta_manual(request):
         "form": form,
         "formset": formset, 
         "diccionario_precios": diccionario_precios
+    })
+
+def consultar_venta(request,venta_id):
+    usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
+    owner = obtener_owner(request, usuario)
+    venta = get_object_or_404(
+        Venta.objects.prefetch_related('detalles__servicio', 'detalles__inventario'),
+        pk=venta_id,
+        owner=owner  
+    )
+    return render(request, "ventas/consultar_venta.html", {
+        "venta": venta
     })
 
 def corte_caja(request):
