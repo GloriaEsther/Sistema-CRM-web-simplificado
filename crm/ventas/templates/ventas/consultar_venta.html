@@ -16,11 +16,30 @@
     <div class="row mb-4">
       <div class="col-md-6">
         <h5 class="text-secondary fw-bold mb-2">{{ venta.nombreventa }}</h5>
+        <p class="mb-1 text-muted small">
+          <strong>Cliente:</strong> 
+          {% if venta.cliente %}
+            {{ venta.cliente.nombre |default:"" }} {{ venta.cliente.apellidopaterno|default:"" }}  {{ venta.cliente.apellidomaterno|default:"" }}
+          {% else %}
+            <span class="text-muted italic">No asignado</span>
+          {% endif %}
+        </p>
+
+        <p class="mb-1 text-muted small">
+          <strong>Empleado:</strong> 
+          {% if venta.usuario_registro %}
+            {{ venta.usuario_registro.nombre |default:"" }} {{ venta.usuario_registro.apellidopaterno|default:"" }}  {{ venta.usuario_registro.apellidomaterno|default:"" }}
+          {% else %}
+            <span class="text-muted italic">No asignado</span>
+          {% endif %}
+        </p>
+
         <p class="mb-1 text-muted small"><strong>Fecha:</strong> {{ venta.fecha_registro|date:"d/m/Y H:i" }}</p>
         {% if venta.oportunidad_venta %}
           <p class="mb-1 text-muted small"><strong>Oportunidad:</strong> {{ venta.oportunidad_venta.nombreventa |default:"" }}</p>
         {% endif %}
       </div>
+
       <div class="col-md-6 text-md-end mt-2 mt-md-0">
         <p class="mb-1 text-muted small"><strong>CFDI:</strong> {{ venta.cfdi|default:"No requerido" }}</p>
         <h5 class="text-orange fw-bold mt-1">Total: ${{ venta.preciototal }}</h5>

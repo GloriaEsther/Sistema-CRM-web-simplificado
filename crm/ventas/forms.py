@@ -3,6 +3,7 @@ from .models import Venta,VentaDetalle
 from oportunidades.models import Oportunidad
 from servicios.models import Servicio
 from inventario.models import Inventario
+from cliente.models import Cliente
 from django.forms import inlineformset_factory, BaseInlineFormSet
 
 class VentaForm(forms.ModelForm):
@@ -12,7 +13,7 @@ class VentaForm(forms.ModelForm):
 
         super().__init__(*args, **kwargs)
         self.fields["oportunidad_venta"].required = False
-        
+
         if self.owner:
             self.fields["oportunidad_venta"].queryset = (
                 Oportunidad.activos
@@ -20,8 +21,13 @@ class VentaForm(forms.ModelForm):
                 etapa_ventas__nombre_etapa="Cierre-Ganado")
                 .exclude(etapa_ventas__nombre_etapa = "Cierre-Perdido")
             )
+            self.fields["cliente"].queryset = Cliente.todos.filter(
+                owner=self.owner, 
+                activo=True 
+            )
         else:
             self.fields["oportunidad_venta"].queryset = Oportunidad.objects.none()
+            self.fields["cliente"].queryset = Cliente.todos.none()
             
     class Meta:
         model = Venta
@@ -32,6 +38,7 @@ class VentaForm(forms.ModelForm):
             "preciototal",
             "cfdi",
             "comentarios",
+            "cliente"
         ]
         widgets = {
             'comentarios': forms.Textarea(attrs={
@@ -50,7 +57,6 @@ class VentaForm(forms.ModelForm):
             )
 
         return precio
-
 
 class VentaDetalleForm(forms.ModelForm):
     class Meta:
@@ -85,7 +91,6 @@ class BaseVentaDetalleFormSet(BaseInlineFormSet):
     def _construct_form(self, i, **kwargs):
         kwargs['owner'] = self.owner
         return super()._construct_form(i, **kwargs)
-
 
 VentaDetalleFormSet = inlineformset_factory(
     Venta,             

@@ -3,6 +3,7 @@ from django.utils import timezone
 from usuario.models import Usuario
 from servicios.models import Servicio
 from inventario.models import Inventario
+from cliente.models import Cliente
 
 class ActivoManager(models.Manager):
     """Devuelve solo los registros activos (no eliminados)"""
@@ -68,6 +69,14 @@ class Venta(models.Model):
         on_delete=models.PROTECT,
         db_column='owner_id',
         related_name='ventas_del_negocio'
+    )
+    cliente = models.ForeignKey(
+        Cliente,
+        on_delete=models.PROTECT, 
+        null=True,
+        blank=True,
+        db_column='cliente_id',    
+        related_name='ventas'     
     )
 
     activos = ActivoManager()

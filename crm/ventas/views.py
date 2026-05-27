@@ -37,7 +37,7 @@ def crear_venta_manual(request):
     ).first()
 
     if not usuario:
-        return redirect("usuario:login")
+        return redirect("usuario:iniciar_sesion")
     
     owner = obtener_owner(request, usuario)
 
@@ -98,7 +98,7 @@ def consultar_venta(request,venta_id):
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
     owner = obtener_owner(request, usuario)
     venta = get_object_or_404(
-        Venta.objects.prefetch_related('detalles__servicio', 'detalles__inventario'),
+        Venta.objects.select_related('cliente').prefetch_related('detalles__servicio', 'detalles__inventario'),
         pk=venta_id,
         owner=owner  
     )
