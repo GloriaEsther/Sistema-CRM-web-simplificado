@@ -69,13 +69,12 @@ class Usuario(models.Model):
         db_table = 'usuario'
 
     def save(self, *args, **kwargs):
-        # Hashea la contrasena si no lo esta
         if not self.contrasena.startswith('pbkdf2_sha256$'):
             self.contrasena = make_password(self.contrasena)
         return  super().save(*args, **kwargs)
 
     def eliminar_logico(self):
-        if self.activo:  # evita volver a marcarlo si ya está eliminado
+        if self.activo: 
             self.activo = False
             self.fecha_eliminacion = timezone.now()
             self.save()

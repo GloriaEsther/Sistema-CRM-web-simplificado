@@ -15,16 +15,23 @@ class VentaForm(forms.ModelForm):
         self.fields["oportunidad_venta"].required = False
 
         if self.owner:
+            oportunidades_usadas = Venta.objects.filter(
+                oportunidad_venta__isnull=False
+            ).values_list('oportunidad_venta', flat=True)
+
             self.fields["oportunidad_venta"].queryset = (
                 Oportunidad.activos
                 .filter(negocio_oportunidad=self.owner,
                 etapa_ventas__nombre_etapa="Cierre-Ganado")
-                .exclude(etapa_ventas__nombre_etapa = "Cierre-Perdido")
+                .exclude(etapa_ventas__nombre_etapa = "Cierre-Perdido")# Excluimos cualquier oportunidad cuyo ID esté en la lista de "usadas"
+                .exclude(pk__in=oportunidades_usadas)
             )
+            self.fields["oportunidad_venta"].empty_label = "Seleccione una oportunidad (Opcional)..."
             self.fields["cliente"].queryset = Cliente.todos.filter(
                 owner=self.owner, 
                 activo=True 
             )
+            self.fields["cliente"].empty_label = "Seleccione un cliente..."#esto es para quitar el ---- del selector vacio 
         else:
             self.fields["oportunidad_venta"].queryset = Oportunidad.objects.none()
             self.fields["cliente"].queryset = Cliente.todos.none()

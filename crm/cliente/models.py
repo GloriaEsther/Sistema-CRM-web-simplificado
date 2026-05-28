@@ -71,4 +71,8 @@ class Cliente(models.Model):
             self.save()
 
     def __str__(self):
-        return f"{self.nombre} {self.apellidopaterno} {self.apellidomaterno}"
+        partes = [self.nombre, self.apellidopaterno, self.apellidomaterno] 
+        # Filtramos los valores nulos o vacíos y los unimos con un espacio
+        nombre_completo = " ".join([str(p) for p in partes if p])
+        
+        return nombre_completo.strip()

@@ -6,7 +6,6 @@ from inventario.models import Inventario
 from cliente.models import Cliente
 
 class ActivoManager(models.Manager):
-    """Devuelve solo los registros activos (no eliminados)"""
     def get_queryset(self):
         return super().get_queryset().filter(activo=True)
 
