@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from ventas.forms import VentaForm,VentaDetalleFormSet,VentaDetalleForm
 from django.db import transaction
-from ventas.models import Venta
+from ventas.models import Venta,Cobros
 from usuario.models import Usuario
 from servicios.models import Servicio
 from inventario.models import Inventario
@@ -66,6 +66,31 @@ def crear_venta_manual(request):
                     venta = form.save(commit=False)
                     venta.owner = owner
                     venta.usuario_registro = usuario 
+
+                    #PROCESAR EL COBRO AUTOMÁTICO de prueba lo puse aqui
+                    estatus = form.cleaned_data.get('estatus_cobro')
+                    forma_pago = form.cleaned_data.get('forma_cobro')
+                    monto_inicial = form.cleaned_data.get('monto_pago_inicial') or 0
+                    
+                    if estatus in ['Cobrado', 'Parcial']:
+                        # Determinamos cuánto se pagó realmente
+                        monto_a_registrar = venta.preciototal if estatus == 'Cobrado' else monto_inicial
+                        restante = float(venta.preciototal) - float(monto_a_registrar)
+                        
+                        # Validación de seguridad en el backend
+                        if estatus == 'Cobrado':
+                            restante = 0
+                        
+                        # Crear el registro del cobro
+                        Cobros.objects.create(
+                            monto_recibido=monto_a_registrar,
+                            monto_restante=restante,
+                            fecha_cobro=timezone.now(),
+                            forma_cobro=forma_pago,
+                            ventas_registro=venta,
+                            usuario_registro=usuario,
+                            owner_id=owner
+                        )
                     venta.save() 
     
                     # Vinculamos de manera automática los detalles a la instancia de la venta recién creada

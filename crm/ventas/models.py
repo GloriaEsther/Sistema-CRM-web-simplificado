@@ -145,7 +145,7 @@ class Cobros(models.Model):
     idcobros = models.AutoField(primary_key=True)
     monto_recibido = models.DecimalField(max_digits=10, decimal_places=2)
     fecha_cobro = models.DateTimeField(auto_now_add=True)
-    monto_restante = models.DecimalField(max_digits=10, decimal_places=2)
+    monto_restante = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     fecha_registro = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
     activo = models.BooleanField(default=True) 
@@ -173,4 +173,4 @@ class Cobros(models.Model):
             self.save()
 
     def __str__(self):
-        return f"(${self.monto_recibido}) - ${self.monto_restante} - ${self.fecha_cobro}"
+       return f"Cobro #{self.idcobros} - Venta #{self.ventas_registro} (${self.monto_recibido})"# return f"(${self.monto_recibido}) - ${self.monto_restante} - ${self.fecha_cobro}"

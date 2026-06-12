@@ -1,5 +1,5 @@
 from django import forms
-from .models import Venta,VentaDetalle
+from .models import Venta,VentaDetalle,FormaCobro
 from oportunidades.models import Oportunidad
 from servicios.models import Servicio
 from inventario.models import Inventario
@@ -23,7 +23,7 @@ class VentaForm(forms.ModelForm):
                 Oportunidad.activos
                 .filter(negocio_oportunidad=self.owner,
                 etapa_ventas__nombre_etapa="Cierre-Ganado")
-                .exclude(etapa_ventas__nombre_etapa = "Cierre-Perdido")# Excluimos cualquier oportunidad cuyo ID esté en la lista de "usadas"
+                .exclude(etapa_ventas__nombre_etapa = "Cierre-Perdido")
                 .exclude(pk__in=oportunidades_usadas)
             )
             self.fields["oportunidad_venta"].empty_label = "Seleccione una oportunidad (Opcional)..."
@@ -31,11 +31,26 @@ class VentaForm(forms.ModelForm):
                 owner=self.owner, 
                 activo=True 
             )
-            self.fields["cliente"].empty_label = "Seleccione un cliente..."#esto es para quitar el ---- del selector vacio 
+            self.fields["cliente"].empty_label = "Seleccione un cliente..."
         else:
             self.fields["oportunidad_venta"].queryset = Oportunidad.objects.none()
             self.fields["cliente"].queryset = Cliente.todos.none()
             
+    # CAMPOS VIRTUALES: No pertenecen a Venta, pero los usaremos en la misma pantalla
+    forma_cobro = forms.ModelChoiceField(
+        queryset=FormaCobro.objects.all(), 
+        required=False,
+        label="Forma de Cobro",
+        empty_label="Seleccione método de pago..."
+    )
+    monto_pago_inicial = forms.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        required=False,
+        label="Monto Recibido",
+        widget=forms.NumberInput(attrs={'placeholder': '0.00'})
+    )
+
     class Meta:
         model = Venta
         fields = [

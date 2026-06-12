@@ -71,19 +71,18 @@ document.addEventListener("DOMContentLoaded", function () {
         // El ID del servicio o inventario que el usuario seleccionó
         const idSeleccionado = e.target.value;
         let precioCatalogo = 0;
-        console.log(idSeleccionado)
         // Si seleccionó algo válido (no está vacío)
         if (idSeleccionado) {
           // Buscamos el precio en nuestro diccionario en memoria
           if (e.target.classList.contains("select-servicio")) {
             precioCatalogo = catalogosPrecios.servicios[idSeleccionado] || 0;
-            console.log("Servicios:")
+            console.log("Precio Servicio:")
             console.log(precioCatalogo)
             const inventarioSelect = fila.querySelector(".select-inventario");
             if (inventarioSelect) inventarioSelect.value = "";
           } else {
             precioCatalogo = catalogosPrecios.inventario[idSeleccionado] || 0;
-            console.log("Inventario:")
+            console.log("Precio Inventario:")
             console.log(precioCatalogo)
             const servicioSelect = fila.querySelector(".select-servicio");
             if (servicioSelect) servicioSelect.value = "";
@@ -106,7 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Clonación Dinámica de Filas 
+  // Clonación Dinámica de Filas (cuando quieras agregar mas productos o servicios a la venta)
   if (btnAgregar && contenedor && totalFormsInput) {
     btnAgregar.addEventListener("click", function () {
       const filasActuales = document.querySelectorAll(".detalle-row");
@@ -254,6 +253,42 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Ejecución inicial por si la vista carga datos preexistentes (Edición)
   calcularTotales();
+
+ //  Atrapamos el <select> usando el ID que Django genera automáticamente
+    const estatus = document.getElementById("id_estatus_cobro");
+    
+    //Atrapamos los contenedores que acabamos de nombrar en el HTML
+    const divFormaPago = document.getElementById("div_forma_cobro");
+    const divMonto = document.getElementById("div_monto_inicial");
+
+    // Verificamos que los 3 elementos existan para evitar errores
+    if (estatus && divFormaPago && divMonto) {
+
+        // Creamos una función encargada de la lógica visual
+        function evaluarEstatus() {
+            const valor = estatus.value;
+            console.log("Estatus seleccionado:", valor);
+
+            if (valor === "Pendiente" || valor === "1") {
+                divFormaPago.style.display = "none";
+                divMonto.style.display = "none";
+            } else if (valor === "Cobrado"|| valor === "3") {
+                divFormaPago.style.display = "block";
+                divMonto.style.display = "none";
+            } else if (valor === "Cobro Parcial"|| valor === "2") {
+                divFormaPago.style.display = "block";
+                divMonto.style.display = "block";
+            }
+        }
+
+        // Ejecutar la función cada vez que el usuario cambie el selector
+        estatus.addEventListener("change", evaluarEstatus);
+
+        evaluarEstatus();
+
+    } else {
+        console.error("No se encontraron los elementos en el HTML. Revisa los IDs.");
+    }
+
 });
