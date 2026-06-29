@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Inyectamos la suma total en el campo principal de la venta
-    const precioTotalInput = document.getElementById("id_preciototal");
+    const precioTotalInput = document.getElementById("id_preciototal");//
     if (precioTotalInput) {
       precioTotalInput.value = granTotal.toFixed(2);
     }

@@ -10,5 +10,4 @@ urlpatterns = [
     path('editar/<int:pk>/', views.venta_editar, name='venta_editar'),
     path('eliminar/<int:pk>/', views.venta_eliminar, name='venta_eliminar'),
     path('consultar/<int:venta_id>',views.consultar_venta, name='consultar_venta')
-    #'consultar/<int:venta_id>'
 ]

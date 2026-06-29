@@ -31,7 +31,7 @@ def listar_ventas(request):
         qs = qs.filter(fecha_registro__date__range=[fecha_inicio, fecha_fin])
     return render(request, 'ventas/listar_ventas.html', {'ventas': qs})
 
-def crear_venta_manual(request):
+def crear_venta_manual(request):# chechar como se registra en la bd(ya comadre :D) y tambien agregar la logica del cobro (que registre un cobro (ya esta)y deje agregar un cobro en editar)
     usuario = Usuario.activos.filter(
         idusuario=request.session.get("idusuario")
     ).first()
@@ -66,37 +66,35 @@ def crear_venta_manual(request):
                     venta = form.save(commit=False)
                     venta.owner = owner
                     venta.usuario_registro = usuario 
+                    venta.save() 
 
-                    #PROCESAR EL COBRO AUTOMÁTICO de prueba lo puse aqui
-                    estatus = form.cleaned_data.get('estatus_cobro')
+                    #Obtener los siguientes datos:
                     forma_pago = form.cleaned_data.get('forma_cobro')
                     monto_inicial = form.cleaned_data.get('monto_pago_inicial') or 0
-                    
-                    if estatus in ['Cobrado', 'Parcial']:
-                        # Determinamos cuánto se pagó realmente
-                        monto_a_registrar = venta.preciototal if estatus == 'Cobrado' else monto_inicial
+                    estatus = form.cleaned_data.get('estatus_cobro')
+                    estatus_nombre=str(estatus)
+    
+                    if estatus_nombre in ['Cobro parcial', 'Cobrado']:
+                        
+                        monto_a_registrar = venta.preciototal if estatus == '3' else monto_inicial
                         restante = float(venta.preciototal) - float(monto_a_registrar)
                         
-                        # Validación de seguridad en el backend
                         if estatus == 'Cobrado':
                             restante = 0
                         
-                        # Crear el registro del cobro
                         Cobros.objects.create(
                             monto_recibido=monto_a_registrar,
-                            monto_restante=restante,
                             fecha_cobro=timezone.now(),
+                            monto_restante=restante,
+                            activo =True,
                             forma_cobro=forma_pago,
                             ventas_registro=venta,
                             usuario_registro=usuario,
-                            owner_id=owner
+                            owner=owner
                         )
-                    venta.save() 
-    
-                    # Vinculamos de manera automática los detalles a la instancia de la venta recién creada
+                        
                     formset.instance = venta
                     formset.save()
-                    
                 messages.success(request, "Venta y sus detalles creados correctamente.")
                 return redirect("ventas:listar")     
             except Exception as e:
@@ -227,7 +225,7 @@ def ventas_hoy(request):
         "fecha": hoy
     })
 
-def venta_editar(request, pk):
+def venta_editar(request, pk):#vista y template por corregir 
     usuario = Usuario.activos.filter(
         idusuario=request.session.get("idusuario")
     ).first()
