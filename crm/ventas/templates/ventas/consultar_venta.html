@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="crm-form-wrapper">
-  <div class="crm-form-card">
+  <div class="crm-form-card"><!-- haz que esta clase sea responsiva tambien en pc (para que se vea decente ksskskks)-->
     
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h4 class="crm-title mb-0">Resumen de Venta</h4>
@@ -39,17 +39,17 @@
           <p class="mb-1 text-muted small"><strong>Oportunidad:</strong> {{ venta.oportunidad_venta.nombreventa |default:"" }}</p>
         {% endif %}
       </div>
-
-      <div class="col-md-6 text-md-end mt-2 mt-md-0">
-        <p class="mb-1 text-muted small"><strong>CFDI:</strong> {{ venta.cfdi|default:"No requerido" }}</p>
-        <h5 class="text-orange fw-bold mt-1">Total: ${{ venta.preciototal }}</h5>
-      </div>
+        <div class="col-md-6 text-md-end mt-2 mt-md-0">
+          <p class="mb-1 text-muted small"><strong>CFDI:</strong> {{ venta.cfdi|default:"No requerido" }}</p>
+          <h5 class="text-orange fw-bold mt-1">Total a pagar: ${{ venta.preciototal }}</h5>
+          <p class="mb-1 text-muted small"><strong>Monto recibido:</strong> {{total_pagado|default:"" }}</p>
+          <p class="mb-1 text-muted small"><strong>Monto restante:</strong> {{ saldo_restante|default:"" }}</p>
+        </div>
     </div>
 
     <hr class="my-3">
 
     <h5 class="mb-3 text-secondary">Artículos y Servicios Incluidos</h5>
-    
     <div class="table-responsive">
       <table class="table table-hover table-bordered table-sm align-middle">
         <thead class="table-light">
@@ -93,7 +93,6 @@
       </table>
       
     </div>
-    
     {% if venta.comentarios %}
       <div class="card bg-light mt-3 border-0 shadow-sm">
         <div class="card-body py-2 px-3">

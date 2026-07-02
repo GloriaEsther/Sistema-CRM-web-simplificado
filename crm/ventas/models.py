@@ -140,7 +140,6 @@ class VentaDetalle(models.Model):
             item = "Concepto no especificado"
         return f"{self.cantidad}x {item} en Venta #{self.venta_id}"
 
-
 class Cobros(models.Model):
     idcobros = models.AutoField(primary_key=True)
     monto_recibido = models.DecimalField(max_digits=10, decimal_places=2)
@@ -173,4 +172,4 @@ class Cobros(models.Model):
             self.save()
 
     def __str__(self):
-       return f"Cobro #{self.idcobros} - Venta #{self.ventas_registro} (${self.monto_recibido})"# return f"(${self.monto_recibido}) - ${self.monto_restante} - ${self.fecha_cobro}"
+       return f"Cobro #{self.idcobros} - Venta #{self.ventas_registro} (${self.monto_recibido})"
