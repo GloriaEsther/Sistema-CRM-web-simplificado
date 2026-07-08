@@ -121,25 +121,25 @@ def consultar_venta(request, venta_id):
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
     owner = obtener_owner(request, usuario)
 
-    # 1. Traemos la venta con sus relaciones de productos/servicios
+    #Venta y relaciones de productos/servicios
     venta = get_object_or_404(
         Venta.objects.select_related('cliente').prefetch_related('detalles__servicio', 'detalles__inventario'),
         pk=venta_id,
         owner=owner  
     )
-    
-    # 2. Recuperamos todos los cobros activos asociados a esta venta
+    #Recuperamos todos los cobros activos asociados a esta venta
     historial_cobros = Cobros.objects.filter(ventas_registro=venta, activo=True).order_by('-fecha_cobro')
     
-    # 3. Sumamos el monto total recibido de los cobros realizados
+    #Sumamos el monto total recibido de los cobros realizados
     # aggregate devuelve un diccionario, ej: {'total': 150.00}
     resultado_pagado = historial_cobros.aggregate(total=Sum('monto_recibido'))
     total_pagado = resultado_pagado['total'] or 0
     
-    # 4. Calculamos el saldo restante actual
+    #Esto se hace para tener una "Unica fuente de verdad"
+    #Calculamos el saldo restante actual
     saldo_restante = float(venta.preciototal) - float(total_pagado)
     
-    # Aseguramos que el saldo no sea negativo por cuestiones de redondeo de flotantes
+    #Aseguramos que el saldo no sea negativo por cuestiones de redondeo de flotantes
     if saldo_restante < 0:
         saldo_restante = 0
 
@@ -149,11 +149,6 @@ def consultar_venta(request, venta_id):
         "total_pagado": total_pagado,
         "saldo_restante": saldo_restante
     })
-
-
-
-
-
 
 def corte_caja(request):
     usuario = Usuario.activos.filter(
