@@ -4,6 +4,7 @@ from usuario.models import Usuario
 from servicios.models import Servicio
 from inventario.models import Inventario
 from cliente.models import Cliente
+from cobros.models import EstatusCobros
 
 class ActivoManager(models.Manager):
     def get_queryset(self):
@@ -15,35 +16,13 @@ class EtapaVentas(models.Model):
     orden = models.PositiveIntegerField(default=1)
 
     class Meta:
-        managed = True#False 
+        managed = True
         db_table = 'etapa_ventas'
         ordering = ['orden']
 
     def __str__(self):
         return self.nombre_etapa
 
-class EstatusCobros(models.Model):
-    idestatus_cobros = models.AutoField(primary_key=True)
-    nombre_estatus_cobro = models.CharField(max_length=45)
-
-    class Meta:
-        managed = False
-        db_table = 'estatus_cobros'
-
-    def __str__(self):
-        return self.nombre_estatus_cobro
-    
-class FormaCobro(models.Model):
-    idforma_cobro = models.AutoField(primary_key=True)
-    nombre_forma_cobro = models.CharField(max_length=45)
-    
-    class Meta:
-        managed = False 
-        db_table = 'forma_cobro_cat'
-
-    def __str__(self):
-        return self.nombre_forma_cobro
-    
 class Venta(models.Model):
     idventa = models.AutoField(primary_key=True)
     nombreventa = models.CharField(max_length=45)
@@ -139,37 +118,3 @@ class VentaDetalle(models.Model):
         else:
             item = "Concepto no especificado"
         return f"{self.cantidad}x {item} en Venta #{self.venta_id}"
-
-class Cobros(models.Model):
-    idcobros = models.AutoField(primary_key=True)
-    monto_recibido = models.DecimalField(max_digits=10, decimal_places=2)
-    fecha_cobro = models.DateTimeField(auto_now_add=True)
-    monto_restante = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    fecha_registro = models.DateTimeField(auto_now_add=True)
-    fecha_modificacion = models.DateTimeField(auto_now=True)
-    activo = models.BooleanField(default=True) 
-    fecha_eliminacion = models.DateTimeField(null=True,blank=True)
-    forma_cobro =  models.ForeignKey(FormaCobro, on_delete=models.PROTECT, db_column='forma_cobro')
-    ventas_registro = models.ForeignKey(Venta, on_delete=models.PROTECT, db_column='ventas_registro')
-    usuario_registro = models.ForeignKey(Usuario, on_delete=models.PROTECT, db_column='usuario_registro')
-    owner = models.ForeignKey(
-        Usuario,
-        on_delete=models.PROTECT,
-        db_column='owner_id',
-        related_name='cobros_negocio'
-    )
-    activos = ActivoManager()
-    objects = models.Manager() 
-
-    class Meta:
-        managed = False
-        db_table = 'cobros'
-    
-    def eliminar_logico(self):
-        if self.activo:  
-            self.activo = False
-            self.fecha_eliminacion = timezone.now()
-            self.save()
-
-    def __str__(self):
-       return f"Cobro #{self.idcobros} - Venta #{self.ventas_registro} (${self.monto_recibido})"

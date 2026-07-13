@@ -42,13 +42,14 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'cliente',
     'usuario',
-    'servicios',#en el nombre de las apps manda el nombre de la carpeta
+    'servicios',
     'inventario',
     'ventas',
     'oportunidades',
     'proveedor',
     'superusuario',
     'cotizacion',
+    'cobros',
 ]
 
 MIDDLEWARE = [

@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from ventas.forms import VentaForm,VentaDetalleFormSet,VentaDetalleForm
 from django.db import transaction
-from ventas.models import Venta,Cobros
+from ventas.models import Venta
+from cobros.models import Cobros
 from usuario.models import Usuario
 from servicios.models import Servicio
 from inventario.models import Inventario

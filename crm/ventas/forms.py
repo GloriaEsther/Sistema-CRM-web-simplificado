@@ -1,5 +1,6 @@
 from django import forms
-from .models import Venta,VentaDetalle,FormaCobro
+from ventas.models import Venta,VentaDetalle
+from cobros.models import FormaCobro
 from oportunidades.models import Oportunidad
 from servicios.models import Servicio
 from inventario.models import Inventario
