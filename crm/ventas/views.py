@@ -14,6 +14,7 @@ from time import time
 from django.contrib import messages
 import json
 from django.http import HttpResponse
+from decimal import Decimal
 
 def listar_ventas(request):
     fecha_inicio = request.GET.get('desde')
@@ -78,7 +79,7 @@ def crear_venta_manual(request):
                     if estatus_nombre in ['Cobro parcial', 'Cobrado']:
                         
                         monto_a_registrar = venta.preciototal if estatus == '3' else monto_inicial
-                        restante = float(venta.preciototal) - float(monto_a_registrar)
+                        restante = Decimal(venta.preciototal) - Decimal(monto_a_registrar)
                         
                         if estatus == 'Cobrado':
                             restante = 0
@@ -138,9 +139,9 @@ def consultar_venta(request, venta_id):
     
     #Esto se hace para tener una "Unica fuente de verdad"
     #Calculamos el saldo restante actual
-    saldo_restante = float(venta.preciototal) - float(total_pagado)
+    saldo_restante = Decimal(venta.preciototal) - Decimal(total_pagado)
     
-    #Aseguramos que el saldo no sea negativo por cuestiones de redondeo de flotantes
+    #Aseguramos que el saldo no sea negativo 
     if saldo_restante < 0:
         saldo_restante = 0
 
