@@ -12,6 +12,8 @@ from proveedor.models import Proveedor
 from ventas.models import Venta
 from cotizacion.models import Cotizacion
 import pandas as pd
+from cobros.models import Cobros
+
 def require_roles(allowed_roles):#restringe roles (quien accede a que)
     def decorator(view_func):
         @wraps(view_func)
@@ -68,6 +70,18 @@ def clientes_para_oportunidad(usuario, owner):
         return Cliente.activos.filter(owner = owner)
     return Cliente.activos.filter(owner=owner)
 
+def abonos_por_rol(usuario,owner):
+    rol = usuario.rol.nombre_rol
+    if rol == "Superusuario":
+        return Cobros.todos.filter(owner = owner)
+    
+    if rol in ["Dueño", "Administrador","Consultor"]:
+        return Cobros.activos.filter(owner = owner)
+
+    if rol == "Vendedor":
+        return Cobros.activos.filter(owner = owner)
+
+    return Cobros.activos.none()
 
 def queryset_servicios_por_rol(usuario,owner):
     rol = usuario.rol.nombre_rol
