@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="crm-form-wrapper">
-  <div class="crm-form-card"><!-- haz que esta clase sea responsiva tambien en pc (para que se vea decente ksskskks)-->
+  <div class="crm-form-card">
     
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h4 class="crm-title mb-0">Resumen de Venta</h4>
@@ -42,8 +42,8 @@
         <div class="col-md-6 text-md-end mt-2 mt-md-0">
           <p class="mb-1 text-muted small"><strong>CFDI:</strong> {{ venta.cfdi|default:"No requerido" }}</p>
           <h5 class="text-orange fw-bold mt-1">Total a pagar: ${{ venta.preciototal }}</h5>
-          <p class="mb-1 text-muted small"><strong>Monto recibido:</strong> {{total_pagado|default:"" }}</p>
-          <p class="mb-1 text-muted small"><strong>Monto restante:</strong> {{ saldo_restante|default:"" }}</p>
+          <p class="mb-1 text-muted small"><strong>Monto recibido:</strong> {{total_pagado|default:"0.00"}}</p>
+          <p class="mb-1 text-muted small"><strong>Monto restante:</strong> {{ saldo_restante|default:"0.00"}}</p>
         </div>
     </div>
 
@@ -104,6 +104,9 @@
     
     <div class="mt-4">
       <a href="{% url 'ventas:listar' %}" class="btn btn-secondary crm-btn">Regresar</a>
+      {%if venta.estatus_cobro.nombre_estatus_cobro != 'Cobrado'%}
+      <a href="{% url 'cobros:crear_cobro' venta.pk %}" class="btn btn-secondary crm-btn">Agregar abono</a>
+      {%endif%}
     </div>
 
   </div> 

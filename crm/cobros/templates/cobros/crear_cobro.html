@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title %}Registro de Abono{% endblock %}
+
+{% block content %}
+
+<div class="crm-form-wrapper">
+   <div class="crm-form-card">
+     <h4 class="crm-title text-center mb-4">
+       Registrar abono
+     </h4>
+
+      {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+      {% endif %}
+
+
+      <p class="mb-1 text-muted"><strong>Monto restante:</strong> ${{ saldo_restante|default:"0.00" }}</p>
+      
+      <form method="POST" id="registroCobroForm" novalidate>
+              {% csrf_token %}
+              
+              <div class="mb-3" id="div_forma_cobro">
+                  <label for="id_forma_cobro" class="form-label">Forma de cobro*</label>
+                  {% render_field form.forma_cobro class="form-select" %}
+              </div>
+
+              <div class="mb-3" id="div_monto_inicial">
+                  <label for="id_monto_recibido" class="form-label">Monto*</label>
+                  {% render_field form.monto_recibido class="form-control" %}
+              </div>
+
+        
+        <div class="crm-form-actions d-flex justify-content-between mt-4">
+              <button type="submit" class="btn btn-orange w-50 me-2">
+                Guardar
+              </button>
+              <a href="{% url 'cobros:listar' %}"
+                class="btn btn-secondary flex-fill">
+                Cancelar
+              </a>
+            </div>
+      </form>
+    </div> 
+</div>
+
+
+  <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-warning">
+          <h5 class="modal-title" id="confirmModalLabel">Confirmar antes de guardar</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body"> 
+          ¿Deseas guardar?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="descartarOpcionales" data-bs-dismiss="modal">No, descartar</button>
+          <button type="button" class="btn btn-primary" id="confirmarOpcionales">Sí, guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal fade" id="duplicadoModal" tabindex="-1" aria-labelledby="duplicadoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="duplicadoModalLabel">Datos duplicados</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body text-center">
+          {% if campo_duplicado %}
+            <p>Ya existe un usuario con el <strong>{{ campo_duplicado }}</strong> ingresado.</p>
+          {% else %}
+            <p>Ya existe un usuario con alguno de los datos ingresados (correo, RFC o CURP).</p>
+          {% endif %}
+          <p>Verifica e inténtalo de nuevo.</p>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if duplicado %} 
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var modalDuplicado = new bootstrap.Modal(document.getElementById('duplicadoModal'));
+      modalDuplicado.show();
+    });
+  </script>
+  {% endif %}
+
+  <div class="modal fade" id="faltantesModal" tabindex="-1" aria-labelledby="faltantesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-warning text-dark">
+          <h5 class="modal-title" id="faltantesModalLabel">Campos obligatorios faltantes</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <p>Debes llenar los siguientes campos antes de continuar:</p>
+          <ul id="listaFaltantes"></ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

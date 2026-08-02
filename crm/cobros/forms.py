@@ -13,7 +13,7 @@ class CobrosForm(forms.ModelForm):
 
         if self.owner:
             self.fields["forma_cobro"].queryset = (
-                FormaCobro.activos.filter(forma_cobro__nombre_forma_cobro="Cierre-Ganado")
+                FormaCobro.objects.all()
             )
             self.fields["forma_cobro"].empty_label = "Seleccione una forma de cobro ..."
         else:

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Cobros{% endblock %}
+{% load static %}
+{% block content %}
+
+<div class="crm-section">
+    <div class="crm-section-header">
+        <h4 class="crm-title">Cobros</h4>
+    </div>
+
+    {% for c in cobros %}
+        <div class="crm-card">
+                <div class="fw-bold mb-1">
+                    {{ c.ventas_registro.cliente.nombre }} {{ c.ventas_registro.cliente.apellidopaterno |default:""  }}            
+                        {% if request.session.modo_superusuario and not c.activo %}
+                            <span class="badge bg-danger ms-2">Eliminado</span>
+                        {% elif request.session.modo_superusuario and c.activo %}
+                            <span class="badge bg-success ms-2">Activo</span>
+                        {% endif %}                    
+                </div>
+                <div class="text-muted small">
+                   Venta: {{c.ventas_registro.nombreventa}} | Fecha: {{ c.fecha_registro|date:"d/m/Y" }} | <strong> Monto recibido: ${{ c.monto_recibido |default:"0.00"}}</strong>
+                </div>
+        </div>
+        {% empty %}
+        <p class="text-center text-muted">Agrega un abono</p>
+    {% endfor %}
+</div>
+{% include "_modal_eliminar.html" %}
+<script src="{% static 'js/eliminar.js' %}"></script>
+{% endblock %}

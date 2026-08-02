@@ -17,4 +17,5 @@ urlpatterns = [
     path("proveedor/", include("proveedor.urls", namespace="proveedor")),
     path("cotizacion/",include("cotizacion.urls", namespace="cotizacion")),
     path("superusuario/", include("superusuario.urls", namespace="superusuario")),
+    path("cobros/", include("cobros.urls",namespace="cobros")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

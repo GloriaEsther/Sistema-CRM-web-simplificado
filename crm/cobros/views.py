@@ -4,7 +4,7 @@ from ventas.models import Venta
 from cobros.models import Cobros
 from decimal import Decimal
 from crm.utils import obtener_owner,abonos_por_rol
-from forms import CobrosForm
+from cobros.forms import CobrosForm
 from django.db.models import Sum
 from django.contrib import messages
 
@@ -21,21 +21,20 @@ def listar_cobros(request):
         "cobros": cobros
     })
 
-def crear_cobro(request, venta_id):
+def crear_cobro(request, pk):#def crear_cobro(request, venta_id):
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
     owner = obtener_owner(request, usuario)
 
     #Venta relacionada con el nuevo cobro
     venta = get_object_or_404(
         Venta.objects.select_related('cliente').prefetch_related('detalles__servicio', 'detalles__inventario'),
-        pk=venta_id,
+        pk=pk,
         owner=owner  
     )
     historial_cobros = Cobros.objects.filter(ventas_registro=venta, activo=True).order_by('-fecha_cobro')
     resultado_pagado = historial_cobros.aggregate(total=Sum('monto_recibido'))
     total_pagado = resultado_pagado['total'] or 0
     
-    #saldo_restante = Decimal(venta.preciototal) - Decimal(total_pagado)#esto es lo que debia el cliente antes del nuevo abono
     saldo_restante = Decimal(str(venta.preciototal)) - Decimal(str(total_pagado))
     
     if saldo_restante < 0:
@@ -59,7 +58,7 @@ def crear_cobro(request, venta_id):
             cobro.save()
 
             if cobro.monto_restante == Decimal('0.00'):
-                venta.estatus_cobro= 'Cobrado'
+                venta.estatus_cobro_id= 3
                 venta.save()
 
             messages.success(request, "Abono creado correctamente.")
@@ -68,5 +67,6 @@ def crear_cobro(request, venta_id):
         form = CobrosForm(usuario=usuario, owner=owner, monto_restante=saldo_restante)
     
     return render(request, "cobros/crear_cobro.html", {
-        "form": form
+        "form": form,
+        "saldo_restante": saldo_restante
     })
