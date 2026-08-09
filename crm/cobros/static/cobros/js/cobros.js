@@ -9,16 +9,17 @@ document.addEventListener("DOMContentLoaded", function () {
   const modalFaltantes = modalFaltantesEl ? new bootstrap.Modal(modalFaltantesEl) : null;
 
   const btnConfirmar = document.getElementById("confirmarOpcionales");
+  const btnDescartar = document.getElementById("descartarOpcionales");
 
   function hayCamposObligatoriosVacios() {
     const obligatorios = [
-      { name: "forma_cobro", label: "Forma de cobro" },
-      { name: "monto_recibido", label: "Monto" }
+      { id: "id_forma_cobro", label: "Forma de cobro" },
+      { id: "id_monto_recibido", label: "Monto" }
     ];
 
     const faltantes = obligatorios.filter(campo => {
-      const el = form.querySelector(`[name="${campo.name}"]`);
-      return !el || el.value.trim() === "";
+        const el = document.getElementById(campo.id);
+        return !el || el.value.trim() === "";
     });
 
     if (faltantes.length > 0 && modalFaltantes) {
@@ -38,11 +39,20 @@ document.addEventListener("DOMContentLoaded", function () {
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     if (hayCamposObligatoriosVacios()) return;
-    modalConfirmar?.show();
+    modalConfirmar ? modalConfirmar.show() : form.submit();
   });
 
-  btnConfirmar?.addEventListener("click", function () {
-    modalConfirmar.hide();
-    form.submit();
-  });
+  if (btnConfirmar) {
+    btnConfirmar.addEventListener("click", function () {
+      modalConfirmar.hide();
+      form.submit();
+    });
+  }
+
+  if (btnDescartar) {
+    btnDescartar.addEventListener("click", function () {
+      form.reset();
+      modalConfirmar.hide();
+    });
+  }
 });

@@ -69,37 +69,6 @@
     </div>
   </div>
   
-  <div class="modal fade" id="duplicadoModal" tabindex="-1" aria-labelledby="duplicadoModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header bg-danger text-white">
-          <h5 class="modal-title" id="duplicadoModalLabel">Datos duplicados</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body text-center">
-          {% if campo_duplicado %}
-            <p>Ya existe un usuario con el <strong>{{ campo_duplicado }}</strong> ingresado.</p>
-          {% else %}
-            <p>Ya existe un usuario con alguno de los datos ingresados (correo, RFC o CURP).</p>
-          {% endif %}
-          <p>Verifica e inténtalo de nuevo.</p>
-        </div>
-        <div class="modal-footer justify-content-center">
-          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Aceptar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  {% if duplicado %} 
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      var modalDuplicado = new bootstrap.Modal(document.getElementById('duplicadoModal'));
-      modalDuplicado.show();
-    });
-  </script>
-  {% endif %}
-
   <div class="modal fade" id="faltantesModal" tabindex="-1" aria-labelledby="faltantesModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -118,4 +87,5 @@
     </div>
   </div>
 
+  <script src="{% static 'cobros/js/cobros.js' %}?v={{ timestamp }}"></script>
 {% endblock %}
