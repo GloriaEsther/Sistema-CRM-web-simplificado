@@ -21,11 +21,9 @@ def listar_cobros(request):
         "cobros": cobros
     })
 
-def crear_cobro(request, pk):#def crear_cobro(request, venta_id):
+def crear_cobro(request, pk):
     usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
     owner = obtener_owner(request, usuario)
-
-    #Venta relacionada con el nuevo cobro
     venta = get_object_or_404(
         Venta.objects.select_related('cliente').prefetch_related('detalles__servicio', 'detalles__inventario'),
         pk=pk,
@@ -34,7 +32,6 @@ def crear_cobro(request, pk):#def crear_cobro(request, venta_id):
     historial_cobros = Cobros.objects.filter(ventas_registro=venta, activo=True).order_by('-fecha_cobro')
     resultado_pagado = historial_cobros.aggregate(total=Sum('monto_recibido'))
     total_pagado = resultado_pagado['total'] or 0
-    
     saldo_restante = Decimal(str(venta.preciototal)) - Decimal(str(total_pagado))
     
     if saldo_restante < 0:
