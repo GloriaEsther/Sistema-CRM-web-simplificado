@@ -11,21 +11,27 @@
     {% for c in cobros %}
         <div class="crm-card">
                 <div class="fw-bold mb-1">
-                    {{ c.ventas_registro.cliente.nombre }} {{ c.ventas_registro.cliente.apellidopaterno |default:""  }}            
-                        {% if request.session.modo_superusuario and not c.activo %}
-                            <span class="badge bg-danger ms-2">Eliminado</span>
-                        {% elif request.session.modo_superusuario and c.activo %}
-                            <span class="badge bg-success ms-2">Activo</span>
+                    {{ c.ventas_registro.cliente.nombre }} {{ c.ventas_registro.cliente.apellidopaterno |default:""  }} {{ c.ventas_registro.cliente.apellidomaterno |default:""  }}           
+                        {% if request.session.modo_superusuario and not c.ventas_registro.cliente.activo %}
+                            <span class="badge bg-danger ms-2">Cliente Eliminado</span>
+                        {% elif request.session.modo_superusuario and c.ventas_registro.cliente.activo %}
+                            <span class="badge bg-success ms-2">Cliente Activo</span>
                         {% endif %}                    
                 </div>
                 <div class="text-muted small">
                    Venta: {{c.ventas_registro.nombreventa}} | Fecha: {{ c.fecha_registro|date:"d/m/Y" }} | <strong> Monto recibido: ${{ c.monto_recibido |default:"0.00"}}</strong>
+                </div>
+
+                <div class="d-grid gap-2 mt-3 d-md-flex">
+                    {% if c.activo %}
+                        <a href="{% url 'cobros:consultar_cobro' c.pk %}" class="btn btn-outline-secondary crm-btn">
+                        Consultar
+                        </a>
+                    {%endif%}
                 </div>
         </div>
         {% empty %}
         <p class="text-center text-muted">Agrega un abono</p>
     {% endfor %}
 </div>
-{% include "_modal_eliminar.html" %}
-<script src="{% static 'js/eliminar.js' %}"></script>
 {% endblock %}

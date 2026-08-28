@@ -67,3 +67,15 @@ def crear_cobro(request, pk):
         "form": form,
         "saldo_restante": saldo_restante
     })
+
+def consultar_cobro(request,pk):
+    usuario = Usuario.activos.filter(idusuario=request.session.get("idusuario")).first()
+    owner = obtener_owner(request, usuario)
+    cobro =get_object_or_404(
+        Cobros,
+        pk=pk,
+        owner=owner
+    )
+    return render(request, "cobros/consultar_cobro.html", {
+        "cobro":cobro
+    })

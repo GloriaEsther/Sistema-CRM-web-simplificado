@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Cobro{% endblock %}
+{% block content %}
+<div class="crm-form-wrapper">
+  <div class="crm-form-card">
+    <h4 class="crm-title text-center mb-4">Detalles de Cobro</h4>
+    <p><strong>Venta:</strong> 
+     {{cobro.ventas_registro.nombreventa}}
+    </p>
+    <p><strong>Cliente:</strong> {{ cobro.ventas_registro.cliente.nombre }}
+         {{ cobro.ventas_registro.cliente.apellidopaterno |default:"" }} 
+         {{ cobro.ventas_registro.cliente.apellidomaterno |default:"" }}
+    </p>
+
+    <hr class="my-3">
+    
+    <h5 class="mb-3 text-secondary">Artículos y Servicios Incluidos</h5>
+    <div class="table-responsive">
+      <table class="table table-hover table-bordered table-sm align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Concepto / Descripción</th>
+            <th class="text-center" style="width: 120px;">Tipo</th>
+            <th class="text-center" style="width: 100px;">Cantidad</th>
+            <th class="text-end" style="width: 150px;">P. Unitario</th>
+            <th class="text-end" style="width: 150px;">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in cobro.ventas_registro.detalles.all %}
+          <tr>
+            <td>
+              {% if d.servicio %}
+                {{ d.servicio.nombre }}
+              {% elif d.inventario %}
+                {{ d.inventario.nombrearticulo }}
+              {% else %}
+                <span class="text-muted italic">No especificado</span>
+              {% endif %}
+            </td>
+            <td class="text-center">
+              {% if d.servicio %}
+                <span class="badge bg-info text-dark bg-opacity-25 text-info">Servicio</span>
+              {% else %}
+                <span class="badge bg-secondary bg-opacity-10 text-secondary">Producto</span>
+              {% endif %}
+            </td>
+            <td class="text-center">{{ d.cantidad }}</td>
+            <td class="text-end">${{ d.precio_unitario }}</td>
+            <td class="text-end fw-bold">${{ d.subtotal }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="text-center text-muted py-3">Esta venta no cuenta con conceptos registrados.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <hr class="my-3">
+    
+    <p><strong>Monto recibido:</strong> ${{cobro.monto_recibido |default:"0.00" }}</p>
+    <p><strong>Monto restante:</strong> ${{cobro.monto_restante |default:"0.00" }}</p>
+    <p><strong>Forma de cobro:</strong> {{ cobro.forma_cobro|default:""  }}</p>
+    <p><strong>Fecha de cobro:</strong> {{ cobro.fecha_cobro|date:"d/m/Y" }}</p>
+    <a href="{% url 'cobros:listar' %}" class="btn btn-secondary mt-3 crm-btn">Regresar</a>
+   </div>
+</div>
+{% endblock %}
