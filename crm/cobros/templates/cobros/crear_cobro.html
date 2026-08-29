@@ -34,6 +34,11 @@
               <div class="mb-3" id="div_monto_inicial">
                   <label for="id_monto_recibido" class="form-label">Monto*</label>
                   {% render_field form.monto_recibido class="form-control" %}
+                   {% for error in form.monto_recibido.errors %}
+                      <div class="invalid-feedback d-block">
+                          {{ error }}
+                      </div>
+                  {% endfor %}
               </div>
 
         
