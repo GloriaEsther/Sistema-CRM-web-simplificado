@@ -79,7 +79,7 @@ def abonos_por_rol(usuario,owner):
         return Cobros.activos.filter(owner = owner)
 
     if rol == "Vendedor":
-        return Cobros.activos.filter(owner = owner)
+        return Cobros.activos.filter(owner = owner,usuario_registro =usuario)
 
     return Cobros.activos.none()
 
@@ -170,7 +170,7 @@ def queryset_ventas_por_rol(usuario,owner):
         return Venta.activos.filter(owner = owner)
 
     if rol == "Vendedor":
-        return Venta.activos.filter(owner = owner)
+        return Venta.activos.filter(owner = owner,usuario_registro =usuario)
 
     return Venta.activos.none()
 
@@ -200,7 +200,7 @@ def queryset_empleados_por_rol(usuario, owner):
             rol__nombre_rol="Dueño"
         )
 
-    if rol in ["Dueño", "Administrador"]:#,"Consultor"
+    if rol in ["Dueño", "Administrador"]:
         return Usuario.activos.filter(
             owner_id=owner
         ).exclude(
