@@ -324,6 +324,11 @@ def venta_eliminar(request, pk):
         if venta.estatus_cobro.idestatus_cobros == 3:
           messages.error(request, "No se puede eliminar una venta cobrada.")
           return redirect("ventas:listar")
+       
+        elif venta.estatus_cobro.idestatus_cobros == 2:
+            messages.error(request, "No se puede eliminar una venta cobrada parcialmente.")
+            return redirect("ventas:listar")
+        
         venta.eliminar_logico()
         messages.success(request, "Venta eliminada correctamente.")
         return redirect("ventas:listar")
