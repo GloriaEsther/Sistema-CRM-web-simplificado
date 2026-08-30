@@ -33,7 +33,7 @@ def crear_cobro(request, pk):
     resultado_pagado = historial_cobros.aggregate(total=Sum('monto_recibido'))
     total_pagado = resultado_pagado['total'] or 0
     saldo_restante = Decimal(str(venta.preciototal)) - Decimal(str(total_pagado))
-    
+
     if saldo_restante < 0:
         saldo_restante = Decimal('0.00')
 
@@ -56,6 +56,9 @@ def crear_cobro(request, pk):
 
             if cobro.monto_restante == Decimal('0.00'):
                 venta.estatus_cobro_id= 3
+                venta.save()
+            elif cobro.monto_restante > Decimal('0.00'):
+                venta.estatus_cobro_id= 2
                 venta.save()
 
             messages.success(request, "Abono creado correctamente.")
