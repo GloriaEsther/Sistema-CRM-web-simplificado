@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% load widget_tweaks %}
 {% load static %}
-
 {% block content %}
 <div class="crm-form-wrapper">
   <div class="crm-form-card">
@@ -19,12 +18,18 @@
       {% endfor %}
     {% endif %}
 
-    <form method="POST" id="edicionVentaForm" novalidate>
+    <form method="POST" id="editarVentaForm" novalidate>
       {% csrf_token %}
 
       <div class="mb-3">
         <label class="form-label">Nombre de la venta *</label>
         {% render_field form.nombreventa class="form-control" %}
+        {% if form.nombreventa.errors %} <div class="text-danger small">{{ form.nombreventa.errors }}</div>{% endif %}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Cliente *</label>
+        {% render_field form.cliente class="form-control" %}
       </div>
 
       <div class="mb-3">
@@ -32,27 +37,82 @@
         {% render_field form.oportunidad_venta class="form-control" %}
       </div>
 
+      <hr class="my-4">      
+      <h5 class="mb-3 text-secondary">Artículos o Servicios Incluidos</h5>
+      
+      {{ formset.management_form }}
+
+      <div id="contenedor-detalles">
+        {% for form_detalle in formset %}
+          <div class="row g-2 align-items-center detalle-row mb-2">
+            {% for hidden in form_detalle.hidden_fields %}
+                {{ hidden }}
+            {% endfor %}
+
+            <div class="col-md-3">
+              <label class="form-label small text-muted">Servicio</label>
+              {% render_field form_detalle.servicio class="form-select form-select-sm select-servicio" %}
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label small text-muted">Producto</label>
+              {% render_field form_detalle.inventario class="form-select form-select-sm select-inventario" %}
+            </div>
+            <div class="col-md-2">
+              <label class="form-label small text-muted">Cant.</label>
+              {% render_field form_detalle.cantidad class="form-control form-control-sm cantidad-input" min="1" %}
+            </div>
+            <div class="col-md-2">
+              <label class="form-label small text-muted">P. Unitario</label>
+              {% render_field form_detalle.precio_unitario class="form-control form-control-sm precio-input" min="0" readonly="readonly"%}
+            </div>
+            <div class="col-md-2">
+              <label class="form-label small text-muted">Subtotal</label>
+              {% render_field form_detalle.subtotal class="form-control form-control-sm subtotal-input" readonly="readonly" %}
+            </div>
+            <div class="col-md-1 text-center pt-4">
+              <button type="button" class="btn btn-sm btn-outline-danger btn-remover-fila"><i class="bi bi-trash"></i></button>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="btn-agregar-articulo">
+        + Añadir artículo o servicio
+      </button>
+     
       <div class="mb-3">
-        <label class="form-label">Estatus de cobro*</label>
+        <label for="id_estatus_cobro" class="form-label">Estatus de cobro *</label>
         {% render_field form.estatus_cobro class="form-control" %}
       </div>
 
-      <div class="mb-3">
-        <label class="form-label">Precio Total *</label>
-        {% render_field form.preciototal class="form-control" %}
+      <div class="mb-3" id="div_forma_cobro" style="display: none;">
+        <label for="id_forma_cobro" class="form-label">Forma de cobro*</label>
+        {% render_field form.forma_cobro class="form-control" %}
+      </div>
+
+      <div class="mb-3" id="div_monto_inicial" style="display: none;">
+        <label for="id_monto_pago_inicial" class="form-label">Monto inicial*</label>
+        {% render_field form.monto_pago_inicial class="form-control" %}
       </div>
 
       <div class="mb-3">
-        <label class="form-label">CFDI</label>
+        <label class="form-label">Precio Total(Calculado) *</label>
+        {% render_field form.preciototal class="form-control" readonly="readonly" id="id_preciototal" %}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">CFDI (Opcional)</label>
         {% render_field form.cfdi class="form-control" %}
+        {% if form.cfdi.errors %}<div class="text-danger small">{{ form.cfdi.errors }}</div>{% endif %}
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Comentarios</label>
+        <label class="form-label">Comentarios (Opcional)</label>
         {% render_field form.comentarios class="form-control" %}
       </div>
 
-      <div class="d-flex justify-content-between mt-4">
+      <div class="crm-form-actions d-flex justify-content-between mt-4">
         <button type="submit" class="btn btn-orange w-50 me-2">
           Guardar
         </button>
@@ -67,8 +127,6 @@
   </div>
 </div>
 
-
- <!--Confirmar-->
   <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -87,7 +145,6 @@
     </div>
   </div>
   
-  <!--Modal de datos duplicados-->
   <div class="modal fade" id="duplicadoModal" tabindex="-1" aria-labelledby="duplicadoModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -119,6 +176,7 @@
   </script>
   {% endif %}
 
+
   <!-- Modal de campos faltantes -->
   <div class="modal fade" id="faltantesModal" tabindex="-1" aria-labelledby="faltantesModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -137,5 +195,7 @@
       </div>
     </div>
   </div>
+
+  {{ diccionario_precios|json_script:"precios-data" }}
   <script src="{% static 'ventas/js/ventas.js' %}?v={{ timestamp }}"></script>
 {% endblock %}

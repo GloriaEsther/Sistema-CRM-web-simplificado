@@ -280,8 +280,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 divFormaPago.style.display = "block";
                 divMonto.style.display = "block";
             }
-        }
-
+        } 
         // Ejecutar la función cada vez que el usuario cambie el selector
         estatus.addEventListener("change", evaluarEstatus);
 

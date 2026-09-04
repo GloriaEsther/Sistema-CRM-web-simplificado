@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from ventas.forms import VentaForm,VentaDetalleFormSet,VentaDetalleForm
 from django.db import transaction
-from ventas.models import Venta
+from ventas.models import Venta,VentaDetalle
 from cobros.models import Cobros
 from usuario.models import Usuario
 from servicios.models import Servicio
@@ -248,7 +248,7 @@ def ventas_hoy(request):
         "fecha": hoy
     })
 
-def venta_editar(request, pk):#vista y template por corregir 
+def venta_editar(request, pk):
     usuario = Usuario.activos.filter(
         idusuario=request.session.get("idusuario")
     ).first()
@@ -281,29 +281,38 @@ def venta_editar(request, pk):#vista y template por corregir
         # Pasamos instance=venta para que sepa qué registro actualizar
         form = VentaForm(request.POST, instance=venta, usuario=usuario,owner=owner)
         # El formset también recibe el POST y la instancia de la venta madre
-        formset = VentaDetalleFormSet(request.POST, instance=venta)
+        formset = VentaDetalleFormSet(request.POST, instance=venta,owner=owner)
         if form.is_valid() and formset.is_valid():
             try:
                 with transaction.atomic():
-                    # Guarda los cambios del formulario principal (ej. nombre o precio total)
-                    venta = form.save()
-                    
-                    # Guarda los cambios de los detalles (crea, edita o elimina automáticamente)
-                    formset.save()
-                    
+                    # Guarda los cambios del formulario principal 
+                    venta = form.save() 
+                    # Guarda los cambios de los detalles 
+                    formset.save()           
                 messages.success(request, "Venta actualizada correctamente.")
                 return redirect("ventas:listar")
             except Exception as e:
                 messages.error(request, f"Ocurrió un error al actualizar los detalles: {e}")
+        else:
+            print("error del forms", form.errors)
+            print("error del formset", formset.errors)
     else:
         # En la petición GET, cargamos los datos actuales de la BD pasando instance=venta
         form = VentaForm(instance=venta, usuario=usuario, owner=owner)
-        formset = VentaDetalleFormSet(instance=venta)
+        formset = VentaDetalleFormSet(instance=venta,owner=owner)
+
+    servicios = Servicio.activos.filter(owner=owner)
+    inventario = Inventario.activos.filter(owner=owner)
+    
+    diccionario_precios = {
+            'servicios': {str(s.idservicio): float(s.precio) for s in servicios},
+            'inventario': {str(i.idinventario): float(i.precio) for i in inventario}
+    }
 
     return render(request, "ventas/editar_ventas.html", {
         "form": form,
         "formset": formset,
-        "venta": venta
+       "diccionario_precios": diccionario_precios
     })
 
 def venta_eliminar(request, pk):
@@ -344,11 +353,14 @@ def venta_eliminar(request, pk):
         if venta.usuario_registro != usuario.idusuario:
             messages.error(
                 request,
-                "No tienes permiso para eliminar este cliente."
+                "No tienes permiso para eliminar esta venta."
             )
             return redirect("ventas:listar")
         if venta.estatus_cobro.idestatus_cobros == 3:
           messages.error(request, "No se puede eliminar una venta cobrada.")
+          return redirect("ventas:listar")
+        elif venta.estatus_cobro.idestatus_cobros == 2:
+          messages.error(request, "No se puede eliminar una venta cobrada parcialmente.")
           return redirect("ventas:listar")
         
         venta.eliminar_logico()
